@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-black: #0A0A0A;
+  --color-brand-dark: #111111;
+  --color-brand-card: #1A1A1A;
+  --color-brand-blue: #3B82F6;
+  --color-brand-blue-dark: #2563EB;
+  --color-brand-purple: #8B5CF6;
+  --color-brand-white: #F8FAFC;
+  --color-brand-muted: #94A3B8;
+  --color-brand-border: #1E293B;
+
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+
+  --animate-blob: blob 8s infinite ease-in-out;
+
+  @keyframes blob {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(20px, -20px) scale(1.05); }
+    66% { transform: translate(-10px, 10px) scale(0.97); }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}

@@ -1,0 +1,165 @@
+---
+const plans = [
+  {
+    name: 'Starter',
+    price: '$120.000',
+    featured: false,
+    features: [
+      'Sitio web 1 página',
+      'Dominio .cl incluido',
+      'Hosting básico',
+      '4 publicaciones/mes',
+      'Soporte por email',
+    ],
+  },
+  {
+    name: 'Esencial',
+    price: '$220.000',
+    featured: false,
+    features: [
+      'Sitio web 3 páginas',
+      'Dominio .cl incluido',
+      'Sistema de agendamiento',
+      '8 publicaciones/mes',
+      'Fidelización básica',
+      'Soporte prioritario',
+    ],
+  },
+  {
+    name: 'Profesional',
+    price: '$380.000',
+    featured: true,
+    badge: 'Más popular',
+    features: [
+      'Sitio web 5 páginas',
+      'Agendamiento + notificaciones',
+      '12 publicaciones + stories',
+      'Fidelización completa',
+      '1 video/mes',
+      'SEO optimizado',
+      'Google Analytics',
+    ],
+  },
+  {
+    name: 'Premium',
+    price: '$550.000',
+    featured: false,
+    features: [
+      'Sitio web ilimitado',
+      'Agendamiento avanzado',
+      '20 publicaciones + reels',
+      'Fidelización con puntos',
+      '2 videos/mes',
+      'Sesión fotográfica',
+      'Reportes mensuales',
+    ],
+  },
+  {
+    name: 'Elite',
+    price: '$790.000',
+    featured: false,
+    features: [
+      'Todo de Premium',
+      'Estrategia personalizada',
+      'Community management',
+      '4 videos/mes',
+      'Reportes detallados',
+      'Soporte 24/7',
+      'Gestor dedicado',
+    ],
+  },
+];
+---
+
+<section id="planes" class="py-24 px-4 bg-brand-dark">
+  <div class="max-w-7xl mx-auto">
+    <!-- Section header -->
+    <div class="text-center mb-16" data-aos="fade-up">
+      <p class="text-brand-blue text-sm font-semibold tracking-widest uppercase mb-3">
+        Precios transparentes
+      </p>
+      <h2 class="text-3xl md:text-4xl font-bold text-brand-white mb-4">
+        Elige el plan que mejor se adapta
+      </h2>
+      <p class="text-brand-muted max-w-xl mx-auto">
+        Sin contratos ni sorpresas. Todos los precios incluyen IVA.
+      </p>
+      <div class="w-16 h-1 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-6"></div>
+    </div>
+
+    <!-- Cards — horizontal scroll on mobile, grid on desktop -->
+    <div
+      class="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 lg:grid lg:grid-cols-5 lg:overflow-visible lg:gap-6 lg:mx-0 lg:px-0"
+      data-aos="fade-up"
+      data-aos-delay="100"
+    >
+      {
+        plans.map((plan) => (
+          <div
+            class={`relative flex-shrink-0 w-72 lg:w-auto flex flex-col rounded-2xl p-6 border transition-all duration-300
+              ${plan.featured
+                ? 'bg-brand-card border-brand-blue shadow-xl shadow-brand-blue/20 hover:-translate-y-1'
+                : 'bg-brand-card border-brand-border hover:border-brand-blue/30 hover:-translate-y-1'
+              }`}
+          >
+            {/* Featured badge */}
+            {plan.featured && plan.badge && (
+              <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-blue to-brand-purple text-white text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap">
+                {plan.badge}
+              </div>
+            )}
+
+            {/* Plan name */}
+            <p class="text-brand-muted text-xs font-semibold tracking-widest uppercase mb-3">
+              {plan.name}
+            </p>
+
+            {/* Price */}
+            <div class="mb-6">
+              <span class="text-3xl font-extrabold text-brand-white">{plan.price}</span>
+              <span class="text-brand-muted text-sm ml-1">CLP/mes</span>
+            </div>
+
+            {/* Features */}
+            <ul class="space-y-2.5 flex-1 mb-8">
+              {plan.features.map((feature) => (
+                <li class="flex items-start gap-2 text-brand-muted text-sm">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    class="w-4 h-4 text-brand-blue flex-shrink-0 mt-0.5"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            {/* CTA */}
+            <a
+              href="#contacto"
+              class={`w-full py-3 rounded-xl font-semibold text-sm text-center transition-all duration-200
+                ${plan.featured
+                  ? 'bg-gradient-to-r from-brand-blue to-brand-purple text-white hover:scale-105 shadow-lg shadow-brand-blue/25'
+                  : 'border border-brand-border text-brand-white hover:border-brand-blue/50 hover:bg-brand-blue/5'
+                }`}
+            >
+              Comenzar
+            </a>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Note -->
+    <p class="text-center text-brand-muted text-sm mt-8" data-aos="fade-up">
+      ¿No sabes cuál elegir? <a href="#contacto" class="text-brand-blue hover:underline">Contáctanos</a> y te ayudamos a encontrar el plan ideal para tu negocio.
+    </p>
+  </div>
+</section>

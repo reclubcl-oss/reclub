@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Servicios from '../components/Servicios.astro';
+import Planes from '../components/Planes.astro';
+import PorQueReclub from '../components/PorQueReclub.astro';
+import Contacto from '../components/Contacto.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+---
+
+<Layout
+  title="ReClub — Agencia Digital Chilena"
+  description="Digitaliza tu negocio con ReClub. Webs profesionales, fidelización digital y contenido para redes sociales. Todo en un solo lugar."
+>
+  <Nav />
+  <main>
+    <Hero />
+    <Servicios />
+    <Planes />
+    <PorQueReclub />
+    <Contacto />
+  </main>
+  <Footer />
+  <WhatsAppButton />
+</Layout>

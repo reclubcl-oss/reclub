@@ -1,0 +1,55 @@
+---
+---
+
+<footer class="bg-brand-dark border-t border-brand-border">
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+      <!-- Brand -->
+      <div>
+        <a href="/" class="text-2xl font-bold tracking-tight inline-block mb-4">
+          Re<span class="text-brand-blue">Club</span>
+        </a>
+        <p class="text-brand-muted text-sm leading-relaxed max-w-xs">
+          Agencia digital chilena. Ayudamos a negocios locales a crecer con soluciones digitales integrales.
+        </p>
+      </div>
+
+      <!-- Quick links -->
+      <div>
+        <h4 class="text-brand-white font-semibold mb-4">Navegación</h4>
+        <ul class="space-y-2">
+          {['#servicios:Servicios', '#planes:Planes', '#por-que-reclub:Por qué ReClub', '#contacto:Contacto'].map((item) => {
+            const [href, label] = item.split(':');
+            return (
+              <li>
+                <a href={href} class="text-brand-muted text-sm hover:text-brand-white transition-colors">
+                  {label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h4 class="text-brand-white font-semibold mb-4">Contacto</h4>
+        <ul class="space-y-2">
+          <li class="text-brand-muted text-sm">hola@reclub.cl</li>
+          <li class="text-brand-muted text-sm">+56 9 XXXX XXXX</li>
+          <li class="text-brand-muted text-sm">Santiago, Chile</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-brand-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-brand-muted text-sm">
+        © 2026 ReClub. Todos los derechos reservados.
+      </p>
+      <p class="text-brand-muted text-sm">
+        Hecho con ❤️ en Santiago, Chile
+      </p>
+    </div>
+  </div>
+</footer>

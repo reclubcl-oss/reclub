@@ -1,0 +1,110 @@
+---
+const services = [
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>`,
+    color: 'text-brand-blue',
+    bgColor: 'bg-brand-blue/10',
+    borderHover: 'hover:border-brand-blue/40',
+    title: 'Creación de Sitios Web',
+    description:
+      'Diseño profesional con sistema de agendamiento integrado. Ideal para salones, restaurantes, clínicas y negocios locales.',
+    features: [
+      'Diseño 100% personalizado',
+      'Sistema de agendamiento online',
+      'Optimizado para Google (SEO)',
+    ],
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" /></svg>`,
+    color: 'text-brand-purple',
+    bgColor: 'bg-brand-purple/10',
+    borderHover: 'hover:border-brand-purple/40',
+    title: 'Tarjeta de Fidelidad Digital',
+    description:
+      'Sistema de puntos y recompensas para tus clientes. Fideliza y retén a tu audiencia de forma automática.',
+    features: [
+      'Programa de puntos y recompensas',
+      'App móvil para tus clientes',
+      'Notificaciones automáticas',
+    ],
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" /></svg>`,
+    color: 'text-emerald-400',
+    bgColor: 'bg-emerald-400/10',
+    borderHover: 'hover:border-emerald-400/40',
+    title: 'Creación de Contenido',
+    description:
+      'Producción para redes sociales: fotografía, video, diseño gráfico y gestión de redes para hacer crecer tu marca.',
+    features: [
+      'Fotografía y video profesional',
+      'Diseño gráfico para RRSS',
+      'Gestión de redes sociales',
+    ],
+  },
+];
+---
+
+<section id="servicios" class="py-24 px-4 bg-brand-black">
+  <div class="max-w-7xl mx-auto">
+    <!-- Section header -->
+    <div class="text-center mb-16" data-aos="fade-up">
+      <p class="text-brand-blue text-sm font-semibold tracking-widest uppercase mb-3">
+        Lo que hacemos
+      </p>
+      <h2 class="text-3xl md:text-4xl font-bold text-brand-white mb-4">
+        Tres pilares para tu negocio digital
+      </h2>
+      <div class="w-16 h-1 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto"></div>
+    </div>
+
+    <!-- Cards grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {
+        services.map((service, i) => (
+          <div
+            class={`bg-brand-card border border-brand-border rounded-2xl p-8 transition-all duration-300 group ${service.borderHover} hover:-translate-y-2`}
+            data-aos="fade-up"
+            data-aos-delay={i * 100}
+          >
+            <!-- Icon -->
+            <div class={`w-16 h-16 ${service.bgColor} rounded-2xl flex items-center justify-center mb-6 ${service.color}`}>
+              <Fragment set:html={service.icon} />
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-xl font-bold text-brand-white mb-3">
+              {service.title}
+            </h3>
+
+            <!-- Description -->
+            <p class="text-brand-muted leading-relaxed mb-6">
+              {service.description}
+            </p>
+
+            <!-- Features -->
+            <ul class="space-y-2">
+              {service.features.map((feature) => (
+                <li class="flex items-center gap-2 text-brand-muted text-sm">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    class={`w-4 h-4 ${service.color} flex-shrink-0`}
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
