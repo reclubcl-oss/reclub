@@ -1,0 +1,225 @@
+---
+export const prerender = false;
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Escanear QR — ReClub">
+  <main class="h-screen bg-brand-black flex flex-col overflow-hidden" style="padding-bottom: env(safe-area-inset-bottom);">
+
+    <!-- Header -->
+    <div class="flex items-center gap-3 px-4 py-4" style="padding-top: max(1rem, env(safe-area-inset-top));">
+      <a href="/dashboard" class="w-9 h-9 flex items-center justify-center text-brand-muted hover:text-brand-white transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </a>
+      <h1 class="font-semibold text-brand-white">Escanear QR del cliente</h1>
+    </div>
+
+    <!-- Scanner container -->
+    <div class="relative flex-1 bg-black">
+      <div id="reader" class="w-full h-full"></div>
+      <!-- Viewfinder overlay -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="w-56 h-56 border-2 border-brand-blue rounded-2xl shadow-lg shadow-brand-blue/30">
+          <!-- Corner accents -->
+          <div class="absolute -top-0.5 -left-0.5 w-8 h-8 border-t-4 border-l-4 border-brand-blue rounded-tl-2xl"></div>
+          <div class="absolute -top-0.5 -right-0.5 w-8 h-8 border-t-4 border-r-4 border-brand-blue rounded-tr-2xl"></div>
+          <div class="absolute -bottom-0.5 -left-0.5 w-8 h-8 border-b-4 border-l-4 border-brand-blue rounded-bl-2xl"></div>
+          <div class="absolute -bottom-0.5 -right-0.5 w-8 h-8 border-b-4 border-r-4 border-brand-blue rounded-br-2xl"></div>
+        </div>
+      </div>
+      <p class="absolute bottom-4 left-0 right-0 text-center text-brand-muted text-sm">
+        Apunta la cámara al QR del cliente
+      </p>
+    </div>
+
+    <!-- Result panel (slides up after scan) -->
+    <div
+      id="result-panel"
+      class="hidden bg-brand-dark border-t border-brand-border rounded-t-3xl px-5 pt-5 pb-4 flex flex-col gap-4"
+    >
+      <!-- Client info -->
+      <div class="flex items-center gap-3">
+        <div
+          id="client-avatar"
+          class="w-12 h-12 rounded-full bg-brand-blue/20 flex items-center justify-center text-brand-blue font-bold text-lg flex-shrink-0"
+        >?</div>
+        <div class="min-w-0">
+          <p class="font-semibold text-brand-white truncate" id="client-name">—</p>
+          <p class="text-brand-muted text-sm truncate" id="client-phone">—</p>
+        </div>
+        <div class="ml-auto text-right">
+          <p id="loyalty-summary" class="text-brand-blue font-bold text-lg">—</p>
+          <p id="loyalty-label" class="text-brand-muted text-xs">sellos</p>
+        </div>
+      </div>
+
+      <!-- Stamp grid preview -->
+      <div id="stamp-grid" class="flex flex-wrap gap-1.5"></div>
+
+      <!-- Actions -->
+      <button
+        id="confirm-btn"
+        class="w-full bg-brand-blue text-white font-bold rounded-2xl py-4 text-base hover:bg-brand-blue-dark active:scale-95 transition-all"
+      >
+        Confirmar sello ✓
+      </button>
+      <button
+        id="cancel-btn"
+        class="w-full text-brand-muted py-2 text-sm active:scale-95 transition-transform"
+      >
+        Cancelar
+      </button>
+    </div>
+
+    <!-- Not authorized -->
+    <div id="auth-error" class="hidden fixed inset-0 bg-brand-black flex items-center justify-center p-8 text-center">
+      <div>
+        <p class="text-brand-white font-semibold mb-2">Sesión no encontrada</p>
+        <p class="text-brand-muted text-sm mb-6">Necesitas iniciar sesión como negocio para escanear QRs.</p>
+        <a href="/dashboard" class="bg-brand-blue text-white px-6 py-3 rounded-xl font-semibold">Ir al panel</a>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { supabase } from '../../lib/supabase-browser';
+
+  let currentCard: any = null;
+  let currentQrToken: string | null = null;
+  let businessId: string | null = null;
+  let accessToken: string | null = null;
+  let scanner: any = null;
+  let scanning = true;
+
+  // Check auth
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    document.getElementById('auth-error')!.classList.remove('hidden');
+  } else {
+    accessToken = session.access_token;
+
+    const { data: business } = await supabase
+      .from('businesses')
+      .select('id')
+      .eq('owner_id', session.user.id)
+      .single();
+
+    businessId = business?.id ?? null;
+
+    // Load html5-qrcode dynamically
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+    document.head.appendChild(s);
+    s.onload = initScanner;
+  }
+
+  function initScanner() {
+    const Html5Qrcode = (window as any).Html5Qrcode;
+    scanner = new Html5Qrcode('reader');
+    scanner.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
+      async (text: string) => {
+        if (!scanning) return;
+        scanning = false;
+        scanner.pause();
+        await handleScan(text);
+      },
+      () => {},
+    ).catch(() => {
+      // Camera permission denied
+      document.getElementById('reader')!.innerHTML =
+        '<p class="text-brand-muted text-sm text-center p-8">Sin acceso a la cámara. Permite el acceso en la configuración del dispositivo.</p>';
+    });
+  }
+
+  async function handleScan(qrToken: string) {
+    currentQrToken = qrToken;
+    const res = await fetch(`/api/wallet/card/${qrToken}`);
+
+    if (!res.ok) {
+      alert('QR no reconocido. Intenta de nuevo.');
+      scanning = true;
+      scanner.resume();
+      return;
+    }
+
+    currentCard = await res.json();
+    showResult(currentCard);
+  }
+
+  function showResult(card: any) {
+    const panel = document.getElementById('result-panel')!;
+    panel.classList.remove('hidden');
+
+    const client = card.client;
+    const business = card.business;
+    const isStamps = business.loyalty_type === 'stamps';
+
+    document.getElementById('client-avatar')!.textContent = (client.name || client.phone || 'C')[0].toUpperCase();
+    document.getElementById('client-name')!.textContent = client.name || 'Sin nombre';
+    document.getElementById('client-phone')!.textContent = client.phone;
+
+    if (isStamps) {
+      document.getElementById('loyalty-summary')!.textContent = `${card.stamps}/${business.stamps_total}`;
+      document.getElementById('loyalty-label')!.textContent = 'sellos';
+
+      const grid = document.getElementById('stamp-grid')!;
+      grid.innerHTML = Array.from({ length: business.stamps_total }, (_: any, i: number) =>
+        `<div class="w-7 h-7 rounded-full border-2 flex items-center justify-center ${i < card.stamps ? 'bg-brand-blue border-brand-blue' : 'border-brand-border'}">
+          ${i < card.stamps ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5 text-white"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>' : ''}
+        </div>`
+      ).join('');
+    } else {
+      document.getElementById('loyalty-summary')!.textContent = String(card.points);
+      document.getElementById('loyalty-label')!.textContent = 'puntos';
+      document.getElementById('stamp-grid')!.innerHTML = '';
+    }
+  }
+
+  document.getElementById('confirm-btn')?.addEventListener('click', async () => {
+    if (!currentQrToken || !businessId || !accessToken) return;
+
+    const btn = document.getElementById('confirm-btn') as HTMLButtonElement;
+    btn.textContent = 'Sumando...';
+    btn.disabled = true;
+
+    const res = await fetch('/api/wallet/stamp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ qrToken: currentQrToken, businessId }),
+    });
+
+    if (res.ok) {
+      btn.textContent = '¡Listo! ✓';
+      btn.classList.replace('bg-brand-blue', 'bg-emerald-600');
+      setTimeout(() => {
+        document.getElementById('result-panel')!.classList.add('hidden');
+        btn.textContent = 'Confirmar sello ✓';
+        btn.classList.replace('bg-emerald-600', 'bg-brand-blue');
+        btn.disabled = false;
+        currentCard = null;
+        currentQrToken = null;
+        scanning = true;
+        scanner.resume();
+      }, 2000);
+    } else {
+      btn.textContent = 'Error — intentar de nuevo';
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('cancel-btn')?.addEventListener('click', () => {
+    document.getElementById('result-panel')!.classList.add('hidden');
+    currentCard = null;
+    currentQrToken = null;
+    scanning = true;
+    scanner.resume();
+  });
+</script>

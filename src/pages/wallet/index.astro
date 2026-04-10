@@ -1,0 +1,150 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+
+let cards: any[] | null = null;
+let client: any = null;
+let errorMsg: string | null = null;
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const phone = (formData.get('phone') as string)?.trim();
+  const email = (formData.get('email') as string)?.trim();
+  const name = (formData.get('name') as string)?.trim();
+
+  const res = await fetch(`${Astro.url.origin}/api/wallet/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone, email, name }),
+  });
+  const result = await res.json();
+  if (res.ok) {
+    client = result.client;
+    cards = result.cards;
+  } else {
+    errorMsg = result.error ?? 'Error al buscar tus tarjetas';
+  }
+}
+---
+
+<Layout title="Mi Wallet — ReClub">
+  <main class="min-h-screen bg-brand-black px-4 py-10 flex flex-col items-center" style="padding-bottom: max(2rem, env(safe-area-inset-bottom));">
+
+    <!-- Logo -->
+    <a href="/" class="text-2xl font-bold mb-10 text-brand-white">
+      Re<span class="text-brand-blue">Club</span>
+    </a>
+
+    {!cards && (
+      <div class="w-full max-w-sm">
+        <h1 class="text-2xl font-bold text-center mb-2 text-brand-white">Tu tarjeta de fidelización</h1>
+        <p class="text-brand-muted text-center text-sm mb-8">
+          Ingresa tus datos para ver tus tarjetas y puntos
+        </p>
+
+        <form method="POST" class="flex flex-col gap-4">
+          <input
+            type="text" name="name" placeholder="Tu nombre (opcional)"
+            autocomplete="name"
+            class="bg-brand-card border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/60 focus:outline-none focus:border-brand-blue transition-colors"
+          />
+          <input
+            type="tel" name="phone" required placeholder="+56 9 1234 5678"
+            autocomplete="tel"
+            class="bg-brand-card border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/60 focus:outline-none focus:border-brand-blue transition-colors"
+          />
+          <input
+            type="email" name="email" required placeholder="tu@email.com"
+            autocomplete="email"
+            class="bg-brand-card border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/60 focus:outline-none focus:border-brand-blue transition-colors"
+          />
+
+          {errorMsg && (
+            <p class="text-red-400 text-sm text-center">{errorMsg}</p>
+          )}
+
+          <button
+            type="submit"
+            class="bg-gradient-to-r from-brand-blue to-brand-purple text-white font-semibold rounded-xl px-6 py-4 hover:scale-[1.02] active:scale-95 transition-transform shadow-lg shadow-brand-blue/25"
+          >
+            Ver mis tarjetas
+          </button>
+        </form>
+      </div>
+    )}
+
+    {cards && cards.length === 0 && (
+      <div class="text-center mt-12 max-w-xs">
+        <div class="w-20 h-20 bg-brand-card rounded-full flex items-center justify-center mx-auto mb-4 text-brand-muted">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+          </svg>
+        </div>
+        <p class="text-brand-white font-semibold mb-2">Aún no tienes tarjetas</p>
+        <p class="text-brand-muted text-sm">Pide una tarjeta de fidelización en tu negocio favorito que use ReClub.</p>
+        <a href="/" class="mt-6 inline-block text-brand-blue text-sm hover:underline">Conocer más sobre ReClub</a>
+      </div>
+    )}
+
+    {cards && cards.length > 0 && (
+      <div class="w-full max-w-sm">
+        <p class="text-brand-muted text-sm text-center mb-6">
+          Hola, <span class="text-brand-white font-medium">{client.name || client.phone}</span>
+        </p>
+
+        <div class="flex flex-col gap-4">
+          {cards.map((card: any) => {
+            const b = card.business;
+            const isStamps = b.loyalty_type === 'stamps';
+            const stampsArr = isStamps ? Array.from({ length: b.stamps_total }) : [];
+            return (
+              <a
+                href={`/wallet/${card.id}`}
+                class="block bg-brand-card border border-brand-border rounded-2xl p-5 hover:border-brand-blue active:scale-[0.98] transition-all duration-200"
+              >
+                <!-- Business header -->
+                <div class="flex items-center gap-3 mb-4">
+                  {b.logo_url ? (
+                    <img src={b.logo_url} alt={b.name} class="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                  ) : (
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0" style={`background: ${b.color || '#3B82F6'}`}>
+                      {b.name[0]}
+                    </div>
+                  )}
+                  <div class="min-w-0">
+                    <h3 class="font-semibold text-brand-white truncate">{b.name}</h3>
+                    <p class="text-brand-muted text-xs truncate">{b.reward_description}</p>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-brand-muted ml-auto flex-shrink-0">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </div>
+
+                <!-- Stamps or points preview -->
+                {isStamps ? (
+                  <div class="flex flex-wrap gap-1.5">
+                    {stampsArr.map((_: any, i: number) => (
+                      <div class={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${i < card.stamps ? 'border-brand-blue bg-brand-blue' : 'border-brand-border'}`}>
+                        {i < card.stamps && (
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5 text-white">
+                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div class="flex items-baseline gap-1">
+                    <span class="text-2xl font-bold text-brand-blue">{card.points}</span>
+                    <span class="text-brand-muted text-sm">puntos</span>
+                  </div>
+                )}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    )}
+  </main>
+</Layout>

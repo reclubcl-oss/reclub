@@ -12,9 +12,18 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/vercel": "^10.0.4",
+    "@supabase/supabase-js": "^2.103.0",
     "@tailwindcss/vite": "^4.2.2",
     "aos": "^2.3.4",
     "astro": "^6.1.5",
+    "jsonwebtoken": "^9.0.3",
+    "passkit-generator": "^3.5.7",
+    "qrcode": "^1.5.4",
     "tailwindcss": "^4.2.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/qrcode": "^1.5.6"
   }
 }

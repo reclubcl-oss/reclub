@@ -1,0 +1,138 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { supabaseAdmin } from '../../lib/supabase';
+import QRCode from 'qrcode';
+
+const { cardId } = Astro.params;
+
+const { data: card } = await supabaseAdmin
+  .from('loyalty_cards')
+  .select('*, business:businesses(*), client:clients(*)')
+  .eq('id', cardId)
+  .single();
+
+if (!card) return Astro.redirect('/wallet');
+
+const business = card.business;
+const isStamps = business.loyalty_type === 'stamps';
+const stampsArr = isStamps ? Array.from({ length: business.stamps_total }) : [];
+
+// Generate QR as SVG server-side
+const qrSVG = await QRCode.toString(card.qr_token, {
+  type: 'svg',
+  color: { dark: '#F8FAFC', light: '#1A1A1A' },
+  margin: 2,
+  width: 200,
+});
+---
+
+<Layout title={`${business.name} — ReClub`}>
+  <main
+    class="min-h-screen bg-brand-black flex flex-col items-center px-4 py-8"
+    style="padding-bottom: max(2rem, env(safe-area-inset-bottom));"
+  >
+    <!-- Back -->
+    <div class="w-full max-w-sm mb-6">
+      <a href="/wallet" class="flex items-center gap-1 text-brand-muted text-sm hover:text-brand-white transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+        Mis tarjetas
+      </a>
+    </div>
+
+    <div class="w-full max-w-sm">
+      <!-- Business header -->
+      <div class="flex items-center gap-3 mb-6">
+        {business.logo_url ? (
+          <img src={business.logo_url} alt={business.name} class="w-12 h-12 rounded-full object-cover" />
+        ) : (
+          <div
+            class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
+            style={`background: ${business.color || '#3B82F6'}`}
+          >
+            {business.name[0]}
+          </div>
+        )}
+        <div>
+          <h1 class="text-lg font-bold text-brand-white">{business.name}</h1>
+          <p class="text-brand-muted text-sm">{business.reward_description}</p>
+        </div>
+      </div>
+
+      <!-- QR code -->
+      <div class="bg-brand-card border border-brand-border rounded-2xl p-6 flex flex-col items-center mb-5">
+        <p class="text-brand-muted text-xs mb-4">Muéstrale este código al negocio</p>
+        <div class="rounded-xl overflow-hidden w-52 h-52" set:html={qrSVG} />
+      </div>
+
+      <!-- Stamp grid or points -->
+      <div class="bg-brand-card border border-brand-border rounded-2xl p-5 mb-5">
+        {isStamps ? (
+          <>
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-brand-muted text-sm">Sellos acumulados</p>
+              <p class="text-brand-white font-semibold text-sm">{card.stamps} / {business.stamps_total}</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              {stampsArr.map((_: any, i: number) => (
+                <div
+                  class={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all ${
+                    i < card.stamps
+                      ? 'border-brand-blue bg-brand-blue shadow-sm shadow-brand-blue/40'
+                      : 'border-brand-border'
+                  }`}
+                >
+                  {i < card.stamps ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
+                      <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                    </svg>
+                  ) : (
+                    <span class="text-brand-border text-xs font-medium">{i + 1}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+            {card.stamps >= business.stamps_total && (
+              <div class="mt-4 bg-brand-blue/10 border border-brand-blue/30 rounded-xl p-3 text-center">
+                <p class="text-brand-blue font-semibold text-sm">🎉 ¡Tarjeta completa! Muéstrala en el negocio.</p>
+              </div>
+            )}
+          </>
+        ) : (
+          <div class="text-center py-2">
+            <p class="text-4xl font-extrabold text-brand-blue">{card.points}</p>
+            <p class="text-brand-muted text-sm mt-1">puntos acumulados</p>
+          </div>
+        )}
+      </div>
+
+      <!-- Wallet buttons -->
+      <div class="flex flex-col gap-3">
+        <a
+          href={`/api/passes/apple/${card.id}`}
+          class="flex items-center justify-center gap-3 bg-black border border-brand-border rounded-2xl py-4 px-5 hover:border-brand-border/60 active:scale-95 transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          </svg>
+          <span class="text-white font-semibold text-sm">Agregar a Apple Wallet</span>
+        </a>
+        <a
+          href={`/api/passes/google/${card.id}`}
+          class="flex items-center justify-center gap-3 bg-white rounded-2xl py-4 px-5 hover:bg-gray-100 active:scale-95 transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-5 h-5">
+            <path fill="#4285F4" d="M43.6 20H24v8h11.3C33.6 33 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l6-6C34.4 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.6-7.9 19.6-20 0-1.3-.1-2.7-.4-4z"/>
+            <path fill="#34A853" d="M6.3 14.7l6.6 4.8C14.5 15.8 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l6-6C34.4 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+            <path fill="#FBBC05" d="M24 44c5.2 0 9.9-1.8 13.5-4.8l-6.2-5.1C29.4 35.4 26.8 36 24 36c-5.2 0-9.6-3-11.3-7.5l-6.6 5.1C9.7 39.8 16.3 44 24 44z"/>
+            <path fill="#EA4335" d="M43.6 20H24v8h11.3c-1 2.7-2.9 4.9-5.3 6.4l6.2 5.1C40.1 36.5 44 31 44 24c0-1.3-.1-2.7-.4-4z"/>
+          </svg>
+          <span class="text-gray-800 font-semibold text-sm">Agregar a Google Wallet</span>
+        </a>
+      </div>
+    </div>
+  </main>
+</Layout>
