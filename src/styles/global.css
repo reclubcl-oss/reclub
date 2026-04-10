@@ -24,23 +24,69 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
+body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* Scrollbar desktop */
 ::-webkit-scrollbar {
   width: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: #0a0a0a;
 }
-
 ::-webkit-scrollbar-thumb {
   background: #1e293b;
   border-radius: 3px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: #3b82f6;
+}
+
+/* Touch targets mínimos 44px (Apple HIG) */
+a, button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Inputs: font-size 16px mínimo para evitar zoom en iOS */
+input, select, textarea {
+  font-size: 16px !important;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 12px;
+}
+
+/* Scroll horizontal con momentum en iOS */
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+.scroll-touch > * {
+  scroll-snap-align: start;
+}
+
+/* Animaciones desactivadas si el usuario prefiere */
+@media (prefers-reduced-motion: reduce) {
+  [data-aos] {
+    transition: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .animate-blob, .animate-bounce, .animate-pulse {
+    animation: none !important;
+  }
 }
 
 .animation-delay-2000 {
