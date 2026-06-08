@@ -1,0 +1,582 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Admin — Portfolio Benjamín">
+  <!-- LOGIN -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-6 bg-brand-black">
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-8">
+        <div class="w-12 h-12 bg-brand-blue/10 border border-brand-blue/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <h1 class="text-2xl font-black text-brand-white">Panel Admin</h1>
+        <p class="text-brand-muted text-sm mt-1">Portfolio de Benjamín</p>
+      </div>
+
+      <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
+        <div id="loginError" class="hidden mb-4 bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
+        <form id="loginForm" class="space-y-4">
+          <div>
+            <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Email</label>
+            <input type="email" id="loginEmail" required autocomplete="email"
+              class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40"
+              placeholder="tu@email.com"
+            />
+          </div>
+          <div>
+            <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Contraseña</label>
+            <input type="password" id="loginPassword" required autocomplete="current-password"
+              class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40"
+              placeholder="••••••••"
+            />
+          </div>
+          <button type="submit" id="loginBtn"
+            class="w-full bg-brand-blue hover:bg-brand-blue-dark text-white py-3 rounded-xl font-semibold transition-colors disabled:opacity-50"
+          >
+            Entrar
+          </button>
+        </form>
+      </div>
+      <p class="text-center mt-6">
+        <a href="/portafolio" class="text-brand-muted text-sm hover:text-brand-white transition-colors">← Ver portfolio</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="adminDashboard" class="hidden min-h-screen bg-brand-black">
+    <!-- Header -->
+    <header class="sticky top-0 z-40 border-b border-brand-border bg-brand-black/90 backdrop-blur-md px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-brand-blue/10 border border-brand-blue/30 rounded-xl flex items-center justify-center">
+          <svg class="w-4 h-4 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-black text-brand-white text-sm leading-none">Admin</p>
+          <p class="text-brand-muted text-xs">Portfolio de Benjamín</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="/portafolio" target="_blank"
+          class="text-brand-muted hover:text-brand-white text-sm transition-colors hidden sm:flex items-center gap-1"
+        >
+          Ver portfolio
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+          </svg>
+        </a>
+        <button id="logoutBtn" class="text-brand-muted hover:text-red-400 text-sm transition-colors flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          Salir
+        </button>
+      </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <!-- Tabs -->
+      <div class="flex gap-2 mb-8 border-b border-brand-border pb-4">
+        <button class="tab-btn active" data-tab="videos">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+          </svg>
+          Videos
+        </button>
+        <button class="tab-btn" data-tab="brands">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          Marcas
+        </button>
+      </div>
+
+      <!-- ===== VIDEOS TAB ===== -->
+      <div id="tab-videos" class="tab-content">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 mb-8">
+          <h2 class="font-bold text-brand-white mb-1">Subir nuevo video</h2>
+          <p class="text-brand-muted text-xs mb-6">Formatos: MP4, MOV, WebM · Recomendado: menos de 200 MB</p>
+
+          <form id="videoForm" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Título *</label>
+                <input type="text" name="title" required
+                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
+                  placeholder="Nombre del proyecto"
+                />
+              </div>
+              <div>
+                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Categoría</label>
+                <input type="text" name="category"
+                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
+                  placeholder="Redes Sociales, Publicidad..."
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Descripción</label>
+              <textarea name="description" rows="2"
+                class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors resize-none placeholder:text-brand-muted/40 text-sm"
+                placeholder="Descripción breve del proyecto..."
+              ></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Archivo de video *</label>
+                <label class="block w-full bg-brand-dark border border-dashed border-brand-border hover:border-brand-blue/50 rounded-xl px-4 py-4 cursor-pointer transition-colors group">
+                  <input type="file" name="videoFile" accept="video/*" required class="hidden" id="videoFileInput" />
+                  <div class="flex items-center gap-3">
+                    <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    <div>
+                      <p id="videoFileName" class="text-brand-muted text-sm">Elegir video</p>
+                      <p class="text-brand-muted/40 text-xs">MP4, MOV, WebM</p>
+                    </div>
+                  </div>
+                </label>
+              </div>
+              <div>
+                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Thumbnail <span class="normal-case font-normal">(opcional)</span></label>
+                <label class="block w-full bg-brand-dark border border-dashed border-brand-border hover:border-brand-blue/50 rounded-xl px-4 py-4 cursor-pointer transition-colors group">
+                  <input type="file" name="thumbnailFile" accept="image/*" class="hidden" id="thumbFileInput" />
+                  <div class="flex items-center gap-3">
+                    <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <div>
+                      <p id="thumbFileName" class="text-brand-muted text-sm">Elegir imagen</p>
+                      <p class="text-brand-muted/40 text-xs">JPG, PNG, WebP</p>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Progress -->
+            <div id="videoProgress" class="hidden space-y-2">
+              <div class="h-1.5 bg-brand-dark rounded-full overflow-hidden">
+                <div id="videoProgressBar" class="h-full bg-gradient-to-r from-brand-blue to-brand-purple rounded-full transition-all duration-300 w-0"></div>
+              </div>
+              <p id="videoProgressText" class="text-brand-muted text-xs">Preparando...</p>
+            </div>
+
+            <div id="videoSuccess" class="hidden bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl">
+              ✓ Video subido con éxito
+            </div>
+            <div id="videoError" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
+
+            <button type="submit" id="videoSubmitBtn"
+              class="bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Subir Video
+            </button>
+          </form>
+        </div>
+
+        <!-- List -->
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-brand-white">Videos publicados</h2>
+          <button id="refreshVideos" class="text-brand-muted hover:text-brand-white text-xs transition-colors">↻ Actualizar</button>
+        </div>
+        <div id="videosList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="col-span-full text-brand-muted text-sm py-8 text-center">Cargando...</div>
+        </div>
+      </div>
+
+      <!-- ===== BRANDS TAB ===== -->
+      <div id="tab-brands" class="tab-content hidden">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 mb-8">
+          <h2 class="font-bold text-brand-white mb-1">Agregar marca</h2>
+          <p class="text-brand-muted text-xs mb-6">Las marcas aparecen en la sección "Marcas que confiaron en mí"</p>
+
+          <form id="brandForm" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Nombre de la marca *</label>
+                <input type="text" name="name" required
+                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
+                  placeholder="ej: Nike, Apple..."
+                />
+              </div>
+              <div>
+                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Sitio web <span class="normal-case font-normal">(opcional)</span></label>
+                <input type="url" name="websiteUrl"
+                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Logo <span class="normal-case font-normal">(PNG o SVG recomendado)</span></label>
+              <label class="block w-full max-w-xs bg-brand-dark border border-dashed border-brand-border hover:border-brand-blue/50 rounded-xl px-4 py-4 cursor-pointer transition-colors group">
+                <input type="file" name="logoFile" accept="image/*" class="hidden" id="logoFileInput" />
+                <div class="flex items-center gap-3">
+                  <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <div>
+                    <p id="logoFileName" class="text-brand-muted text-sm">Elegir logo</p>
+                    <p class="text-brand-muted/40 text-xs">PNG, SVG, WebP</p>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <div id="brandError" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
+            <div id="brandSuccess" class="hidden bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl">
+              ✓ Marca agregada con éxito
+            </div>
+
+            <button type="submit" id="brandSubmitBtn"
+              class="bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Agregar Marca
+            </button>
+          </form>
+        </div>
+
+        <!-- List -->
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-brand-white">Marcas</h2>
+          <button id="refreshBrands" class="text-brand-muted hover:text-brand-white text-xs transition-colors">↻ Actualizar</button>
+        </div>
+        <div id="brandsList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div class="col-span-full text-brand-muted text-sm py-8 text-center">Cargando...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.15s;
+    color: #94A3B8;
+    background: transparent;
+    border: 1px solid transparent;
+  }
+  .tab-btn:hover {
+    color: #F8FAFC;
+    border-color: #1E293B;
+  }
+  .tab-btn.active {
+    background: #3B82F6;
+    color: white;
+    border-color: transparent;
+  }
+</style>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const sb = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const $ = (id: string) => document.getElementById(id)!;
+
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  async function boot() {
+    const { data: { session } } = await sb.auth.getSession();
+    session ? showDashboard() : showLogin();
+    sb.auth.onAuthStateChange((_, s) => s ? showDashboard() : showLogin());
+  }
+
+  function showLogin() {
+    $('loginScreen').classList.remove('hidden');
+    $('adminDashboard').classList.add('hidden');
+  }
+
+  async function showDashboard() {
+    $('loginScreen').classList.add('hidden');
+    $('adminDashboard').classList.remove('hidden');
+    await Promise.all([loadVideos(), loadBrands()]);
+  }
+
+  $('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('loginBtn') as HTMLButtonElement;
+    const err = $('loginError');
+    btn.disabled = true;
+    btn.textContent = 'Entrando...';
+    err.classList.add('hidden');
+
+    const { error } = await sb.auth.signInWithPassword({
+      email: ($('loginEmail') as HTMLInputElement).value,
+      password: ($('loginPassword') as HTMLInputElement).value,
+    });
+
+    if (error) {
+      err.textContent = error.message;
+      err.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+    }
+  });
+
+  $('logoutBtn').addEventListener('click', () => sb.auth.signOut());
+
+  // ── Tabs ──────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      btn.classList.add('active');
+      $(`tab-${(btn as HTMLElement).dataset.tab}`).classList.remove('hidden');
+    });
+  });
+
+  // ── File name display ─────────────────────────────────────────────────────
+  function watchFile(inputId: string, labelId: string) {
+    document.getElementById(inputId)?.addEventListener('change', (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      const label = $(labelId);
+      label.textContent = file ? file.name : 'Elegir archivo';
+    });
+  }
+  watchFile('videoFileInput', 'videoFileName');
+  watchFile('thumbFileInput', 'thumbFileName');
+  watchFile('logoFileInput', 'logoFileName');
+
+  // ── Videos ────────────────────────────────────────────────────────────────
+  function pubUrl(path: string) {
+    return sb.storage.from('portfolio').getPublicUrl(path).data.publicUrl;
+  }
+
+  async function loadVideos() {
+    const list = $('videosList');
+    const { data, error } = await sb
+      .from('portfolio_videos')
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
+
+    if (error || !data?.length) {
+      list.innerHTML = '<p class="col-span-full text-brand-muted text-sm py-8 text-center">No hay videos aún. Sube el primero.</p>';
+      return;
+    }
+
+    list.innerHTML = data.map(v => `
+      <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden">
+        <div class="aspect-video bg-brand-dark flex items-center justify-center relative overflow-hidden">
+          ${v.thumbnail_path
+            ? `<img src="${pubUrl(v.thumbnail_path)}" class="w-full h-full object-cover" loading="lazy" />`
+            : `<svg class="w-10 h-10 text-brand-muted/30" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>`
+          }
+        </div>
+        <div class="p-4">
+          <p class="font-semibold text-brand-white text-sm mb-0.5 truncate">${escHtml(v.title)}</p>
+          ${v.category && v.category !== 'general' ? `<span class="text-xs text-brand-blue">${escHtml(v.category)}</span>` : ''}
+          <button
+            data-id="${v.id}" data-vpath="${v.video_path}" data-tpath="${v.thumbnail_path ?? ''}"
+            class="del-video mt-3 w-full text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-400/40 rounded-lg py-2 transition-colors"
+          >Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+
+    list.querySelectorAll<HTMLButtonElement>('.del-video').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm(`¿Eliminar "${btn.closest('.bg-brand-card')?.querySelector('p')?.textContent}"?`)) return;
+        btn.disabled = true;
+        btn.textContent = 'Eliminando...';
+        const paths = [btn.dataset.vpath!];
+        if (btn.dataset.tpath) paths.push(btn.dataset.tpath);
+        await sb.storage.from('portfolio').remove(paths.filter(Boolean));
+        await sb.from('portfolio_videos').delete().eq('id', btn.dataset.id!);
+        await loadVideos();
+      });
+    });
+  }
+
+  $('refreshVideos').addEventListener('click', loadVideos);
+
+  $('videoForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const fd = new FormData(form);
+    const btn = $('videoSubmitBtn') as HTMLButtonElement;
+    const progress = $('videoProgress');
+    const bar = $('videoProgressBar') as HTMLElement;
+    const txt = $('videoProgressText');
+    const successEl = $('videoSuccess');
+    const errEl = $('videoError');
+
+    btn.disabled = true;
+    progress.classList.remove('hidden');
+    successEl.classList.add('hidden');
+    errEl.classList.add('hidden');
+
+    const setProgress = (pct: number, msg: string) => {
+      bar.style.width = `${pct}%`;
+      txt.textContent = msg;
+    };
+
+    try {
+      const videoFile = fd.get('videoFile') as File;
+      const thumbFile = fd.get('thumbnailFile') as File;
+
+      setProgress(5, 'Subiendo video...');
+      const videoExt = videoFile.name.split('.').pop();
+      const videoPath = `videos/${Date.now()}-${Math.random().toString(36).slice(2)}.${videoExt}`;
+
+      const { error: ve } = await sb.storage.from('portfolio').upload(videoPath, videoFile, {
+        cacheControl: '3600',
+        upsert: false,
+        // @ts-ignore — onUploadProgress is supported at runtime
+        onUploadProgress: ({ loaded, total }: { loaded: number; total: number }) => {
+          setProgress(5 + Math.round((loaded / total) * 75), `Subiendo video... ${Math.round((loaded / total) * 100)}%`);
+        },
+      });
+      if (ve) throw ve;
+
+      let thumbnailPath: string | null = null;
+      if (thumbFile?.size > 0) {
+        setProgress(82, 'Subiendo thumbnail...');
+        const tExt = thumbFile.name.split('.').pop();
+        thumbnailPath = `thumbnails/${Date.now()}-${Math.random().toString(36).slice(2)}.${tExt}`;
+        const { error: te } = await sb.storage.from('portfolio').upload(thumbnailPath, thumbFile);
+        if (te) throw te;
+      }
+
+      setProgress(95, 'Guardando...');
+      const { error: de } = await sb.from('portfolio_videos').insert({
+        title: fd.get('title'),
+        description: fd.get('description') || '',
+        category: fd.get('category') || 'general',
+        video_path: videoPath,
+        thumbnail_path: thumbnailPath,
+      });
+      if (de) throw de;
+
+      setProgress(100, '¡Listo!');
+      form.reset();
+      $('videoFileName').textContent = 'Elegir video';
+      $('thumbFileName').textContent = 'Elegir imagen';
+      successEl.classList.remove('hidden');
+      setTimeout(() => {
+        progress.classList.add('hidden');
+        bar.style.width = '0%';
+        successEl.classList.add('hidden');
+      }, 3000);
+      await loadVideos();
+    } catch (err: any) {
+      errEl.textContent = `Error: ${err?.message ?? 'Intenta de nuevo'}`;
+      errEl.classList.remove('hidden');
+      progress.classList.add('hidden');
+      bar.style.width = '0%';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // ── Brands ────────────────────────────────────────────────────────────────
+  async function loadBrands() {
+    const list = $('brandsList');
+    const { data, error } = await sb
+      .from('portfolio_brands')
+      .select('*')
+      .order('sort_order', { ascending: true });
+
+    if (error || !data?.length) {
+      list.innerHTML = '<p class="col-span-full text-brand-muted text-sm py-8 text-center">No hay marcas aún.</p>';
+      return;
+    }
+
+    list.innerHTML = data.map(b => `
+      <div class="bg-brand-card border border-brand-border rounded-xl p-4 flex flex-col items-center gap-3 text-center">
+        ${b.logo_path
+          ? `<img src="${pubUrl(b.logo_path)}" class="h-12 max-w-full object-contain" alt="${escHtml(b.name)}" loading="lazy" />`
+          : `<div class="h-12 flex items-center"><span class="text-brand-white font-semibold text-sm">${escHtml(b.name)}</span></div>`
+        }
+        <p class="text-brand-muted text-xs truncate w-full">${escHtml(b.name)}</p>
+        <button
+          data-id="${b.id}" data-lpath="${b.logo_path ?? ''}"
+          class="del-brand w-full text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-400/40 rounded-lg py-2 transition-colors"
+        >Eliminar</button>
+      </div>
+    `).join('');
+
+    list.querySelectorAll<HTMLButtonElement>('.del-brand').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('¿Eliminar esta marca?')) return;
+        btn.disabled = true;
+        if (btn.dataset.lpath) await sb.storage.from('portfolio').remove([btn.dataset.lpath]);
+        await sb.from('portfolio_brands').delete().eq('id', btn.dataset.id!);
+        await loadBrands();
+      });
+    });
+  }
+
+  $('refreshBrands').addEventListener('click', loadBrands);
+
+  $('brandForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const fd = new FormData(form);
+    const btn = $('brandSubmitBtn') as HTMLButtonElement;
+    const errEl = $('brandError');
+    const successEl = $('brandSuccess');
+
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+    errEl.classList.add('hidden');
+    successEl.classList.add('hidden');
+
+    try {
+      const logoFile = fd.get('logoFile') as File;
+      let logoPath: string | null = null;
+
+      if (logoFile?.size > 0) {
+        const ext = logoFile.name.split('.').pop();
+        logoPath = `brands/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error: ue } = await sb.storage.from('portfolio').upload(logoPath, logoFile);
+        if (ue) throw ue;
+      }
+
+      const { error } = await sb.from('portfolio_brands').insert({
+        name: fd.get('name'),
+        website_url: fd.get('websiteUrl') || '',
+        logo_path: logoPath,
+      });
+      if (error) throw error;
+
+      form.reset();
+      $('logoFileName').textContent = 'Elegir logo';
+      successEl.classList.remove('hidden');
+      setTimeout(() => successEl.classList.add('hidden'), 3000);
+      await loadBrands();
+    } catch (err: any) {
+      errEl.textContent = `Error: ${err?.message ?? 'Intenta de nuevo'}`;
+      errEl.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Agregar Marca';
+    }
+  });
+
+  // ── Utils ─────────────────────────────────────────────────────────────────
+  function escHtml(str: string) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  boot();
+</script>
