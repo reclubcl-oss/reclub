@@ -457,27 +457,80 @@ import Layout from '../../layouts/Layout.astro';
     }
 
     list.innerHTML = data.map(v => `
-      <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden">
-        <div class="aspect-video bg-brand-dark flex items-center justify-center relative overflow-hidden">
+      <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden" data-video-id="${v.id}">
+        <!-- Thumbnail — clic para cambiar portada -->
+        <label class="block aspect-video bg-brand-dark relative overflow-hidden cursor-pointer group" title="Clic para cambiar portada">
+          <input type="file" accept="image/*" class="hidden thumb-input" data-id="${v.id}" data-tpath="${v.thumbnail_path ?? ''}" />
           ${v.thumbnail_path
             ? `<img src="${pubUrl(v.thumbnail_path)}" class="w-full h-full object-cover" loading="lazy" />`
-            : `<svg class="w-10 h-10 text-brand-muted/30" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>`
+            : `<div class="w-full h-full flex items-center justify-center"><svg class="w-10 h-10 text-brand-muted/30" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>`
           }
-        </div>
+          <!-- Overlay al hacer hover -->
+          <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <span class="text-white text-xs font-semibold">Cambiar portada</span>
+          </div>
+          <!-- Indicador de carga -->
+          <div class="thumb-loading absolute inset-0 bg-black/70 hidden items-center justify-center">
+            <div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </label>
         <div class="p-4">
           <p class="font-semibold text-brand-white text-sm mb-0.5 truncate">${escHtml(v.title)}</p>
           ${v.category && v.category !== 'general' ? `<span class="text-xs text-brand-blue">${escHtml(v.category)}</span>` : ''}
-          <button
-            data-id="${v.id}" data-vpath="${v.video_path}" data-tpath="${v.thumbnail_path ?? ''}"
-            class="del-video mt-3 w-full text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-400/40 rounded-lg py-2 transition-colors"
-          >Eliminar</button>
+          <div class="flex gap-2 mt-3">
+            <button
+              data-id="${v.id}" data-vpath="${v.video_path}" data-tpath="${v.thumbnail_path ?? ''}"
+              class="del-video flex-1 text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-400/40 rounded-lg py-2 transition-colors"
+            >Eliminar</button>
+          </div>
         </div>
       </div>
     `).join('');
 
+    // Cambiar portada — click en thumbnail
+    list.querySelectorAll<HTMLInputElement>('.thumb-input').forEach(input => {
+      input.addEventListener('change', async () => {
+        const file = input.files?.[0];
+        if (!file) return;
+
+        const card = input.closest('[data-video-id]') as HTMLElement;
+        const loadingEl = card.querySelector('.thumb-loading') as HTMLElement;
+        loadingEl.classList.remove('hidden');
+        loadingEl.classList.add('flex');
+
+        try {
+          // Subir nueva imagen
+          const ext = file.name.split('.').pop();
+          const newPath = `thumbnails/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+          const { error: upErr } = await sb.storage.from('portfolio').upload(newPath, file, { cacheControl: '3600' });
+          if (upErr) throw upErr;
+
+          // Eliminar la antigua si existía
+          const oldPath = input.dataset.tpath;
+          if (oldPath) await sb.storage.from('portfolio').remove([oldPath]);
+
+          // Actualizar registro en DB
+          const { error: dbErr } = await sb.from('portfolio_videos')
+            .update({ thumbnail_path: newPath })
+            .eq('id', input.dataset.id!);
+          if (dbErr) throw dbErr;
+
+          await loadVideos();
+        } catch (err: any) {
+          alert('Error al cambiar portada: ' + err?.message);
+          loadingEl.classList.add('hidden');
+          loadingEl.classList.remove('flex');
+        }
+      });
+    });
+
+    // Eliminar video
     list.querySelectorAll<HTMLButtonElement>('.del-video').forEach(btn => {
       btn.addEventListener('click', async () => {
-        if (!confirm(`¿Eliminar "${btn.closest('.bg-brand-card')?.querySelector('p')?.textContent}"?`)) return;
+        if (!confirm(`¿Eliminar "${btn.closest('[data-video-id]')?.querySelector('p')?.textContent}"?`)) return;
         btn.disabled = true;
         btn.textContent = 'Eliminando...';
         const paths = [btn.dataset.vpath!];
