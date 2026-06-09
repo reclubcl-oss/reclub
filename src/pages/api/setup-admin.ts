@@ -5,6 +5,17 @@ export const GET: APIRoute = async () => {
   const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL?.trim();
   const serviceKey = import.meta.env.SUPABASE_SERVICE_KEY;
 
+  // Test básico de conectividad
+  try {
+    const healthRes = await fetch(`${supabaseUrl}/rest/v1/`, { headers: { 'apikey': serviceKey } });
+    const healthText = await healthRes.text();
+    if (!healthRes.ok) {
+      return new Response(JSON.stringify({ ok: false, step: 'health_check', status: healthRes.status, body: healthText.slice(0, 200) }), { status: 200 });
+    }
+  } catch (e: any) {
+    return new Response(JSON.stringify({ ok: false, step: 'health_check_catch', error: e?.message }), { status: 200 });
+  }
+
   try {
     // Crear usuario vía API REST directa
     const res = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
