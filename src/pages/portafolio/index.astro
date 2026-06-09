@@ -5,6 +5,11 @@ import Footer from '../../components/Footer.astro';
 import WhatsAppButton from '../../components/WhatsAppButton.astro';
 import { supabaseAdmin } from '../../lib/supabase';
 
+// Fuerza re-render en cada request — sin caché
+Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+Astro.response.headers.set('Pragma', 'no-cache');
+Astro.response.headers.set('Surrogate-Control', 'no-store');
+
 let videos: any[] = [];
 let photos: any[] = [];
 let brands: any[] = [];
