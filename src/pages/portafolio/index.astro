@@ -6,21 +6,18 @@ import WhatsAppButton from '../../components/WhatsAppButton.astro';
 import { supabaseAdmin } from '../../lib/supabase';
 
 let videos: any[] = [];
+let photos: any[] = [];
 let brands: any[] = [];
 
 try {
-  const { data: vData } = await supabaseAdmin
-    .from('portfolio_videos')
-    .select('*')
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: false });
-  videos = vData ?? [];
-
-  const { data: bData } = await supabaseAdmin
-    .from('portfolio_brands')
-    .select('*')
-    .order('sort_order', { ascending: true });
-  brands = bData ?? [];
+  const [vRes, pRes, bRes] = await Promise.all([
+    supabaseAdmin.from('portfolio_videos').select('*').order('sort_order').order('created_at', { ascending: false }),
+    supabaseAdmin.from('portfolio_photos').select('*').order('sort_order').order('created_at', { ascending: false }),
+    supabaseAdmin.from('portfolio_brands').select('*').order('sort_order'),
+  ]);
+  videos = vRes.data ?? [];
+  photos = pRes.data ?? [];
+  brands = bRes.data ?? [];
 } catch (_) {}
 
 function pub(path: string) {
@@ -33,6 +30,11 @@ const videosReady = videos.map(v => ({
   thumbUrl: v.thumbnail_path ? pub(v.thumbnail_path) : null,
 }));
 
+const photosReady = photos.map(p => ({
+  ...p,
+  imageUrl: pub(p.image_path),
+}));
+
 const brandsReady = brands.map(b => ({
   ...b,
   logoUrl: b.logo_path ? pub(b.logo_path) : null,
@@ -41,7 +43,7 @@ const brandsReady = brands.map(b => ({
 
 <Layout
   title="Portafolio — ReClub Agencia Digital"
-  description="Conoce el trabajo de ReClub. Videos, campañas digitales y las marcas que han confiado en nosotros."
+  description="Conoce el trabajo de ReClub. Videos, fotos, campañas digitales y las marcas que han confiado en nosotros."
 >
   <Nav />
   <main>
@@ -109,7 +111,7 @@ const brandsReady = brands.map(b => ({
 
         <!-- Stats -->
         <div
-          class="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
+          class="mt-16 grid grid-cols-4 gap-6 max-w-2xl mx-auto"
           data-aos="fade-up"
           data-aos-delay="400"
         >
@@ -118,6 +120,10 @@ const brandsReady = brands.map(b => ({
             <p class="text-brand-muted text-sm mt-1">Videos</p>
           </div>
           <div class="text-center border-x border-brand-border">
+            <p class="text-2xl font-bold text-brand-white">{photosReady.length}+</p>
+            <p class="text-brand-muted text-sm mt-1">Fotos</p>
+          </div>
+          <div class="text-center border-r border-brand-border">
             <p class="text-2xl font-bold text-brand-white">{brandsReady.length}+</p>
             <p class="text-brand-muted text-sm mt-1">Marcas</p>
           </div>
@@ -211,6 +217,49 @@ const brandsReady = brands.map(b => ({
         )}
       </div>
     </section>
+
+    <!-- FOTOS -->
+    {photosReady.length > 0 && (
+      <section id="fotos" class="py-24 px-4 bg-brand-dark">
+        <div class="max-w-7xl mx-auto">
+          <div class="text-center mb-16" data-aos="fade-up">
+            <div class="inline-flex items-center gap-2 border border-brand-blue/30 bg-brand-blue/10 text-brand-blue text-xs px-3 py-1 rounded-full mb-4">
+              Galería
+            </div>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-brand-white mb-4">Nuestras Fotos</h2>
+            <p class="text-brand-muted text-lg max-w-xl mx-auto">Momentos y trabajos fotográficos que hablan por sí solos.</p>
+          </div>
+
+          <!-- Masonry grid -->
+          <div class="columns-2 sm:columns-3 lg:columns-4 gap-3 space-y-3" data-aos="fade-up" data-aos-delay="100">
+            {photosReady.map((p, i) => (
+              <div
+                class="group break-inside-avoid relative overflow-hidden rounded-xl cursor-pointer border border-brand-border hover:border-brand-blue/50 transition-all duration-300"
+                data-photo-url={p.imageUrl}
+                data-photo-title={p.title}
+                data-photo-desc={p.description}
+              >
+                <img
+                  src={p.imageUrl}
+                  alt={p.title}
+                  class="w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+                <!-- overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                  <div>
+                    <p class="text-white font-semibold text-sm line-clamp-1">{p.title}</p>
+                    {p.category && p.category !== 'general' && (
+                      <span class="text-white/60 text-xs capitalize">{p.category}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
 
     <!-- MARCAS -->
     {brandsReady.length > 0 && (
@@ -311,6 +360,37 @@ const brandsReady = brands.map(b => ({
   <Footer />
   <WhatsAppButton />
 
+  <!-- PHOTO MODAL (lightbox) -->
+  <div
+    id="photoModal"
+    class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 hidden"
+    aria-modal="true" role="dialog"
+  >
+    <div class="relative w-full max-w-5xl flex flex-col items-center">
+      <button id="closePhotoBtn" class="absolute -top-12 right-0 text-white/60 hover:text-white transition-colors flex items-center gap-2 text-sm" aria-label="Cerrar">
+        <kbd class="text-xs border border-white/20 rounded px-1.5 py-0.5">ESC</kbd>
+        Cerrar
+      </button>
+      <!-- Prev / Next -->
+      <button id="photoPrev" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 text-white/60 hover:text-white transition-colors hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-brand-card border border-brand-border">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <button id="photoNext" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-white/60 hover:text-white transition-colors hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-brand-card border border-brand-border">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </button>
+      <div class="bg-brand-card rounded-2xl overflow-hidden shadow-2xl border border-brand-border w-full">
+        <img id="photoModalImg" src="" alt="" class="w-full max-h-[75vh] object-contain bg-black" />
+        <div class="p-5 border-t border-brand-border flex items-start justify-between gap-4">
+          <div>
+            <h3 id="photoModalTitle" class="text-lg font-bold text-brand-white mb-0.5"></h3>
+            <p id="photoModalDesc" class="text-brand-muted text-sm"></p>
+          </div>
+          <span id="photoModalCount" class="text-brand-muted text-xs shrink-0 mt-1"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- VIDEO MODAL -->
   <div
     id="videoModal"
@@ -344,53 +424,102 @@ const brandsReady = brands.map(b => ({
 </Layout>
 
 <script>
-  const modal = document.getElementById('videoModal') as HTMLElement;
+  // ── VIDEO MODAL ──────────────────────────────────────────────────────────
+  const videoModal = document.getElementById('videoModal') as HTMLElement;
   const modalVideo = document.getElementById('modalVideo') as HTMLVideoElement;
   const modalTitle = document.getElementById('modalTitle') as HTMLElement;
-  const modalDesc = document.getElementById('modalDesc') as HTMLElement;
+  const modalDesc  = document.getElementById('modalDesc') as HTMLElement;
 
-  function openModal(el: HTMLElement) {
+  function openVideoModal(el: HTMLElement) {
     modalVideo.src = el.dataset.videoUrl!;
     modalTitle.textContent = el.dataset.videoTitle ?? '';
-    modalDesc.textContent = el.dataset.videoDesc ?? '';
-    modal.classList.remove('hidden');
+    modalDesc.textContent  = el.dataset.videoDesc  ?? '';
+    videoModal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     modalVideo.play().catch(() => {});
   }
-
-  function closeModal() {
-    modalVideo.pause();
-    modalVideo.src = '';
-    modal.classList.add('hidden');
+  function closeVideoModal() {
+    modalVideo.pause(); modalVideo.src = '';
+    videoModal.classList.add('hidden');
     document.body.style.overflow = '';
   }
+  document.querySelectorAll('article[data-video-url]').forEach(c =>
+    c.addEventListener('click', () => openVideoModal(c as HTMLElement))
+  );
+  videoModal.addEventListener('click', e => { if (e.target === videoModal) closeVideoModal(); });
+  document.getElementById('closeModalBtn')?.addEventListener('click', closeVideoModal);
 
-  document.querySelectorAll('article[data-video-url]').forEach(card => {
-    card.addEventListener('click', () => openModal(card as HTMLElement));
+  // ── PHOTO LIGHTBOX ────────────────────────────────────────────────────────
+  const photoModal      = document.getElementById('photoModal') as HTMLElement;
+  const photoImg        = document.getElementById('photoModalImg') as HTMLImageElement;
+  const photoTitle      = document.getElementById('photoModalTitle') as HTMLElement;
+  const photoDesc       = document.getElementById('photoModalDesc') as HTMLElement;
+  const photoCount      = document.getElementById('photoModalCount') as HTMLElement;
+
+  const photoCards = Array.from(document.querySelectorAll<HTMLElement>('[data-photo-url]'));
+  let currentPhoto = 0;
+
+  function showPhoto(idx: number) {
+    currentPhoto = (idx + photoCards.length) % photoCards.length;
+    const card = photoCards[currentPhoto];
+    photoImg.src         = card.dataset.photoUrl!;
+    photoImg.alt         = card.dataset.photoTitle ?? '';
+    photoTitle.textContent = card.dataset.photoTitle ?? '';
+    photoDesc.textContent  = card.dataset.photoDesc  ?? '';
+    photoCount.textContent = `${currentPhoto + 1} / ${photoCards.length}`;
+  }
+
+  function openPhotoModal(idx: number) {
+    showPhoto(idx);
+    photoModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePhotoModal() {
+    photoModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    photoImg.src = '';
+  }
+
+  photoCards.forEach((card, i) =>
+    card.addEventListener('click', () => openPhotoModal(i))
+  );
+  photoModal.addEventListener('click', e => { if (e.target === photoModal) closePhotoModal(); });
+  document.getElementById('closePhotoBtn')?.addEventListener('click', closePhotoModal);
+  document.getElementById('photoPrev')?.addEventListener('click', () => showPhoto(currentPhoto - 1));
+  document.getElementById('photoNext')?.addEventListener('click', () => showPhoto(currentPhoto + 1));
+
+  // ── TECLADO ───────────────────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeVideoModal(); closePhotoModal(); }
+    if (!photoModal.classList.contains('hidden')) {
+      if (e.key === 'ArrowLeft')  showPhoto(currentPhoto - 1);
+      if (e.key === 'ArrowRight') showPhoto(currentPhoto + 1);
+    }
   });
 
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-  document.getElementById('closeModalBtn')?.addEventListener('click', closeModal);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  // ── SWIPE en móvil ────────────────────────────────────────────────────────
+  let touchStartX = 0;
+  photoModal.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  photoModal.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) showPhoto(currentPhoto + (dx < 0 ? 1 : -1));
+  });
 
-  // Toggle marcas ocultas
-  const showAllBtn = document.getElementById('showAllBrands');
+  // ── MOSTRAR TODAS LAS MARCAS ──────────────────────────────────────────────
+  const showAllBtn  = document.getElementById('showAllBrands');
   const showAllText = document.getElementById('showAllText');
-  const showAllIcon = document.getElementById('showAllIcon');
-  let expanded = false;
+  const showAllIcon = document.getElementById('showAllIcon') as HTMLElement | null;
+  let brandsExpanded = false;
 
   showAllBtn?.addEventListener('click', () => {
-    expanded = !expanded;
-    document.querySelectorAll<HTMLElement>('.brand-extra').forEach(el => {
-      el.classList.toggle('hidden', !expanded);
-    });
-    if (showAllIcon) showAllIcon.style.transform = expanded ? 'rotate(180deg)' : '';
+    brandsExpanded = !brandsExpanded;
+    document.querySelectorAll<HTMLElement>('.brand-extra').forEach(el =>
+      el.classList.toggle('hidden', !brandsExpanded)
+    );
+    if (showAllIcon) showAllIcon.style.transform = brandsExpanded ? 'rotate(180deg)' : '';
     if (showAllText) {
       const total = document.querySelectorAll('.brand-card').length;
-      showAllText.textContent = expanded ? 'Ver menos' : `Ver todas las marcas (${total})`;
-    }
-    if (expanded) {
-      document.getElementById('marcas')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showAllText.textContent = brandsExpanded ? 'Ver menos' : `Ver todas las marcas (${total})`;
     }
   });
 </script>

@@ -81,12 +81,18 @@ import Layout from '../../layouts/Layout.astro';
 
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <!-- Tabs -->
-      <div class="flex gap-2 mb-8 border-b border-brand-border pb-4">
+      <div class="flex gap-2 mb-8 border-b border-brand-border pb-4 flex-wrap">
         <button class="tab-btn active" data-tab="videos">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
           </svg>
           Videos
+        </button>
+        <button class="tab-btn" data-tab="photos">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Fotos
         </button>
         <button class="tab-btn" data-tab="brands">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,6 +194,82 @@ import Layout from '../../layouts/Layout.astro';
           <button id="refreshVideos" class="text-brand-muted hover:text-brand-white text-xs transition-colors">↻ Actualizar</button>
         </div>
         <div id="videosList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="col-span-full text-brand-muted text-sm py-8 text-center">Cargando...</div>
+        </div>
+      </div>
+
+      <!-- ===== PHOTOS TAB ===== -->
+      <div id="tab-photos" class="tab-content hidden">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 mb-8">
+          <h2 class="font-bold text-brand-white mb-1">Subir nueva foto</h2>
+          <p class="text-brand-muted text-xs mb-6">Formatos: JPG, PNG, WebP · Recomendado: mínimo 1200px de ancho</p>
+
+          <form id="photoForm" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Título *</label>
+                <input type="text" name="title" required
+                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
+                  placeholder="Nombre del proyecto"
+                />
+              </div>
+              <div>
+                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Categoría</label>
+                <input type="text" name="category"
+                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
+                  placeholder="ej: Branding, Producto, Evento..."
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Descripción</label>
+              <textarea name="description" rows="2"
+                class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors resize-none placeholder:text-brand-muted/40 text-sm"
+                placeholder="Descripción breve..."
+              ></textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Archivo de imagen *</label>
+              <label class="block w-full bg-brand-dark border border-dashed border-brand-border hover:border-brand-blue/50 rounded-xl px-4 py-4 cursor-pointer transition-colors group">
+                <input type="file" name="photoFile" accept="image/*" required class="hidden" id="photoFileInput" multiple />
+                <div class="flex items-center gap-3">
+                  <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <div>
+                    <p id="photoFileName" class="text-brand-muted text-sm">Elegir imagen(es)</p>
+                    <p class="text-brand-muted/40 text-xs">JPG, PNG, WebP · Puedes seleccionar varias a la vez</p>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <!-- Progress -->
+            <div id="photoProgress" class="hidden space-y-2">
+              <div class="h-1.5 bg-brand-dark rounded-full overflow-hidden">
+                <div id="photoProgressBar" class="h-full bg-gradient-to-r from-brand-blue to-brand-purple rounded-full transition-all duration-300 w-0"></div>
+              </div>
+              <p id="photoProgressText" class="text-brand-muted text-xs">Subiendo...</p>
+            </div>
+            <div id="photoSuccess" class="hidden bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl">✓ Foto(s) subida(s) con éxito</div>
+            <div id="photoError" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
+
+            <button type="submit" id="photoSubmitBtn"
+              class="bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Subir Foto(s)
+            </button>
+          </form>
+        </div>
+
+        <!-- List -->
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-brand-white">Fotos publicadas</h2>
+          <button id="refreshPhotos" class="text-brand-muted hover:text-brand-white text-xs transition-colors">↻ Actualizar</button>
+        </div>
+        <div id="photosList" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           <div class="col-span-full text-brand-muted text-sm py-8 text-center">Cargando...</div>
         </div>
       </div>
@@ -308,7 +390,7 @@ import Layout from '../../layouts/Layout.astro';
   async function showDashboard() {
     $('loginScreen').classList.add('hidden');
     $('adminDashboard').classList.remove('hidden');
-    await Promise.all([loadVideos(), loadBrands()]);
+    await Promise.all([loadVideos(), loadPhotos(), loadBrands()]);
   }
 
   $('loginForm').addEventListener('submit', async (e) => {
@@ -478,6 +560,125 @@ import Layout from '../../layouts/Layout.astro';
         successEl.classList.add('hidden');
       }, 3000);
       await loadVideos();
+    } catch (err: any) {
+      errEl.textContent = `Error: ${err?.message ?? 'Intenta de nuevo'}`;
+      errEl.classList.remove('hidden');
+      progress.classList.add('hidden');
+      bar.style.width = '0%';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // ── Photos ───────────────────────────────────────────────────────────────
+  // file name display
+  document.getElementById('photoFileInput')?.addEventListener('change', (e) => {
+    const files = (e.target as HTMLInputElement).files;
+    $('photoFileName').textContent = files && files.length > 1
+      ? `${files.length} imágenes seleccionadas`
+      : files?.[0]?.name ?? 'Elegir imagen(es)';
+  });
+
+  async function loadPhotos() {
+    const list = $('photosList');
+    const { data, error } = await sb
+      .from('portfolio_photos')
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
+
+    if (error || !data?.length) {
+      list.innerHTML = '<p class="col-span-full text-brand-muted text-sm py-8 text-center">No hay fotos aún. Sube la primera.</p>';
+      return;
+    }
+
+    list.innerHTML = data.map(p => `
+      <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden group">
+        <div class="aspect-square bg-brand-dark overflow-hidden">
+          <img src="${pubUrl(p.image_path)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+        </div>
+        <div class="p-3">
+          <p class="font-semibold text-brand-white text-sm truncate mb-0.5">${escHtml(p.title)}</p>
+          ${p.category && p.category !== 'general' ? `<span class="text-xs text-brand-blue">${escHtml(p.category)}</span>` : ''}
+          <button
+            data-id="${p.id}" data-ipath="${p.image_path}"
+            class="del-photo mt-2 w-full text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-400/40 rounded-lg py-1.5 transition-colors"
+          >Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+
+    list.querySelectorAll<HTMLButtonElement>('.del-photo').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('¿Eliminar esta foto?')) return;
+        btn.disabled = true;
+        await sb.storage.from('portfolio').remove([btn.dataset.ipath!]);
+        await sb.from('portfolio_photos').delete().eq('id', btn.dataset.id!);
+        await loadPhotos();
+      });
+    });
+  }
+
+  $('refreshPhotos').addEventListener('click', loadPhotos);
+
+  $('photoForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const fd = new FormData(form);
+    const btn = $('photoSubmitBtn') as HTMLButtonElement;
+    const progress = $('photoProgress');
+    const bar = $('photoProgressBar') as HTMLElement;
+    const txt = $('photoProgressText');
+    const successEl = $('photoSuccess');
+    const errEl = $('photoError');
+
+    const files = (document.getElementById('photoFileInput') as HTMLInputElement).files;
+    if (!files || files.length === 0) return;
+
+    btn.disabled = true;
+    progress.classList.remove('hidden');
+    successEl.classList.add('hidden');
+    errEl.classList.add('hidden');
+
+    try {
+      const title = fd.get('title') as string;
+      const description = fd.get('description') as string || '';
+      const category = fd.get('category') as string || 'general';
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const pct = Math.round(((i) / files.length) * 90) + 5;
+        bar.style.width = `${pct}%`;
+        txt.textContent = files.length > 1
+          ? `Subiendo foto ${i + 1} de ${files.length}...`
+          : 'Subiendo foto...';
+
+        const ext = file.name.split('.').pop();
+        const imagePath = `photos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+        const { error: ue } = await sb.storage.from('portfolio').upload(imagePath, file, { cacheControl: '3600' });
+        if (ue) throw ue;
+
+        const { error: de } = await sb.from('portfolio_photos').insert({
+          title: files.length > 1 ? `${title} ${i + 1}` : title,
+          description,
+          category,
+          image_path: imagePath,
+        });
+        if (de) throw de;
+      }
+
+      bar.style.width = '100%';
+      txt.textContent = '¡Listo!';
+      form.reset();
+      $('photoFileName').textContent = 'Elegir imagen(es)';
+      successEl.classList.remove('hidden');
+      setTimeout(() => {
+        progress.classList.add('hidden');
+        bar.style.width = '0%';
+        successEl.classList.add('hidden');
+      }, 3000);
+      await loadPhotos();
     } catch (err: any) {
       errEl.textContent = `Error: ${err?.message ?? 'Intenta de nuevo'}`;
       errEl.classList.remove('hidden');
