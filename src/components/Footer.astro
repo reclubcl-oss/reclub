@@ -19,11 +19,12 @@ const base = Astro.url.pathname === '/' ? '' : '/';
       <div>
         <h4 class="text-brand-white font-semibold mb-4">Navegación</h4>
         <ul class="space-y-2">
-          {['#servicios:Servicios', '#por-que-reclub:Por qué ReClub', '#contacto:Contacto'].map((item) => {
+          {['#servicios:Servicios', '#por-que-reclub:Por qué ReClub', '#contacto:Contacto', '/portafolio:Portafolio'].map((item) => {
             const [anchor, label] = item.split(':');
+            const href = anchor.startsWith('/') ? anchor : `${base}${anchor}`;
             return (
               <li>
-                <a href={`${base}${anchor}`} class="text-brand-muted text-sm hover:text-brand-white transition-colors">
+                <a href={href} class="text-brand-muted text-sm hover:text-brand-white transition-colors">
                   {label}
                 </a>
               </li>

@@ -29,6 +29,12 @@ const base = Astro.url.pathname === '/' ? '' : '/';
         Por qué ReClub
       </a>
       <a
+        href="/portafolio"
+        class={`text-sm font-medium transition-colors ${Astro.url.pathname.startsWith('/portafolio') ? 'text-brand-white' : 'text-brand-muted hover:text-brand-white'}`}
+      >
+        Portafolio
+      </a>
+      <a
         href={`${base}#contacto`}
         class="bg-brand-blue hover:bg-brand-blue-dark text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
       >
@@ -92,6 +98,12 @@ const base = Astro.url.pathname === '/' ? '' : '/';
         class="mobile-link text-brand-muted hover:text-brand-white transition-colors font-medium"
       >
         Por qué ReClub
+      </a>
+      <a
+        href="/portafolio"
+        class="mobile-link text-brand-muted hover:text-brand-white transition-colors font-medium"
+      >
+        Portafolio
       </a>
       <a
         href={`${base}#contacto`}
