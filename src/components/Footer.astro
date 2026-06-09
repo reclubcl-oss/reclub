@@ -4,7 +4,7 @@ const base = Astro.url.pathname === '/' ? '' : '/';
 
 <footer class="bg-brand-dark border-t border-brand-border" style="padding-bottom: env(safe-area-inset-bottom);">
   <div class="max-w-7xl mx-auto px-4 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
       <!-- Brand -->
       <div>
         <a href="/" class="text-2xl font-bold tracking-tight inline-block mb-4">
@@ -15,11 +15,11 @@ const base = Astro.url.pathname === '/' ? '' : '/';
         </p>
       </div>
 
-      <!-- Quick links -->
+      <!-- Navegación -->
       <div>
         <h4 class="text-brand-white font-semibold mb-4">Navegación</h4>
         <ul class="space-y-2">
-          {['#servicios:Servicios', '#por-que-reclub:Por qué ReClub', '#contacto:Contacto', '/portafolio:Portafolio'].map((item) => {
+          {['#servicios:Servicios', '#por-que-reclub:Por qué ReClub', '#contacto:Contacto'].map((item) => {
             const [anchor, label] = item.split(':');
             const href = anchor.startsWith('/') ? anchor : `${base}${anchor}`;
             return (
@@ -33,7 +33,34 @@ const base = Astro.url.pathname === '/' ? '' : '/';
         </ul>
       </div>
 
-      <!-- Contact -->
+      <!-- Portafolio -->
+      <div>
+        <h4 class="text-brand-white font-semibold mb-4">Portafolio</h4>
+        <ul class="space-y-2">
+          <li>
+            <a href="/portafolio" class="text-brand-muted text-sm hover:text-brand-white transition-colors">
+              Ver todo
+            </a>
+          </li>
+          <li>
+            <a href="/portafolio#trabajo" class="text-brand-muted text-sm hover:text-brand-white transition-colors">
+              Videos
+            </a>
+          </li>
+          <li>
+            <a href="/portafolio#fotos" class="text-brand-muted text-sm hover:text-brand-white transition-colors">
+              Fotos
+            </a>
+          </li>
+          <li>
+            <a href="/portafolio#marcas" class="text-brand-muted text-sm hover:text-brand-white transition-colors">
+              Marcas
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contacto -->
       <div>
         <h4 class="text-brand-white font-semibold mb-4">Contacto</h4>
         <ul class="space-y-2">
