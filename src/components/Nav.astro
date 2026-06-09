@@ -1,4 +1,6 @@
 ---
+// Prefijo para links de ancla — desde otras páginas necesita ir a /#seccion
+const base = Astro.url.pathname === '/' ? '' : '/';
 ---
 
 <nav
@@ -15,19 +17,19 @@
     <!-- Desktop links -->
     <div class="hidden md:flex items-center gap-8">
       <a
-        href="#servicios"
+        href={`${base}#servicios`}
         class="text-brand-muted hover:text-brand-white transition-colors text-sm font-medium"
       >
         Servicios
       </a>
       <a
-        href="#por-que-reclub"
+        href={`${base}#por-que-reclub`}
         class="text-brand-muted hover:text-brand-white transition-colors text-sm font-medium"
       >
         Por qué ReClub
       </a>
       <a
-        href="#contacto"
+        href={`${base}#contacto`}
         class="bg-brand-blue hover:bg-brand-blue-dark text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
       >
         Empezar
@@ -80,19 +82,19 @@
   >
     <div class="flex flex-col gap-4 pt-4 px-4">
       <a
-        href="#servicios"
+        href={`${base}#servicios`}
         class="mobile-link text-brand-muted hover:text-brand-white transition-colors font-medium"
       >
         Servicios
       </a>
       <a
-        href="#por-que-reclub"
+        href={`${base}#por-que-reclub`}
         class="mobile-link text-brand-muted hover:text-brand-white transition-colors font-medium"
       >
         Por qué ReClub
       </a>
       <a
-        href="#contacto"
+        href={`${base}#contacto`}
         class="mobile-link bg-brand-blue hover:bg-brand-blue-dark text-white px-5 py-3 rounded-lg font-semibold text-center transition-colors"
       >
         Empezar
