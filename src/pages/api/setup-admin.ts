@@ -26,7 +26,7 @@ export const GET: APIRoute = async () => {
   });
 
   if (error) {
-    return new Response(JSON.stringify({ ok: false, error: error.message, loginErr: loginError?.message }), { status: 400 });
+    return new Response(JSON.stringify({ ok: false, error: error.message, loginErr: loginError?.message }), { status: 200 });
   }
 
   return new Response(JSON.stringify({ ok: true, status: 'created', id: data.user?.id }), { status: 200 });
