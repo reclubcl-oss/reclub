@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 
 // Endpoint temporal para crear usuario admin — ELIMINAR después de usar
 export const GET: APIRoute = async () => {
-  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL?.trim();
   const serviceKey = import.meta.env.SUPABASE_SERVICE_KEY;
 
   try {
