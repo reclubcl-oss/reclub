@@ -5,13 +5,13 @@ const services = [
     color: 'text-brand-blue',
     bgColor: 'bg-brand-blue/10',
     borderHover: 'hover:border-brand-blue/40',
-    title: 'Creación de Sitios Web',
+    title: 'Sitios Web Profesionales',
     description:
-      'Diseño profesional con sistema de agendamiento integrado. Ideal para salones, restaurantes, clínicas y negocios locales.',
+      'Desarrollo web a medida con diseño moderno y sistema de agendamiento integrado. Solución ideal para clínicas, salones, restaurantes y comercios locales que buscan proyectar una imagen sólida.',
     features: [
-      'Diseño 100% personalizado',
-      'Sistema de agendamiento online',
-      'Optimizado para Google (SEO)',
+      'Diseño 100% personalizado y responsive',
+      'Sistema de agendamiento en línea',
+      'Optimización SEO para Google',
     ],
   },
   {
@@ -19,13 +19,13 @@ const services = [
     color: 'text-brand-purple',
     bgColor: 'bg-brand-purple/10',
     borderHover: 'hover:border-brand-purple/40',
-    title: 'Tarjeta de Fidelidad Digital',
+    title: 'Fidelización Digital',
     description:
-      'Sistema de puntos y recompensas para tus clientes. Fideliza y retén a tu audiencia de forma automática.',
+      'Sistema de puntos y recompensas que fortalece la relación con sus clientes. Automatice su programa de lealtad y aumente la frecuencia de visitas sin esfuerzo operativo adicional.',
     features: [
       'Programa de puntos y recompensas',
-      'App móvil para tus clientes',
-      'Notificaciones automáticas',
+      'App móvil para sus clientes',
+      'Notificaciones y campañas automáticas',
     ],
   },
   {
@@ -33,29 +33,32 @@ const services = [
     color: 'text-emerald-400',
     bgColor: 'bg-emerald-400/10',
     borderHover: 'hover:border-emerald-400/40',
-    title: 'Creación de Contenido',
+    title: 'Producción de Contenido',
     description:
-      'Producción para redes sociales: fotografía, video, diseño gráfico y gestión de redes para hacer crecer tu marca.',
+      'Creación de contenido profesional para posicionar su marca en redes sociales. Fotografía, video y diseño gráfico ejecutado con estándares de calidad que generan confianza y conversión.',
     features: [
       'Fotografía y video profesional',
-      'Diseño gráfico para RRSS',
-      'Gestión de redes sociales',
+      'Diseño gráfico para redes sociales',
+      'Gestión y estrategia de contenido',
     ],
   },
 ];
 ---
 
-<section id="servicios" class="py-24 px-4 bg-brand-black">
+<section id="servicios" class="py-28 px-4 bg-brand-black">
   <div class="max-w-7xl mx-auto">
     <!-- Section header -->
-    <div class="text-center mb-16" data-aos="fade-up">
-      <p class="text-brand-blue text-sm font-semibold tracking-widest uppercase mb-3">
-        Lo que hacemos
+    <div class="text-center mb-20" data-aos="fade-up">
+      <p class="text-brand-blue text-xs font-semibold tracking-widest uppercase mb-4">
+        Nuestros Servicios
       </p>
-      <h2 class="text-3xl md:text-4xl font-bold text-brand-white mb-4">
-        Tres pilares para tu negocio digital
+      <h2 class="text-3xl md:text-5xl font-bold text-brand-white mb-5">
+        Todo lo que su negocio necesita
       </h2>
-      <div class="w-16 h-1 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto"></div>
+      <p class="text-brand-muted max-w-xl mx-auto leading-relaxed">
+        Tres servicios integrados bajo una sola agencia, diseñados para impulsar el crecimiento digital de su empresa.
+      </p>
+      <div class="w-12 h-0.5 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-8"></div>
     </div>
 
     <!-- Cards grid -->
@@ -63,12 +66,12 @@ const services = [
       {
         services.map((service, i) => (
           <div
-            class={`bg-brand-card border border-brand-border rounded-2xl p-8 transition-all duration-300 group ${service.borderHover} hover:-translate-y-2`}
+            class={`bg-brand-card border border-brand-border rounded-2xl p-8 transition-all duration-300 group ${service.borderHover} hover:-translate-y-2 hover:shadow-xl hover:shadow-black/30`}
             data-aos="fade-up"
             data-aos-delay={i * 100}
           >
             <!-- Icon -->
-            <div class={`w-16 h-16 ${service.bgColor} rounded-2xl flex items-center justify-center mb-6 ${service.color}`}>
+            <div class={`w-14 h-14 ${service.bgColor} rounded-xl flex items-center justify-center mb-7 ${service.color}`}>
               <Fragment set:html={service.icon} />
             </div>
 
@@ -78,19 +81,22 @@ const services = [
             </h3>
 
             <!-- Description -->
-            <p class="text-brand-muted leading-relaxed mb-6">
+            <p class="text-brand-muted leading-relaxed mb-7 text-sm">
               {service.description}
             </p>
 
+            <!-- Divider -->
+            <div class="border-t border-brand-border mb-6"></div>
+
             <!-- Features -->
-            <ul class="space-y-2">
+            <ul class="space-y-3">
               {service.features.map((feature) => (
-                <li class="flex items-center gap-2 text-brand-muted text-sm">
+                <li class="flex items-start gap-3 text-brand-muted text-sm">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
-                    class={`w-4 h-4 ${service.color} flex-shrink-0`}
+                    class={`w-4 h-4 ${service.color} flex-shrink-0 mt-0.5`}
                   >
                     <path
                       fill-rule="evenodd"
@@ -105,6 +111,19 @@ const services = [
           </div>
         ))
       }
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="text-center mt-14" data-aos="fade-up">
+      <a
+        href="#contacto"
+        class="inline-flex items-center gap-2 text-brand-blue hover:text-brand-white text-sm font-medium transition-colors border border-brand-blue/30 hover:border-brand-blue hover:bg-brand-blue/10 px-6 py-3 rounded-xl"
+      >
+        Solicitar información detallada
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+          <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+        </svg>
+      </a>
     </div>
   </div>
 </section>
