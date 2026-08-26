@@ -3,166 +3,141 @@ import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import WhatsAppButton from '../../components/WhatsAppButton.astro';
-import { supabaseAdmin } from '../../lib/supabase';
+import sql from '../../lib/db';
 
-// Sin caché — siempre datos frescos
-Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-Astro.response.headers.set('Pragma', 'no-cache');
-Astro.response.headers.set('Surrogate-Control', 'no-store');
+Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
 
 let videos: any[] = [];
 let brands: any[] = [];
 
 try {
-  const [vRes, bRes] = await Promise.all([
-    supabaseAdmin.from('portfolio_videos').select('*').order('sort_order').order('created_at', { ascending: false }),
-    supabaseAdmin.from('portfolio_brands').select('*').order('sort_order'),
+  [videos, brands] = await Promise.all([
+    sql`SELECT * FROM portfolio_videos ORDER BY sort_order, created_at DESC`,
+    sql`SELECT * FROM portfolio_brands ORDER BY sort_order, created_at DESC`,
   ]);
-  videos = vRes.data ?? [];
-  brands = bRes.data ?? [];
 } catch (_) {}
 
-function pub(path: string) {
-  return supabaseAdmin.storage.from('portfolio').getPublicUrl(path).data.publicUrl;
-}
-
-const videosReady = videos.map(v => ({
-  ...v,
-  videoUrl: pub(v.video_path),
-  thumbUrl: v.thumbnail_path ? pub(v.thumbnail_path) : null,
-}));
-
-const brandsReady = brands.map(b => ({
-  ...b,
-  logoUrl: b.logo_path ? pub(b.logo_path) : null,
-}));
-
-const totalBrands = brandsReady.length;
+const totalBrands = brands.length;
 ---
 
 <Layout
   title="Portafolio — ReClub Agencia Digital"
-  description="Videos y marcas de ReClub. Más de 60+ empresas han confiado en nosotros."
+  description="Videos y marcas atendidas por ReClub. Más de 60 empresas han confiado en nosotros."
 >
   <Nav />
   <main>
 
     <!-- HERO -->
     <section class="relative flex flex-col items-center justify-center overflow-hidden bg-brand-black pt-20" style="min-height:100svh;">
-      <div class="absolute inset-0 bg-[linear-gradient(rgba(30,41,59,0.25)_1px,transparent_1px),linear-gradient(90deg,rgba(30,41,59,0.25)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
-      <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.15),transparent)]"></div>
-      <div class="absolute top-1/4 left-1/4 w-72 h-72 bg-brand-blue/10 rounded-full blur-3xl animate-blob"></div>
-      <div class="absolute top-1/3 right-1/4 w-72 h-72 bg-brand-purple/10 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
-      <div class="absolute bottom-1/4 left-1/2 w-56 h-56 bg-brand-blue/8 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(30,41,59,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,41,59,0.2)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(59,130,246,0.12),transparent)]"></div>
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-blue/8 rounded-full blur-3xl animate-blob"></div>
+      <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-brand-purple/8 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
 
       <div class="relative z-10 max-w-5xl mx-auto px-4 text-center">
-        <div class="inline-flex items-center gap-2 border border-brand-blue/30 bg-brand-blue/10 text-brand-blue text-sm px-4 py-1.5 rounded-full mb-8" data-aos="fade-down">
-          <span class="w-2 h-2 bg-brand-blue rounded-full animate-pulse"></span>
+        <div class="inline-flex items-center gap-2 border border-brand-blue/25 bg-brand-blue/8 text-brand-blue text-xs px-4 py-2 rounded-full mb-10 tracking-wider uppercase font-medium" data-aos="fade-down">
+          <span class="w-1.5 h-1.5 bg-brand-blue rounded-full animate-pulse"></span>
           Nuestro Trabajo
         </div>
 
-        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 tracking-tight" data-aos="fade-up" data-aos-delay="100">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] mb-6 tracking-tight" data-aos="fade-up" data-aos-delay="100">
           Resultados reales para<br />
           <span class="bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent">
             marcas reales
           </span>
         </h1>
 
-        <p class="text-brand-muted text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed" data-aos="fade-up" data-aos-delay="200">
-          Videos y campañas digitales que conectan marcas con su audiencia.<br class="hidden md:block" />
-          Esto es lo que hacemos en ReClub.
+        <p class="text-brand-muted text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed" data-aos="fade-up" data-aos-delay="200">
+          Producción audiovisual y contenido digital que conecta marcas con su audiencia.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-sm sm:max-w-none mx-auto" data-aos="fade-up" data-aos-delay="300">
-          <a href="#videos" class="bg-gradient-to-r from-brand-blue to-brand-purple text-white px-8 py-4 rounded-xl font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 shadow-lg shadow-brand-blue/25 text-center">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-sm sm:max-w-none mx-auto" data-aos="fade-up" data-aos-delay="300">
+          <a href="#videos" class="bg-gradient-to-r from-brand-blue to-brand-purple text-white px-10 py-4 rounded-xl font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 shadow-lg shadow-brand-blue/20 text-center">
             Ver videos
           </a>
-          <a href="/#contacto" class="border border-brand-border text-brand-white px-8 py-4 rounded-xl font-semibold hover:border-brand-blue/50 hover:bg-brand-blue/5 transition-all duration-200 text-center">
+          <a href="/#contacto" class="border border-brand-border text-brand-white px-10 py-4 rounded-xl font-semibold hover:border-brand-blue/40 hover:bg-brand-blue/5 transition-all duration-200 text-center">
             Trabajemos juntos
           </a>
         </div>
 
-        <!-- Stats -->
-        <div class="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto" data-aos="fade-up" data-aos-delay="400">
+        <div class="mt-20 grid grid-cols-3 gap-8 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="400">
           <div class="text-center">
-            <p class="text-2xl font-bold text-brand-white">{videosReady.length}+</p>
-            <p class="text-brand-muted text-sm mt-1">Videos</p>
+            <p class="text-3xl font-bold text-brand-white">{videos.length > 0 ? `${videos.length}+` : '—'}</p>
+            <p class="text-brand-muted text-xs mt-1 tracking-wide uppercase">Videos</p>
           </div>
           <div class="text-center border-x border-brand-border">
-            <p class="text-2xl font-bold text-brand-white">{totalBrands > 60 ? `${totalBrands}+` : '60+'}</p>
-            <p class="text-brand-muted text-sm mt-1">Marcas</p>
+            <p class="text-3xl font-bold text-brand-white">{totalBrands > 60 ? `${totalBrands}+` : '60+'}</p>
+            <p class="text-brand-muted text-xs mt-1 tracking-wide uppercase">Marcas</p>
           </div>
           <div class="text-center">
-            <p class="text-2xl font-bold text-brand-white">100%</p>
-            <p class="text-brand-muted text-sm mt-1">Dedicación</p>
+            <p class="text-3xl font-bold text-brand-white">5+</p>
+            <p class="text-brand-muted text-xs mt-1 tracking-wide uppercase">Años</p>
           </div>
         </div>
       </div>
 
-      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-brand-muted">
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce opacity-40">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-brand-muted">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
         </svg>
       </div>
     </section>
 
     <!-- VIDEOS -->
-    <section id="videos" class="py-24 px-4">
+    <section id="videos" class="py-28 px-4 bg-brand-black">
       <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16" data-aos="fade-up">
-          <div class="inline-flex items-center gap-2 border border-brand-blue/30 bg-brand-blue/10 text-brand-blue text-xs px-3 py-1 rounded-full mb-4">
-            Videos
-          </div>
-          <h2 class="text-3xl md:text-5xl font-extrabold text-brand-white mb-4">Nuestros Proyectos</h2>
-          <p class="text-brand-muted text-lg max-w-xl mx-auto">Cada video cuenta una historia. Aquí están las nuestras.</p>
+        <div class="text-center mb-20" data-aos="fade-up">
+          <p class="text-brand-blue text-xs font-semibold tracking-widest uppercase mb-4">Producción</p>
+          <h2 class="text-3xl md:text-5xl font-bold text-brand-white mb-5">Nuestros Videos</h2>
+          <p class="text-brand-muted max-w-xl mx-auto">Cada proyecto cuenta una historia. Aquí están las nuestras.</p>
+          <div class="w-12 h-0.5 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-8"></div>
         </div>
 
-        {videosReady.length === 0 ? (
+        {videos.length === 0 ? (
           <div class="text-center py-32 text-brand-muted">
-            <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-14 h-14 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.369A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
             </svg>
             <p class="text-lg font-medium">Videos próximamente</p>
           </div>
         ) : (
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {videosReady.map((v, i) => (
+            {videos.map((v, i) => (
               <article
                 class="group relative bg-brand-card border border-brand-border rounded-2xl overflow-hidden cursor-pointer hover:border-brand-blue/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_40px_rgba(59,130,246,0.12)]"
                 data-aos="fade-up"
                 data-aos-delay={Math.min(i * 80, 400)}
-                data-video-url={v.videoUrl}
+                data-video-url={v.video_url}
                 data-video-title={v.title}
                 data-video-desc={v.description}
               >
                 <div class="aspect-video bg-brand-dark relative overflow-hidden">
-                  {v.thumbUrl ? (
-                    <img src={v.thumbUrl} alt={v.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                  {v.thumbnail_url ? (
+                    <img src={v.thumbnail_url} alt={v.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                   ) : (
-                    <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-blue/10 to-brand-purple/10">
-                      <svg class="w-14 h-14 text-brand-muted/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <div class="w-full h-full flex items-center justify-center">
+                      <svg class="w-12 h-12 text-brand-muted/20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
                       </svg>
                     </div>
                   )}
-                  <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl scale-90 group-hover:scale-100 transition-transform duration-300">
-                      <svg class="w-7 h-7 text-brand-black ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
+                      <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
                       </svg>
                     </div>
                   </div>
-                  {v.category && v.category !== 'general' && (
-                    <span class="absolute top-3 left-3 bg-brand-black/70 backdrop-blur-sm text-brand-white text-xs px-3 py-1 rounded-full border border-brand-border/50 capitalize">
-                      {v.category}
-                    </span>
-                  )}
                 </div>
                 <div class="p-5">
-                  <h3 class="font-bold text-brand-white text-base mb-1.5 line-clamp-1">{v.title}</h3>
+                  <div class="flex items-start justify-between gap-2">
+                    <h3 class="font-bold text-brand-white text-sm leading-tight">{v.title}</h3>
+                    {v.category && v.category !== 'general' && (
+                      <span class="text-xs text-brand-blue bg-brand-blue/10 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">{v.category}</span>
+                    )}
+                  </div>
                   {v.description && (
-                    <p class="text-brand-muted text-sm line-clamp-2 leading-relaxed">{v.description}</p>
+                    <p class="text-brand-muted text-xs mt-2 leading-relaxed line-clamp-2">{v.description}</p>
                   )}
                 </div>
               </article>
@@ -172,46 +147,56 @@ const totalBrands = brandsReady.length;
       </div>
     </section>
 
-    <!-- MARCAS -->
-    <section id="marcas" class="py-24 px-4 bg-brand-dark">
+    <!-- BRANDS -->
+    <section id="marcas" class="py-28 px-4 bg-brand-dark">
       <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16" data-aos="fade-up">
-          <div class="inline-flex items-center gap-2 border border-brand-purple/30 bg-brand-purple/10 text-brand-purple text-xs px-3 py-1 rounded-full mb-4">
-            Clientes
-          </div>
-          <h2 class="text-3xl md:text-5xl font-extrabold text-brand-white mb-4">
-            Marcas que Confiaron en ReClub
+        <div class="text-center mb-20" data-aos="fade-up">
+          <p class="text-brand-blue text-xs font-semibold tracking-widest uppercase mb-4">Clientes</p>
+          <h2 class="text-3xl md:text-5xl font-bold text-brand-white mb-5">
+            {totalBrands > 60 ? `${totalBrands}+` : '60+'} marcas han confiado en ReClub
           </h2>
-          <p class="text-brand-muted text-lg max-w-xl mx-auto">
-            Más de {totalBrands > 60 ? totalBrands : '60'}+ empresas eligieron a ReClub para hacer crecer su presencia digital.
-          </p>
+          <p class="text-brand-muted max-w-xl mx-auto">Empresas y emprendimientos que eligieron ReClub para crecer digitalmente.</p>
+          <div class="w-12 h-0.5 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-8"></div>
         </div>
 
-        {brandsReady.length === 0 ? (
-          <div class="text-center py-20 text-brand-muted">
-            <p class="text-lg font-medium">Marcas próximamente</p>
-          </div>
+        {brands.length === 0 ? (
+          <p class="text-center text-brand-muted py-16">Marcas próximamente</p>
         ) : (
           <>
-            <div id="brandsGrid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3" data-aos="fade-up" data-aos-delay="100">
-              {brandsReady.map((b, i) => (
-                <div class={`brand-card group bg-brand-card border border-brand-border rounded-xl p-3 flex items-center justify-center min-h-[72px] hover:border-brand-blue/40 transition-all duration-300${i >= 60 ? ' brand-extra hidden' : ''}`}>
-                  {b.logoUrl ? (
-                    <img src={b.logoUrl} alt={b.name} class="max-h-8 max-w-full object-contain filter grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" loading="lazy" />
+            <div id="brands-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+              {brands.slice(0, 48).map((b, i) => (
+                <div
+                  class="bg-brand-card border border-brand-border rounded-xl p-4 flex items-center justify-center aspect-square hover:border-brand-blue/30 transition-all duration-300 hover:-translate-y-0.5"
+                  data-aos="fade-up"
+                  data-aos-delay={Math.min(i * 20, 300)}
+                >
+                  {b.logo_url ? (
+                    <img src={b.logo_url} alt={b.name} class="w-full h-full object-contain" loading="lazy" title={b.name} />
                   ) : (
-                    <span class="text-brand-muted group-hover:text-brand-white font-medium text-xs text-center transition-colors leading-tight">{b.name}</span>
+                    <span class="text-brand-muted text-xs text-center font-medium leading-tight">{b.name}</span>
                   )}
                 </div>
               ))}
             </div>
 
-            {brandsReady.length > 60 && (
+            {brands.length > 48 && (
+              <div id="brands-extra" class="hidden mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                {brands.slice(48).map((b) => (
+                  <div class="bg-brand-card border border-brand-border rounded-xl p-4 flex items-center justify-center aspect-square hover:border-brand-blue/30 transition-all duration-300">
+                    {b.logo_url ? (
+                      <img src={b.logo_url} alt={b.name} class="w-full h-full object-contain" loading="lazy" title={b.name} />
+                    ) : (
+                      <span class="text-brand-muted text-xs text-center font-medium leading-tight">{b.name}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {brands.length > 48 && (
               <div class="text-center mt-10">
-                <button id="showAllBrands" class="inline-flex items-center gap-2 border border-brand-border hover:border-brand-blue/50 text-brand-muted hover:text-brand-white px-8 py-3 rounded-full text-sm font-semibold transition-all duration-300">
-                  <svg id="showAllIcon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                  </svg>
-                  <span id="showAllText">Ver todas las marcas ({brandsReady.length})</span>
+                <button id="show-more-brands" class="border border-brand-border text-brand-muted hover:text-brand-white hover:border-brand-blue/40 px-8 py-3 rounded-xl text-sm font-medium transition-all">
+                  Ver todas las marcas ({brands.length})
                 </button>
               </div>
             )}
@@ -221,87 +206,87 @@ const totalBrands = brandsReady.length;
     </section>
 
     <!-- CTA -->
-    <section class="py-24 px-4">
-      <div class="max-w-4xl mx-auto" data-aos="fade-up">
-        <div class="relative overflow-hidden rounded-3xl border border-brand-border bg-gradient-to-br from-brand-card to-brand-dark p-12 md:p-16 text-center">
-          <div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(59,130,246,0.1),transparent)] pointer-events-none"></div>
-          <div class="relative z-10">
-            <div class="inline-flex items-center gap-2 border border-brand-blue/30 bg-brand-blue/10 text-brand-blue text-xs px-3 py-1 rounded-full mb-6">¿Listo para crecer?</div>
-            <h2 class="text-3xl md:text-5xl font-extrabold text-brand-white mb-5">Hagamos crecer<br class="hidden md:block" /> tu marca juntos</h2>
-            <p class="text-brand-muted text-lg mb-10 max-w-xl mx-auto">Únete a las más de {totalBrands > 60 ? totalBrands : 60}+ marcas que ya confían en ReClub.</p>
-            <a href="/#contacto" class="bg-gradient-to-r from-brand-blue to-brand-purple text-white px-10 py-4 rounded-xl font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 shadow-lg shadow-brand-blue/25 inline-block">
-              Empezar ahora
-            </a>
-          </div>
-        </div>
+    <section class="py-28 px-4 bg-brand-black">
+      <div class="max-w-3xl mx-auto text-center" data-aos="fade-up">
+        <h2 class="text-3xl md:text-4xl font-bold text-brand-white mb-5">
+          ¿Su marca podría estar aquí?
+        </h2>
+        <p class="text-brand-muted mb-10 leading-relaxed">
+          Contáctenos y le explicamos cómo podemos ayudarle a crecer digitalmente.
+        </p>
+        <a
+          href="https://wa.me/56938897621?text=Hola%20ReClub%2C%20vi%20su%20portafolio%20y%20me%20gustaría%20saber%20más."
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-3 bg-gradient-to-r from-brand-blue to-brand-purple text-white px-10 py-4 rounded-xl font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 shadow-lg shadow-brand-blue/20"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Contactar por WhatsApp
+        </a>
       </div>
     </section>
 
   </main>
   <Footer />
   <WhatsAppButton />
+</Layout>
 
-  <!-- VIDEO MODAL -->
-  <div id="videoModal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 hidden" aria-modal="true" role="dialog">
-    <div class="relative w-full max-w-5xl">
-      <button id="closeModalBtn" class="absolute -top-12 right-0 text-white/60 hover:text-white transition-colors flex items-center gap-2 text-sm" aria-label="Cerrar">
-        <kbd class="text-xs border border-white/20 rounded px-1.5 py-0.5">ESC</kbd>
-        Cerrar
-      </button>
-      <div class="bg-brand-card rounded-2xl overflow-hidden shadow-2xl border border-brand-border">
-        <video id="modalVideo" controls playsinline class="w-full aspect-video bg-black"></video>
-        <div class="p-6 border-t border-brand-border">
-          <h3 id="modalTitle" class="text-xl font-bold text-brand-white mb-1"></h3>
-          <p id="modalDesc" class="text-brand-muted text-sm leading-relaxed"></p>
-        </div>
-      </div>
+<!-- Video modal -->
+<div id="video-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
+  <div class="relative w-full max-w-4xl">
+    <button id="close-modal" class="absolute -top-12 right-0 text-white/60 hover:text-white transition-colors">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <video id="modal-video" controls class="w-full rounded-2xl shadow-2xl max-h-[80vh]" preload="metadata"></video>
+    <div class="mt-4 text-center">
+      <h3 id="modal-title" class="text-brand-white font-bold text-lg"></h3>
+      <p id="modal-desc" class="text-brand-muted text-sm mt-1"></p>
     </div>
   </div>
-</Layout>
+</div>
 
 <script>
   // Video modal
-  const videoModal = document.getElementById('videoModal') as HTMLElement;
-  const modalVideo = document.getElementById('modalVideo') as HTMLVideoElement;
-  const modalTitle = document.getElementById('modalTitle') as HTMLElement;
-  const modalDesc  = document.getElementById('modalDesc') as HTMLElement;
+  const modal = document.getElementById('video-modal')!;
+  const modalVideo = document.getElementById('modal-video') as HTMLVideoElement;
+  const modalTitle = document.getElementById('modal-title')!;
+  const modalDesc = document.getElementById('modal-desc')!;
 
-  function openModal(el: HTMLElement) {
-    modalVideo.src = el.dataset.videoUrl!;
-    modalTitle.textContent = el.dataset.videoTitle ?? '';
-    modalDesc.textContent  = el.dataset.videoDesc  ?? '';
-    videoModal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    modalVideo.play().catch(() => {});
-  }
-  function closeModal() {
-    modalVideo.pause(); modalVideo.src = '';
-    videoModal.classList.add('hidden');
-    document.body.style.overflow = '';
-  }
-
-  document.querySelectorAll('article[data-video-url]').forEach(c =>
-    c.addEventListener('click', () => openModal(c as HTMLElement))
-  );
-  videoModal.addEventListener('click', e => { if (e.target === videoModal) closeModal(); });
-  document.getElementById('closeModalBtn')?.addEventListener('click', closeModal);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  // Mostrar todas las marcas
-  const showAllBtn  = document.getElementById('showAllBrands');
-  const showAllText = document.getElementById('showAllText');
-  const showAllIcon = document.getElementById('showAllIcon') as HTMLElement | null;
-  let expanded = false;
-
-  showAllBtn?.addEventListener('click', () => {
-    expanded = !expanded;
-    document.querySelectorAll<HTMLElement>('.brand-extra').forEach(el =>
-      el.classList.toggle('hidden', !expanded)
-    );
-    if (showAllIcon) showAllIcon.style.transform = expanded ? 'rotate(180deg)' : '';
-    if (showAllText) {
-      const total = document.querySelectorAll('.brand-card').length;
-      showAllText.textContent = expanded ? 'Ver menos' : `Ver todas las marcas (${total})`;
-    }
+  document.querySelectorAll('[data-video-url]').forEach(card => {
+    card.addEventListener('click', () => {
+      const url = (card as HTMLElement).dataset.videoUrl!;
+      const title = (card as HTMLElement).dataset.videoTitle ?? '';
+      const desc = (card as HTMLElement).dataset.videoDesc ?? '';
+      modalVideo.src = url;
+      modalTitle.textContent = title;
+      modalDesc.textContent = desc;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      modalVideo.play();
+    });
   });
+
+  document.getElementById('close-modal')!.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+  function closeModal() {
+    modalVideo.pause();
+    modalVideo.src = '';
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  // Show more brands
+  const showMore = document.getElementById('show-more-brands');
+  if (showMore) {
+    showMore.addEventListener('click', () => {
+      document.getElementById('brands-extra')?.classList.remove('hidden');
+      showMore.remove();
+    });
+  }
 </script>

@@ -1,10 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { checkAuth } from '../../lib/auth';
+
+const authed = checkAuth(Astro.request);
 ---
 
-<Layout title="Admin — Portfolio Benjamín">
+<Layout title="Admin — ReClub">
   <!-- LOGIN -->
-  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-6 bg-brand-black">
+  <div id="loginScreen" class={`min-h-screen flex items-center justify-center p-6 bg-brand-black ${authed ? 'hidden' : ''}`}>
     <div class="w-full max-w-sm">
       <div class="text-center mb-8">
         <div class="w-12 h-12 bg-brand-blue/10 border border-brand-blue/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -13,19 +16,11 @@ import Layout from '../../layouts/Layout.astro';
           </svg>
         </div>
         <h1 class="text-2xl font-black text-brand-white">Panel Admin</h1>
-        <p class="text-brand-muted text-sm mt-1">Portfolio de Benjamín</p>
+        <p class="text-brand-muted text-sm mt-1">ReClub Agencia Digital</p>
       </div>
-
       <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
         <div id="loginError" class="hidden mb-4 bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
         <form id="loginForm" class="space-y-4">
-          <div>
-            <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Email</label>
-            <input type="email" id="loginEmail" required autocomplete="email"
-              class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40"
-              placeholder="tu@email.com"
-            />
-          </div>
           <div>
             <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Contraseña</label>
             <input type="password" id="loginPassword" required autocomplete="current-password"
@@ -35,20 +30,17 @@ import Layout from '../../layouts/Layout.astro';
           </div>
           <button type="submit" id="loginBtn"
             class="w-full bg-brand-blue hover:bg-brand-blue-dark text-white py-3 rounded-xl font-semibold transition-colors disabled:opacity-50"
-          >
-            Entrar
-          </button>
+          >Entrar</button>
         </form>
       </div>
       <p class="text-center mt-6">
-        <a href="/portafolio" class="text-brand-muted text-sm hover:text-brand-white transition-colors">← Ver portfolio</a>
+        <a href="/portafolio" class="text-brand-muted text-sm hover:text-brand-white transition-colors">← Ver portafolio</a>
       </p>
     </div>
   </div>
 
   <!-- DASHBOARD -->
-  <div id="adminDashboard" class="hidden min-h-screen bg-brand-black">
-    <!-- Header -->
+  <div id="adminDashboard" class={`min-h-screen bg-brand-black ${authed ? '' : 'hidden'}`}>
     <header class="sticky top-0 z-40 border-b border-brand-border bg-brand-black/90 backdrop-blur-md px-6 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-brand-blue/10 border border-brand-blue/30 rounded-xl flex items-center justify-center">
@@ -58,14 +50,12 @@ import Layout from '../../layouts/Layout.astro';
         </div>
         <div>
           <p class="font-black text-brand-white text-sm leading-none">Admin</p>
-          <p class="text-brand-muted text-xs">Portfolio de Benjamín</p>
+          <p class="text-brand-muted text-xs">ReClub</p>
         </div>
       </div>
       <div class="flex items-center gap-4">
-        <a href="/portafolio" target="_blank"
-          class="text-brand-muted hover:text-brand-white text-sm transition-colors hidden sm:flex items-center gap-1"
-        >
-          Ver portfolio
+        <a href="/portafolio" target="_blank" class="text-brand-muted hover:text-brand-white text-sm transition-colors hidden sm:flex items-center gap-1">
+          Ver portafolio
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
           </svg>
@@ -83,21 +73,15 @@ import Layout from '../../layouts/Layout.astro';
       <!-- Tabs -->
       <div class="flex gap-2 mb-8 border-b border-brand-border pb-4 flex-wrap">
         <button class="tab-btn active" data-tab="videos">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-          </svg>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
           Videos
         </button>
         <button class="tab-btn" data-tab="photos">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
           Fotos
         </button>
         <button class="tab-btn" data-tab="brands">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-          </svg>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
           Marcas
         </button>
       </div>
@@ -106,43 +90,29 @@ import Layout from '../../layouts/Layout.astro';
       <div id="tab-videos" class="tab-content">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 mb-8">
           <h2 class="font-bold text-brand-white mb-1">Subir nuevo video</h2>
-          <p class="text-brand-muted text-xs mb-6">Formatos: MP4, MOV, WebM · Recomendado: menos de 200 MB</p>
-
+          <p class="text-brand-muted text-xs mb-6">Formatos: MP4, MOV, WebM · Hasta 500 MB</p>
           <form id="videoForm" class="space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Título *</label>
-                <input type="text" name="title" required
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
-                  placeholder="Nombre del proyecto"
-                />
+                <input type="text" name="title" required class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors text-sm" placeholder="Nombre del proyecto"/>
               </div>
               <div>
                 <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Categoría</label>
-                <input type="text" name="category"
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
-                  placeholder="Redes Sociales, Publicidad..."
-                />
+                <input type="text" name="category" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors text-sm" placeholder="Redes Sociales, Publicidad..."/>
               </div>
             </div>
-
             <div>
               <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Descripción</label>
-              <textarea name="description" rows="2"
-                class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors resize-none placeholder:text-brand-muted/40 text-sm"
-                placeholder="Descripción breve del proyecto..."
-              ></textarea>
+              <textarea name="description" rows="2" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors resize-none text-sm" placeholder="Descripción breve..."></textarea>
             </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Archivo de video *</label>
                 <label class="block w-full bg-brand-dark border border-dashed border-brand-border hover:border-brand-blue/50 rounded-xl px-4 py-4 cursor-pointer transition-colors group">
-                  <input type="file" name="videoFile" accept="video/*" required class="hidden" id="videoFileInput" />
+                  <input type="file" name="videoFile" accept="video/*" required class="hidden" id="videoFileInput"/>
                   <div class="flex items-center gap-3">
-                    <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                    </svg>
+                    <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                     <div>
                       <p id="videoFileName" class="text-brand-muted text-sm">Elegir video</p>
                       <p class="text-brand-muted/40 text-xs">MP4, MOV, WebM</p>
@@ -153,11 +123,9 @@ import Layout from '../../layouts/Layout.astro';
               <div>
                 <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Thumbnail <span class="normal-case font-normal">(opcional)</span></label>
                 <label class="block w-full bg-brand-dark border border-dashed border-brand-border hover:border-brand-blue/50 rounded-xl px-4 py-4 cursor-pointer transition-colors group">
-                  <input type="file" name="thumbnailFile" accept="image/*" class="hidden" id="thumbFileInput" />
+                  <input type="file" name="thumbnailFile" accept="image/*" class="hidden" id="thumbFileInput"/>
                   <div class="flex items-center gap-3">
-                    <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
+                    <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     <div>
                       <p id="thumbFileName" class="text-brand-muted text-sm">Elegir imagen</p>
                       <p class="text-brand-muted/40 text-xs">JPG, PNG, WebP</p>
@@ -166,29 +134,17 @@ import Layout from '../../layouts/Layout.astro';
                 </label>
               </div>
             </div>
-
-            <!-- Progress -->
             <div id="videoProgress" class="hidden space-y-2">
               <div class="h-1.5 bg-brand-dark rounded-full overflow-hidden">
                 <div id="videoProgressBar" class="h-full bg-gradient-to-r from-brand-blue to-brand-purple rounded-full transition-all duration-300 w-0"></div>
               </div>
-              <p id="videoProgressText" class="text-brand-muted text-xs">Preparando...</p>
+              <p id="videoProgressText" class="text-brand-muted text-xs">Subiendo...</p>
             </div>
-
-            <div id="videoSuccess" class="hidden bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl">
-              ✓ Video subido con éxito
-            </div>
+            <div id="videoSuccess" class="hidden bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl">✓ Video subido con éxito</div>
             <div id="videoError" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
-
-            <button type="submit" id="videoSubmitBtn"
-              class="bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Subir Video
-            </button>
+            <button type="submit" id="videoSubmitBtn" class="bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm disabled:opacity-50">Subir Video</button>
           </form>
         </div>
-
-        <!-- List -->
         <div class="flex items-center justify-between mb-4">
           <h2 class="font-bold text-brand-white">Videos publicados</h2>
           <button id="refreshVideos" class="text-brand-muted hover:text-brand-white text-xs transition-colors">↻ Actualizar</button>
@@ -202,51 +158,25 @@ import Layout from '../../layouts/Layout.astro';
       <div id="tab-photos" class="tab-content hidden">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 mb-8">
           <h2 class="font-bold text-brand-white mb-1">Subir nueva foto</h2>
-          <p class="text-brand-muted text-xs mb-6">Formatos: JPG, PNG, WebP · Recomendado: mínimo 1200px de ancho</p>
-
+          <p class="text-brand-muted text-xs mb-6">Formatos: JPG, PNG, WebP</p>
           <form id="photoForm" class="space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Título *</label>
-                <input type="text" name="title" required
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
-                  placeholder="Nombre del proyecto"
-                />
-              </div>
-              <div>
-                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Categoría</label>
-                <input type="text" name="category"
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
-                  placeholder="ej: Branding, Producto, Evento..."
-                />
-              </div>
-            </div>
-
             <div>
-              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Descripción</label>
-              <textarea name="description" rows="2"
-                class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors resize-none placeholder:text-brand-muted/40 text-sm"
-                placeholder="Descripción breve..."
-              ></textarea>
+              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Título *</label>
+              <input type="text" name="title" required class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors text-sm" placeholder="Nombre del proyecto"/>
             </div>
-
             <div>
-              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Archivo de imagen *</label>
+              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Archivo *</label>
               <label class="block w-full bg-brand-dark border border-dashed border-brand-border hover:border-brand-blue/50 rounded-xl px-4 py-4 cursor-pointer transition-colors group">
-                <input type="file" name="photoFile" accept="image/*" required class="hidden" id="photoFileInput" multiple />
+                <input type="file" name="photoFile" accept="image/*" required class="hidden" id="photoFileInput" multiple/>
                 <div class="flex items-center gap-3">
-                  <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                  </svg>
+                  <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                   <div>
                     <p id="photoFileName" class="text-brand-muted text-sm">Elegir imagen(es)</p>
-                    <p class="text-brand-muted/40 text-xs">JPG, PNG, WebP · Puedes seleccionar varias a la vez</p>
+                    <p class="text-brand-muted/40 text-xs">Puedes seleccionar varias a la vez</p>
                   </div>
                 </div>
               </label>
             </div>
-
-            <!-- Progress -->
             <div id="photoProgress" class="hidden space-y-2">
               <div class="h-1.5 bg-brand-dark rounded-full overflow-hidden">
                 <div id="photoProgressBar" class="h-full bg-gradient-to-r from-brand-blue to-brand-purple rounded-full transition-all duration-300 w-0"></div>
@@ -255,16 +185,9 @@ import Layout from '../../layouts/Layout.astro';
             </div>
             <div id="photoSuccess" class="hidden bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl">✓ Foto(s) subida(s) con éxito</div>
             <div id="photoError" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
-
-            <button type="submit" id="photoSubmitBtn"
-              class="bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Subir Foto(s)
-            </button>
+            <button type="submit" id="photoSubmitBtn" class="bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm disabled:opacity-50">Subir Foto(s)</button>
           </form>
         </div>
-
-        <!-- List -->
         <div class="flex items-center justify-between mb-4">
           <h2 class="font-bold text-brand-white">Fotos publicadas</h2>
           <button id="refreshPhotos" class="text-brand-muted hover:text-brand-white text-xs transition-colors">↻ Actualizar</button>
@@ -278,34 +201,24 @@ import Layout from '../../layouts/Layout.astro';
       <div id="tab-brands" class="tab-content hidden">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 mb-8">
           <h2 class="font-bold text-brand-white mb-1">Agregar marca</h2>
-          <p class="text-brand-muted text-xs mb-6">Las marcas aparecen en la sección "Marcas que confiaron en mí"</p>
-
+          <p class="text-brand-muted text-xs mb-6">Aparece en la sección de marcas del portafolio</p>
           <form id="brandForm" class="space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Nombre de la marca *</label>
-                <input type="text" name="name" required
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
-                  placeholder="ej: Nike, Apple..."
-                />
+                <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Nombre *</label>
+                <input type="text" name="name" required class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors text-sm" placeholder="Nombre de la marca"/>
               </div>
               <div>
                 <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Sitio web <span class="normal-case font-normal">(opcional)</span></label>
-                <input type="url" name="websiteUrl"
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors placeholder:text-brand-muted/40 text-sm"
-                  placeholder="https://..."
-                />
+                <input type="url" name="websiteUrl" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-blue outline-none transition-colors text-sm" placeholder="https://..."/>
               </div>
             </div>
-
             <div>
-              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Logo <span class="normal-case font-normal">(PNG o SVG recomendado)</span></label>
+              <label class="block text-xs text-brand-muted mb-2 font-medium uppercase tracking-wider">Logo <span class="normal-case font-normal">(PNG, SVG)</span></label>
               <label class="block w-full max-w-xs bg-brand-dark border border-dashed border-brand-border hover:border-brand-blue/50 rounded-xl px-4 py-4 cursor-pointer transition-colors group">
-                <input type="file" name="logoFile" accept="image/*" class="hidden" id="logoFileInput" />
+                <input type="file" name="logoFile" accept="image/*" class="hidden" id="logoFileInput"/>
                 <div class="flex items-center gap-3">
-                  <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                  </svg>
+                  <svg class="w-8 h-8 text-brand-muted/50 group-hover:text-brand-blue/70 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                   <div>
                     <p id="logoFileName" class="text-brand-muted text-sm">Elegir logo</p>
                     <p class="text-brand-muted/40 text-xs">PNG, SVG, WebP</p>
@@ -313,21 +226,11 @@ import Layout from '../../layouts/Layout.astro';
                 </div>
               </label>
             </div>
-
             <div id="brandError" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
-            <div id="brandSuccess" class="hidden bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl">
-              ✓ Marca agregada con éxito
-            </div>
-
-            <button type="submit" id="brandSubmitBtn"
-              class="bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Agregar Marca
-            </button>
+            <div id="brandSuccess" class="hidden bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl">✓ Marca agregada</div>
+            <button type="submit" id="brandSubmitBtn" class="bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm disabled:opacity-50">Agregar Marca</button>
           </form>
         </div>
-
-        <!-- List -->
         <div class="flex items-center justify-between mb-4">
           <h2 class="font-bold text-brand-white">Marcas</h2>
           <button id="refreshBrands" class="text-brand-muted hover:text-brand-white text-xs transition-colors">↻ Actualizar</button>
@@ -354,44 +257,17 @@ import Layout from '../../layouts/Layout.astro';
     background: transparent;
     border: 1px solid transparent;
   }
-  .tab-btn:hover {
-    color: #F8FAFC;
-    border-color: #1E293B;
-  }
-  .tab-btn.active {
-    background: #3B82F6;
-    color: white;
-    border-color: transparent;
-  }
+  .tab-btn:hover { color: #F8FAFC; border-color: #1E293B; }
+  .tab-btn.active { background: #3B82F6; color: white; border-color: transparent; }
 </style>
 
 <script>
-  import { createClient } from '@supabase/supabase-js';
-
-  const sb = createClient(
-    import.meta.env.PUBLIC_SUPABASE_URL,
-    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-  );
+  import { upload } from '@vercel/blob/client';
 
   const $ = (id: string) => document.getElementById(id)!;
 
   // ── Auth ──────────────────────────────────────────────────────────────────
-  async function boot() {
-    const { data: { session } } = await sb.auth.getSession();
-    session ? showDashboard() : showLogin();
-    sb.auth.onAuthStateChange((_, s) => s ? showDashboard() : showLogin());
-  }
-
-  function showLogin() {
-    $('loginScreen').classList.remove('hidden');
-    $('adminDashboard').classList.add('hidden');
-  }
-
-  async function showDashboard() {
-    $('loginScreen').classList.add('hidden');
-    $('adminDashboard').classList.remove('hidden');
-    await Promise.all([loadVideos(), loadPhotos(), loadBrands()]);
-  }
+  const isLoggedIn = !$('loginScreen').classList.contains('hidden') === false;
 
   $('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -401,20 +277,36 @@ import Layout from '../../layouts/Layout.astro';
     btn.textContent = 'Entrando...';
     err.classList.add('hidden');
 
-    const { error } = await sb.auth.signInWithPassword({
-      email: ($('loginEmail') as HTMLInputElement).value,
-      password: ($('loginPassword') as HTMLInputElement).value,
+    const password = ($('loginPassword') as HTMLInputElement).value;
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
     });
 
-    if (error) {
-      err.textContent = error.message;
+    if (res.ok) {
+      $('loginScreen').classList.add('hidden');
+      $('adminDashboard').classList.remove('hidden');
+      await Promise.all([loadVideos(), loadPhotos(), loadBrands()]);
+    } else {
+      const { error } = await res.json();
+      err.textContent = error ?? 'Contraseña incorrecta';
       err.classList.remove('hidden');
       btn.disabled = false;
       btn.textContent = 'Entrar';
     }
   });
 
-  $('logoutBtn').addEventListener('click', () => sb.auth.signOut());
+  $('logoutBtn').addEventListener('click', async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    $('adminDashboard').classList.add('hidden');
+    $('loginScreen').classList.remove('hidden');
+  });
+
+  // Load on mount if already authed
+  if (!$('adminDashboard').classList.contains('hidden')) {
+    Promise.all([loadVideos(), loadPhotos(), loadBrands()]);
+  }
 
   // ── Tabs ──────────────────────────────────────────────────────────────────
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -426,117 +318,91 @@ import Layout from '../../layouts/Layout.astro';
     });
   });
 
-  // ── File name display ─────────────────────────────────────────────────────
+  // ── File name labels ──────────────────────────────────────────────────────
   function watchFile(inputId: string, labelId: string) {
     document.getElementById(inputId)?.addEventListener('change', (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      const label = $(labelId);
-      label.textContent = file ? file.name : 'Elegir archivo';
+      const files = (e.target as HTMLInputElement).files;
+      $(labelId).textContent = files?.length === 1 ? files[0].name : files ? `${files.length} archivos` : 'Elegir archivo';
     });
   }
   watchFile('videoFileInput', 'videoFileName');
   watchFile('thumbFileInput', 'thumbFileName');
   watchFile('logoFileInput', 'logoFileName');
+  watchFile('photoFileInput', 'photoFileName');
 
-  // ── Videos ────────────────────────────────────────────────────────────────
-  function pubUrl(path: string) {
-    return sb.storage.from('portfolio').getPublicUrl(path).data.publicUrl;
+  // ── Upload to Vercel Blob ─────────────────────────────────────────────────
+  async function uploadFile(file: File, onProgress?: (pct: number) => void): Promise<string> {
+    const ext = file.name.split('.').pop() ?? 'bin';
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const blob = await upload(filename, file, {
+      access: 'public',
+      handleUploadUrl: '/api/blob',
+      onUploadProgress: ({ percentage }) => onProgress?.(percentage),
+    });
+    return blob.url;
   }
 
+  // ── Videos ────────────────────────────────────────────────────────────────
   async function loadVideos() {
     const list = $('videosList');
-    const { data, error } = await sb
-      .from('portfolio_videos')
-      .select('*')
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: false });
+    const res = await fetch('/api/admin/videos');
+    const data: any[] = res.ok ? await res.json() : [];
 
-    if (error || !data?.length) {
-      list.innerHTML = '<p class="col-span-full text-brand-muted text-sm py-8 text-center">No hay videos aún. Sube el primero.</p>';
+    if (!data.length) {
+      list.innerHTML = '<p class="col-span-full text-brand-muted text-sm py-8 text-center">No hay videos aún.</p>';
       return;
     }
 
     list.innerHTML = data.map(v => `
       <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden" data-video-id="${v.id}">
-        <!-- Thumbnail — clic para cambiar portada -->
         <label class="block aspect-video bg-brand-dark relative overflow-hidden cursor-pointer group" title="Clic para cambiar portada">
-          <input type="file" accept="image/*" class="hidden thumb-input" data-id="${v.id}" data-tpath="${v.thumbnail_path ?? ''}" />
-          ${v.thumbnail_path
-            ? `<img src="${pubUrl(v.thumbnail_path)}" class="w-full h-full object-cover" loading="lazy" />`
-            : `<div class="w-full h-full flex items-center justify-center"><svg class="w-10 h-10 text-brand-muted/30" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>`
-          }
-          <!-- Overlay al hacer hover -->
+          <input type="file" accept="image/*" class="hidden thumb-input" data-id="${v.id}" />
+          ${v.thumbnail_url
+            ? `<img src="${v.thumbnail_url}" class="w-full h-full object-cover" loading="lazy" />`
+            : `<div class="w-full h-full flex items-center justify-center"><svg class="w-10 h-10 text-brand-muted/30" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>`}
           <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             <span class="text-white text-xs font-semibold">Cambiar portada</span>
           </div>
-          <!-- Indicador de carga -->
           <div class="thumb-loading absolute inset-0 bg-black/70 hidden items-center justify-center">
             <div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           </div>
         </label>
         <div class="p-4">
-          <p class="font-semibold text-brand-white text-sm mb-0.5 truncate">${escHtml(v.title)}</p>
-          ${v.category && v.category !== 'general' ? `<span class="text-xs text-brand-blue">${escHtml(v.category)}</span>` : ''}
-          <div class="flex gap-2 mt-3">
-            <button
-              data-id="${v.id}" data-vpath="${v.video_path}" data-tpath="${v.thumbnail_path ?? ''}"
-              class="del-video flex-1 text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-400/40 rounded-lg py-2 transition-colors"
-            >Eliminar</button>
-          </div>
+          <p class="font-semibold text-brand-white text-sm truncate">${v.title}</p>
+          ${v.category && v.category !== 'general' ? `<p class="text-brand-blue text-xs mt-0.5">${v.category}</p>` : ''}
+          <button class="delete-video mt-3 text-red-400/60 hover:text-red-400 text-xs transition-colors flex items-center gap-1" data-id="${v.id}">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Eliminar
+          </button>
         </div>
       </div>
     `).join('');
 
-    // Cambiar portada — click en thumbnail
-    list.querySelectorAll<HTMLInputElement>('.thumb-input').forEach(input => {
-      input.addEventListener('change', async () => {
-        const file = input.files?.[0];
+    // Thumbnail change
+    list.querySelectorAll('.thumb-input').forEach(inp => {
+      inp.addEventListener('change', async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
         if (!file) return;
-
-        const card = input.closest('[data-video-id]') as HTMLElement;
-        const loadingEl = card.querySelector('.thumb-loading') as HTMLElement;
-        loadingEl.classList.remove('hidden');
-        loadingEl.classList.add('flex');
-
+        const id = (inp as HTMLElement).dataset.id!;
+        const label = inp.closest('label')!;
+        const loading = label.querySelector('.thumb-loading') as HTMLElement;
+        loading.classList.remove('hidden');
+        loading.classList.add('flex');
         try {
-          // Subir nueva imagen
-          const ext = file.name.split('.').pop();
-          const newPath = `thumbnails/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-          const { error: upErr } = await sb.storage.from('portfolio').upload(newPath, file, { cacheControl: '3600' });
-          if (upErr) throw upErr;
-
-          // Eliminar la antigua si existía
-          const oldPath = input.dataset.tpath;
-          if (oldPath) await sb.storage.from('portfolio').remove([oldPath]);
-
-          // Actualizar registro en DB
-          const { error: dbErr } = await sb.from('portfolio_videos')
-            .update({ thumbnail_path: newPath })
-            .eq('id', input.dataset.id!);
-          if (dbErr) throw dbErr;
-
+          const thumbnail_url = await uploadFile(file);
+          await fetch('/api/admin/videos', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, thumbnail_url }) });
           await loadVideos();
-        } catch (err: any) {
-          alert('Error al cambiar portada: ' + err?.message);
-          loadingEl.classList.add('hidden');
-          loadingEl.classList.remove('flex');
-        }
+        } catch { loading.classList.add('hidden'); loading.classList.remove('flex'); }
       });
     });
 
-    // Eliminar video
-    list.querySelectorAll<HTMLButtonElement>('.del-video').forEach(btn => {
+    // Delete
+    list.querySelectorAll('.delete-video').forEach(btn => {
       btn.addEventListener('click', async () => {
-        if (!confirm(`¿Eliminar "${btn.closest('[data-video-id]')?.querySelector('p')?.textContent}"?`)) return;
-        btn.disabled = true;
-        btn.textContent = 'Eliminando...';
-        const paths = [btn.dataset.vpath!];
-        if (btn.dataset.tpath) paths.push(btn.dataset.tpath);
-        await sb.storage.from('portfolio').remove(paths.filter(Boolean));
-        await sb.from('portfolio_videos').delete().eq('id', btn.dataset.id!);
+        if (!confirm('¿Eliminar este video?')) return;
+        const id = (btn as HTMLElement).dataset.id!;
+        await fetch('/api/admin/videos', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
         await loadVideos();
       });
     });
@@ -547,126 +413,98 @@ import Layout from '../../layouts/Layout.astro';
   $('videoForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    const fd = new FormData(form);
     const btn = $('videoSubmitBtn') as HTMLButtonElement;
     const progress = $('videoProgress');
-    const bar = $('videoProgressBar') as HTMLElement;
-    const txt = $('videoProgressText');
+    const progressBar = $('videoProgressBar') as HTMLElement;
+    const progressText = $('videoProgressText');
     const successEl = $('videoSuccess');
-    const errEl = $('videoError');
+    const errorEl = $('videoError');
 
     btn.disabled = true;
-    progress.classList.remove('hidden');
     successEl.classList.add('hidden');
-    errEl.classList.add('hidden');
-
-    const setProgress = (pct: number, msg: string) => {
-      bar.style.width = `${pct}%`;
-      txt.textContent = msg;
-    };
+    errorEl.classList.add('hidden');
+    progress.classList.remove('hidden');
 
     try {
-      const videoFile = fd.get('videoFile') as File;
-      const thumbFile = fd.get('thumbnailFile') as File;
+      const videoFile = (form.querySelector('#videoFileInput') as HTMLInputElement).files![0];
+      const thumbFile = (form.querySelector('#thumbFileInput') as HTMLInputElement).files?.[0];
 
-      setProgress(5, 'Subiendo video...');
-      const videoExt = videoFile.name.split('.').pop();
-      const videoPath = `videos/${Date.now()}-${Math.random().toString(36).slice(2)}.${videoExt}`;
-
-      const { error: ve } = await sb.storage.from('portfolio').upload(videoPath, videoFile, {
-        cacheControl: '3600',
-        upsert: false,
-        // @ts-ignore — onUploadProgress is supported at runtime
-        onUploadProgress: ({ loaded, total }: { loaded: number; total: number }) => {
-          setProgress(5 + Math.round((loaded / total) * 75), `Subiendo video... ${Math.round((loaded / total) * 100)}%`);
-        },
+      progressText.textContent = 'Subiendo video...';
+      const video_url = await uploadFile(videoFile, (pct) => {
+        progressBar.style.width = pct + '%';
+        progressText.textContent = `Subiendo video... ${Math.round(pct)}%`;
       });
-      if (ve) throw ve;
 
-      let thumbnailPath: string | null = null;
-      if (thumbFile?.size > 0) {
-        setProgress(82, 'Subiendo thumbnail...');
-        const tExt = thumbFile.name.split('.').pop();
-        thumbnailPath = `thumbnails/${Date.now()}-${Math.random().toString(36).slice(2)}.${tExt}`;
-        const { error: te } = await sb.storage.from('portfolio').upload(thumbnailPath, thumbFile);
-        if (te) throw te;
+      let thumbnail_url: string | null = null;
+      if (thumbFile) {
+        progressText.textContent = 'Subiendo thumbnail...';
+        progressBar.style.width = '0%';
+        thumbnail_url = await uploadFile(thumbFile, (pct) => {
+          progressBar.style.width = pct + '%';
+        });
       }
 
-      setProgress(95, 'Guardando...');
-      const { error: de } = await sb.from('portfolio_videos').insert({
-        title: fd.get('title'),
-        description: fd.get('description') || '',
-        category: fd.get('category') || 'general',
-        video_path: videoPath,
-        thumbnail_path: thumbnailPath,
-      });
-      if (de) throw de;
+      progressBar.style.width = '100%';
+      progressText.textContent = 'Guardando...';
 
-      setProgress(100, '¡Listo!');
+      await fetch('/api/admin/videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: (form.querySelector('[name=title]') as HTMLInputElement).value,
+          description: (form.querySelector('[name=description]') as HTMLTextAreaElement).value,
+          category: (form.querySelector('[name=category]') as HTMLInputElement).value,
+          video_url,
+          thumbnail_url,
+        }),
+      });
+
       form.reset();
       $('videoFileName').textContent = 'Elegir video';
       $('thumbFileName').textContent = 'Elegir imagen';
-      successEl.classList.remove('hidden');
-      setTimeout(() => {
-        progress.classList.add('hidden');
-        bar.style.width = '0%';
-        successEl.classList.add('hidden');
-      }, 3000);
-      await loadVideos();
-    } catch (err: any) {
-      errEl.textContent = `Error: ${err?.message ?? 'Intenta de nuevo'}`;
-      errEl.classList.remove('hidden');
       progress.classList.add('hidden');
-      bar.style.width = '0%';
-    } finally {
-      btn.disabled = false;
+      progressBar.style.width = '0%';
+      successEl.classList.remove('hidden');
+      setTimeout(() => successEl.classList.add('hidden'), 4000);
+      await loadVideos();
+    } catch (err) {
+      progress.classList.add('hidden');
+      errorEl.textContent = String(err);
+      errorEl.classList.remove('hidden');
     }
+    btn.disabled = false;
   });
 
-  // ── Photos ───────────────────────────────────────────────────────────────
-  // file name display
-  document.getElementById('photoFileInput')?.addEventListener('change', (e) => {
-    const files = (e.target as HTMLInputElement).files;
-    $('photoFileName').textContent = files && files.length > 1
-      ? `${files.length} imágenes seleccionadas`
-      : files?.[0]?.name ?? 'Elegir imagen(es)';
-  });
-
+  // ── Photos ────────────────────────────────────────────────────────────────
   async function loadPhotos() {
     const list = $('photosList');
-    const { data, error } = await sb
-      .from('portfolio_photos')
-      .select('*')
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: false });
+    const res = await fetch('/api/admin/photos');
+    const data: any[] = res.ok ? await res.json() : [];
 
-    if (error || !data?.length) {
-      list.innerHTML = '<p class="col-span-full text-brand-muted text-sm py-8 text-center">No hay fotos aún. Sube la primera.</p>';
+    if (!data.length) {
+      list.innerHTML = '<p class="col-span-full text-brand-muted text-sm py-8 text-center">No hay fotos aún.</p>';
       return;
     }
 
     list.innerHTML = data.map(p => `
-      <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden group">
-        <div class="aspect-square bg-brand-dark overflow-hidden">
-          <img src="${pubUrl(p.image_path)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-        </div>
-        <div class="p-3">
-          <p class="font-semibold text-brand-white text-sm truncate mb-0.5">${escHtml(p.title)}</p>
-          ${p.category && p.category !== 'general' ? `<span class="text-xs text-brand-blue">${escHtml(p.category)}</span>` : ''}
-          <button
-            data-id="${p.id}" data-ipath="${p.image_path}"
-            class="del-photo mt-2 w-full text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-400/40 rounded-lg py-1.5 transition-colors"
-          >Eliminar</button>
+      <div class="relative group">
+        <img src="${p.photo_url}" alt="${p.title}" class="w-full aspect-square object-cover rounded-xl border border-brand-border" loading="lazy"/>
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-end p-3">
+          <div class="w-full">
+            <p class="text-white text-xs font-medium truncate">${p.title}</p>
+            <button class="delete-photo mt-1 text-red-400 text-xs flex items-center gap-1" data-id="${p.id}">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              Eliminar
+            </button>
+          </div>
         </div>
       </div>
     `).join('');
 
-    list.querySelectorAll<HTMLButtonElement>('.del-photo').forEach(btn => {
+    list.querySelectorAll('.delete-photo').forEach(btn => {
       btn.addEventListener('click', async () => {
         if (!confirm('¿Eliminar esta foto?')) return;
-        btn.disabled = true;
-        await sb.storage.from('portfolio').remove([btn.dataset.ipath!]);
-        await sb.from('portfolio_photos').delete().eq('id', btn.dataset.id!);
+        await fetch('/api/admin/photos', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: (btn as HTMLElement).dataset.id }) });
         await loadPhotos();
       });
     });
@@ -677,104 +515,77 @@ import Layout from '../../layouts/Layout.astro';
   $('photoForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    const fd = new FormData(form);
     const btn = $('photoSubmitBtn') as HTMLButtonElement;
     const progress = $('photoProgress');
-    const bar = $('photoProgressBar') as HTMLElement;
-    const txt = $('photoProgressText');
+    const progressBar = $('photoProgressBar') as HTMLElement;
+    const progressText = $('photoProgressText');
     const successEl = $('photoSuccess');
-    const errEl = $('photoError');
-
-    const files = (document.getElementById('photoFileInput') as HTMLInputElement).files;
-    if (!files || files.length === 0) return;
+    const errorEl = $('photoError');
 
     btn.disabled = true;
-    progress.classList.remove('hidden');
     successEl.classList.add('hidden');
-    errEl.classList.add('hidden');
+    errorEl.classList.add('hidden');
+    progress.classList.remove('hidden');
+
+    const files = Array.from((form.querySelector('#photoFileInput') as HTMLInputElement).files ?? []);
+    const title = (form.querySelector('[name=title]') as HTMLInputElement).value;
 
     try {
-      const title = fd.get('title') as string;
-      const description = fd.get('description') as string || '';
-      const category = fd.get('category') as string || 'general';
-
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const pct = Math.round(((i) / files.length) * 90) + 5;
-        bar.style.width = `${pct}%`;
-        txt.textContent = files.length > 1
-          ? `Subiendo foto ${i + 1} de ${files.length}...`
-          : 'Subiendo foto...';
-
-        const ext = file.name.split('.').pop();
-        const imagePath = `photos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-        const { error: ue } = await sb.storage.from('portfolio').upload(imagePath, file, { cacheControl: '3600' });
-        if (ue) throw ue;
-
-        const { error: de } = await sb.from('portfolio_photos').insert({
-          title: files.length > 1 ? `${title} ${i + 1}` : title,
-          description,
-          category,
-          image_path: imagePath,
+        progressText.textContent = `Subiendo ${i + 1} de ${files.length}...`;
+        const photo_url = await uploadFile(file, (pct) => {
+          progressBar.style.width = ((i / files.length) * 100 + pct / files.length) + '%';
         });
-        if (de) throw de;
+        await fetch('/api/admin/photos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: files.length > 1 ? `${title} ${i + 1}` : title, photo_url }),
+        });
       }
 
-      bar.style.width = '100%';
-      txt.textContent = '¡Listo!';
       form.reset();
       $('photoFileName').textContent = 'Elegir imagen(es)';
-      successEl.classList.remove('hidden');
-      setTimeout(() => {
-        progress.classList.add('hidden');
-        bar.style.width = '0%';
-        successEl.classList.add('hidden');
-      }, 3000);
-      await loadPhotos();
-    } catch (err: any) {
-      errEl.textContent = `Error: ${err?.message ?? 'Intenta de nuevo'}`;
-      errEl.classList.remove('hidden');
       progress.classList.add('hidden');
-      bar.style.width = '0%';
-    } finally {
-      btn.disabled = false;
+      progressBar.style.width = '0%';
+      successEl.classList.remove('hidden');
+      setTimeout(() => successEl.classList.add('hidden'), 4000);
+      await loadPhotos();
+    } catch (err) {
+      progress.classList.add('hidden');
+      errorEl.textContent = String(err);
+      errorEl.classList.remove('hidden');
     }
+    btn.disabled = false;
   });
 
   // ── Brands ────────────────────────────────────────────────────────────────
   async function loadBrands() {
     const list = $('brandsList');
-    const { data, error } = await sb
-      .from('portfolio_brands')
-      .select('*')
-      .order('sort_order', { ascending: true });
+    const res = await fetch('/api/admin/brands');
+    const data: any[] = res.ok ? await res.json() : [];
 
-    if (error || !data?.length) {
+    if (!data.length) {
       list.innerHTML = '<p class="col-span-full text-brand-muted text-sm py-8 text-center">No hay marcas aún.</p>';
       return;
     }
 
     list.innerHTML = data.map(b => `
-      <div class="bg-brand-card border border-brand-border rounded-xl p-4 flex flex-col items-center gap-3 text-center">
-        ${b.logo_path
-          ? `<img src="${pubUrl(b.logo_path)}" class="h-12 max-w-full object-contain" alt="${escHtml(b.name)}" loading="lazy" />`
-          : `<div class="h-12 flex items-center"><span class="text-brand-white font-semibold text-sm">${escHtml(b.name)}</span></div>`
-        }
-        <p class="text-brand-muted text-xs truncate w-full">${escHtml(b.name)}</p>
-        <button
-          data-id="${b.id}" data-lpath="${b.logo_path ?? ''}"
-          class="del-brand w-full text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-400/40 rounded-lg py-2 transition-colors"
-        >Eliminar</button>
+      <div class="bg-brand-card border border-brand-border rounded-xl p-4 flex flex-col items-center gap-3 group hover:border-brand-blue/30 transition-all">
+        <div class="w-16 h-16 flex items-center justify-center">
+          ${b.logo_url
+            ? `<img src="${b.logo_url}" alt="${b.name}" class="w-full h-full object-contain" loading="lazy"/>`
+            : `<div class="w-full h-full bg-brand-dark rounded-lg flex items-center justify-center text-brand-muted text-xs text-center font-medium p-2">${b.name}</div>`}
+        </div>
+        <p class="text-brand-white text-xs font-medium text-center truncate w-full">${b.name}</p>
+        <button class="delete-brand text-red-400/50 hover:text-red-400 text-xs transition-colors" data-id="${b.id}">Eliminar</button>
       </div>
     `).join('');
 
-    list.querySelectorAll<HTMLButtonElement>('.del-brand').forEach(btn => {
+    list.querySelectorAll('.delete-brand').forEach(btn => {
       btn.addEventListener('click', async () => {
         if (!confirm('¿Eliminar esta marca?')) return;
-        btn.disabled = true;
-        if (btn.dataset.lpath) await sb.storage.from('portfolio').remove([btn.dataset.lpath]);
-        await sb.from('portfolio_brands').delete().eq('id', btn.dataset.id!);
+        await fetch('/api/admin/brands', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: (btn as HTMLElement).dataset.id }) });
         await loadBrands();
       });
     });
@@ -785,52 +596,40 @@ import Layout from '../../layouts/Layout.astro';
   $('brandForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    const fd = new FormData(form);
     const btn = $('brandSubmitBtn') as HTMLButtonElement;
-    const errEl = $('brandError');
+    const errorEl = $('brandError');
     const successEl = $('brandSuccess');
 
     btn.disabled = true;
-    btn.textContent = 'Guardando...';
-    errEl.classList.add('hidden');
+    errorEl.classList.add('hidden');
     successEl.classList.add('hidden');
 
     try {
-      const logoFile = fd.get('logoFile') as File;
-      let logoPath: string | null = null;
-
-      if (logoFile?.size > 0) {
-        const ext = logoFile.name.split('.').pop();
-        logoPath = `brands/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error: ue } = await sb.storage.from('portfolio').upload(logoPath, logoFile);
-        if (ue) throw ue;
+      const logoFile = (form.querySelector('#logoFileInput') as HTMLInputElement).files?.[0];
+      let logo_url: string | null = null;
+      if (logoFile) {
+        logo_url = await uploadFile(logoFile);
       }
 
-      const { error } = await sb.from('portfolio_brands').insert({
-        name: fd.get('name'),
-        website_url: fd.get('websiteUrl') || '',
-        logo_path: logoPath,
+      await fetch('/api/admin/brands', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: (form.querySelector('[name=name]') as HTMLInputElement).value,
+          website_url: (form.querySelector('[name=websiteUrl]') as HTMLInputElement).value,
+          logo_url,
+        }),
       });
-      if (error) throw error;
 
       form.reset();
       $('logoFileName').textContent = 'Elegir logo';
       successEl.classList.remove('hidden');
-      setTimeout(() => successEl.classList.add('hidden'), 3000);
+      setTimeout(() => successEl.classList.add('hidden'), 4000);
       await loadBrands();
-    } catch (err: any) {
-      errEl.textContent = `Error: ${err?.message ?? 'Intenta de nuevo'}`;
-      errEl.classList.remove('hidden');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Agregar Marca';
+    } catch (err) {
+      errorEl.textContent = String(err);
+      errorEl.classList.remove('hidden');
     }
+    btn.disabled = false;
   });
-
-  // ── Utils ─────────────────────────────────────────────────────────────────
-  function escHtml(str: string) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
-  boot();
 </script>
