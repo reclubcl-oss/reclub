@@ -1,0 +1,341 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="Sistema 90 | ReClub — Contenido, Meta Ads y Ventas en 90 días"
+  description="Sistema 90 de ReClub: contenido audiovisual, campañas en Meta Ads y asesoría en ventas durante 90 días. Pago único $990.000 o 3 pagos de $400.000. Solo 4 cupos."
+  canonical="https://reclubcl.com/sistema-90"
+>
+  <Nav />
+
+  <!-- HERO -->
+  <section class="relative flex flex-col items-center justify-center overflow-hidden" style="min-height:100svh;background:#020202;">
+    <canvas id="sw-canvas" class="absolute inset-0 w-full h-full" aria-hidden="true"></canvas>
+    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 90% 90% at 50% 50%,transparent 30%,rgba(2,2,2,0.65) 100%);"></div>
+    <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to bottom,rgba(2,2,2,0.2) 0%,transparent 20%,transparent 70%,rgba(2,2,2,0.5) 100%);"></div>
+    <div class="relative z-10 w-full max-w-4xl mx-auto px-6 text-center flex flex-col items-center">
+      <p class="text-brand-muted text-xs font-medium tracking-[0.22em] uppercase mb-10">Sistema 90 — ReClub</p>
+      <h1 class="font-serif text-brand-white mb-10" style="font-size:clamp(40px,6vw,82px);font-weight:400;line-height:1.05;letter-spacing:-0.03em;text-wrap:balance;text-shadow:rgba(0,0,0,0.9) 0px 4px 40px;">
+        Contenido, Meta Ads<br/>y ventas en<br/><em style="font-style:italic;color:rgba(245,245,247,0.72);">90 días.</em>
+      </h1>
+      <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-0 text-brand-muted text-sm mb-12">
+        <span>Solo 4 cupos</span>
+        <span class="hidden sm:block mx-5 opacity-30">|</span>
+        <span>3 grabaciones</span>
+        <span class="hidden sm:block mx-5 opacity-30">|</span>
+        <span>24–30 reels</span>
+        <span class="hidden sm:block mx-5 opacity-30">|</span>
+        <span>Campañas Meta activas</span>
+      </div>
+      <a href="#solicitar" class="inline-flex items-center gap-2 bg-brand-white text-brand-black font-semibold px-8 py-4 rounded-full text-sm hover:bg-brand-blue-dark transition-colors">
+        Reservar mi cupo
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+      </a>
+    </div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-20 animate-bounce" style="z-index:10;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+    </div>
+  </section>
+
+  <!-- QUÉ INCLUYE — blanco, 3 pilares visuales -->
+  <section class="py-24 sm:py-36 px-6" style="background:#FAFAFA;border-top:1px solid #E2E2EA;">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-16" data-aos="fade-up">
+        <p class="text-xs tracking-[0.22em] uppercase mb-4" style="color:#6B6B80;">Qué incluye</p>
+        <h2 class="font-serif" style="font-size:clamp(28px,3.5vw,48px);font-weight:400;line-height:1.1;letter-spacing:-0.03em;color:#111118;">
+          Cuatro cosas que trabajan juntas.
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px" style="background:#E2E2EA;">
+        <!-- Contenido -->
+        <div class="p-10 text-center" style="background:#FAFAFA;" data-aos="fade-up" data-aos-delay="0">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style="background:#111118;">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/>
+            </svg>
+          </div>
+          <h3 class="font-serif mb-3" style="font-size:22px;font-weight:400;letter-spacing:-0.02em;color:#111118;">Contenido</h3>
+          <p class="text-sm leading-relaxed" style="color:#6B6B80;">Grabamos en tu negocio una vez al mes. Salen 8–10 reels listos para publicar y usar como anuncios.</p>
+        </div>
+
+        <!-- Meta Ads -->
+        <div class="p-10 text-center" style="background:#FAFAFA;" data-aos="fade-up" data-aos-delay="80">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style="background:#111118;">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6"/>
+            </svg>
+          </div>
+          <h3 class="font-serif mb-3" style="font-size:22px;font-weight:400;letter-spacing:-0.02em;color:#111118;">Meta Ads</h3>
+          <p class="text-sm leading-relaxed" style="color:#6B6B80;">Campañas en Facebook e Instagram. Probamos anuncios, medimos resultados y concentramos el dinero en lo que convierte.</p>
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="p-10 text-center" style="background:#FAFAFA;" data-aos="fade-up" data-aos-delay="160">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style="background:#111118;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-6 h-6">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+          </div>
+          <h3 class="font-serif mb-3" style="font-size:22px;font-weight:400;letter-spacing:-0.02em;color:#111118;">WhatsApp</h3>
+          <p class="text-sm leading-relaxed" style="color:#6B6B80;">Tu WhatsApp configurado para responder rápido y cerrar ventas. Cada mensaje que llega tiene más chances de convertirse en cliente.</p>
+        </div>
+
+        <!-- Asesoría en ventas -->
+        <div class="p-10 text-center" style="background:#FAFAFA;" data-aos="fade-up" data-aos-delay="240">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style="background:#111118;">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/>
+            </svg>
+          </div>
+          <h3 class="font-serif mb-3" style="font-size:22px;font-weight:400;letter-spacing:-0.02em;color:#111118;">Asesoría en ventas</h3>
+          <p class="text-sm leading-relaxed" style="color:#6B6B80;">Te orientamos en cómo responder mensajes, qué decir para cerrar y cómo convertir cada consulta en una venta real.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LÍNEA DE TIEMPO — oscuro -->
+  <section id="plan" class="py-24 sm:py-36 px-6" style="background:#020202;border-top:1px solid #1C1C24;">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16 sm:mb-24" data-aos="fade-up">
+        <p class="text-brand-muted text-xs tracking-[0.22em] uppercase mb-4">Hoja de ruta</p>
+        <h2 class="font-serif text-brand-white" style="font-size:clamp(28px,3.5vw,48px);font-weight:400;line-height:1.1;letter-spacing:-0.03em;">
+          Los 90 días, de un vistazo.
+        </h2>
+      </div>
+
+      <!-- Timeline desktop: horizontal / mobile: vertical -->
+      <div class="relative">
+
+        <!-- Línea horizontal (desktop) -->
+        <div class="hidden md:block absolute top-[52px] left-[calc(16.6%)] right-[calc(16.6%)] h-px" style="background:linear-gradient(to right,#1C1C24,#5C5C6A,#1C1C24);"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
+
+          <!-- Mes 1 -->
+          <div class="relative flex flex-col items-center text-center md:items-center" data-aos="fade-up" data-aos-delay="0">
+            <!-- Nodo -->
+            <div class="w-[104px] h-[104px] rounded-full border border-brand-border flex flex-col items-center justify-center mb-8 relative z-10" style="background:#020202;">
+              <span class="text-brand-muted text-xs tracking-widest uppercase mb-1">Mes 1</span>
+              <span class="font-serif text-brand-white text-lg" style="font-weight:400;">Lanzar</span>
+            </div>
+            <div class="md:text-center">
+              <p class="text-brand-muted text-xs uppercase tracking-wider mb-4">Semanas 1–4</p>
+              <ul class="space-y-3 text-left md:text-left inline-block">
+                {['Reunión + estrategia','Grabación en tu negocio','8–10 reels editados','Campañas Meta activas','WhatsApp configurado'].map(i => (
+                  <li class="flex items-start gap-2.5 text-sm text-brand-muted">
+                    <span class="w-1 h-1 rounded-full bg-brand-muted flex-shrink-0 mt-1.5"></span>{i}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Mes 2 -->
+          <div class="relative flex flex-col items-center text-center md:items-center" data-aos="fade-up" data-aos-delay="120">
+            <div class="w-[104px] h-[104px] rounded-full border border-brand-border flex flex-col items-center justify-center mb-8 relative z-10" style="background:#020202;">
+              <span class="text-brand-muted text-xs tracking-widest uppercase mb-1">Mes 2</span>
+              <span class="font-serif text-brand-white text-lg" style="font-weight:400;">Optimizar</span>
+            </div>
+            <div class="md:text-center">
+              <p class="text-brand-muted text-xs uppercase tracking-wider mb-4">Semanas 5–8</p>
+              <ul class="space-y-3 text-left inline-block">
+                {['Analizamos qué funcionó','Segunda grabación','Enfoque en anuncios ganadores','Menos costo por mensaje','Reporte + reunión mensual'].map(i => (
+                  <li class="flex items-start gap-2.5 text-sm text-brand-muted">
+                    <span class="w-1 h-1 rounded-full bg-brand-muted flex-shrink-0 mt-1.5"></span>{i}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Mes 3 -->
+          <div class="relative flex flex-col items-center text-center md:items-center" data-aos="fade-up" data-aos-delay="240">
+            <div class="w-[104px] h-[104px] rounded-full border border-brand-border flex flex-col items-center justify-center mb-8 relative z-10" style="background:#020202;">
+              <span class="text-brand-muted text-xs tracking-widest uppercase mb-1">Mes 3</span>
+              <span class="font-serif text-brand-white text-lg" style="font-weight:400;">Escalar</span>
+            </div>
+            <div class="md:text-center">
+              <p class="text-brand-muted text-xs uppercase tracking-wider mb-4">Semanas 9–12</p>
+              <ul class="space-y-3 text-left inline-block">
+                {['Tercera grabación','Nuevos formatos de video','Evaluamos subir presupuesto','Nuevas audiencias','Reporte final 90 días'].map(i => (
+                  <li class="flex items-start gap-2.5 text-sm text-brand-muted">
+                    <span class="w-1 h-1 rounded-full bg-brand-muted flex-shrink-0 mt-1.5"></span>{i}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16 border border-brand-border rounded-xl px-8 py-6 text-center" data-aos="fade-up">
+        <p class="text-brand-muted text-xs uppercase tracking-wider mb-2">Cupos limitados</p>
+        <p class="text-brand-white text-sm">Trabajo con máximo 4 clientes al mismo tiempo para garantizar dedicación total.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INVERSIÓN — blanco -->
+  <section class="py-24 sm:py-36 px-6" style="background:#FAFAFA;border-top:1px solid #E2E2EA;">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16" data-aos="fade-up">
+        <p class="text-xs tracking-[0.22em] uppercase mb-4" style="color:#6B6B80;">Inversión</p>
+        <h2 class="font-serif" style="font-size:clamp(28px,3.5vw,48px);font-weight:400;line-height:1.1;letter-spacing:-0.03em;color:#111118;">
+          Elige cómo pagar.
+        </h2>
+        <p class="text-sm mt-3" style="color:#6B6B80;">El mismo servicio completo, dos formas de invertir.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-px mb-8" style="background:#E2E2EA;">
+        <!-- Pago único -->
+        <div class="p-10 relative" style="background:#FAFAFA;" data-aos="fade-up">
+          <div class="absolute top-6 right-6">
+            <span class="text-xs px-3 py-1 rounded-full uppercase tracking-wider" style="border:1px solid #E2E2EA;color:#6B6B80;">Mejor precio</span>
+          </div>
+          <p class="text-xs tracking-[0.2em] uppercase mb-4" style="color:#6B6B80;">Pago único</p>
+          <p class="font-serif mb-2" style="font-size:clamp(44px,5vw,62px);font-weight:400;letter-spacing:-0.03em;color:#111118;">$990.000</p>
+          <p class="text-sm mb-8" style="color:#6B6B80;">Un solo pago. Sin cobros adicionales.</p>
+          <a href="#solicitar" class="block w-full text-center font-semibold py-4 rounded-full text-sm transition-colors" style="background:#111118;color:#F5F5F7;">Quiero el pago único</a>
+        </div>
+
+        <!-- 3 pagos -->
+        <div class="p-10" style="background:#FAFAFA;" data-aos="fade-up" data-aos-delay="80">
+          <p class="text-xs tracking-[0.2em] uppercase mb-4" style="color:#6B6B80;">3 Pagos mensuales</p>
+          <div class="flex items-end gap-2 mb-2">
+            <p class="font-serif" style="font-size:clamp(44px,5vw,62px);font-weight:400;letter-spacing:-0.03em;color:#111118;">$400.000</p>
+            <span class="text-sm pb-3" style="color:#6B6B80;">/ mes</span>
+          </div>
+          <p class="text-sm mb-8" style="color:#6B6B80;">Un pago al inicio de cada mes. Total $1.200.000.</p>
+          <a href="#solicitar" class="block w-full text-center font-semibold py-4 rounded-full text-sm transition-colors" style="border:1px solid #E2E2EA;color:#111118;">Quiero los 3 pagos</a>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-xl text-sm" style="background:#F2F2F5;border:1px solid #E2E2EA;color:#6B6B80;">
+        <strong style="color:#111118;">Presupuesto de publicidad (aparte):</strong> Se paga directo a Meta con tu tarjeta. Recomendamos <strong style="color:#111118;">$150.000 – $300.000 / mes</strong>. Tú lo controlas en todo momento.
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULARIO — oscuro -->
+  <section id="solicitar" class="py-24 sm:py-36 px-6" style="background:#020202;border-top:1px solid #1C1C24;">
+    <div class="max-w-2xl mx-auto">
+      <div class="mb-12" data-aos="fade-up">
+        <p class="text-brand-muted text-xs tracking-[0.22em] uppercase mb-4">Reserva tu cupo</p>
+        <h2 class="font-serif text-brand-white mb-3" style="font-size:clamp(28px,3.5vw,48px);font-weight:400;line-height:1.1;letter-spacing:-0.03em;">
+          Cuéntame sobre tu negocio.
+        </h2>
+        <p class="text-brand-muted text-sm">Solo 4 cupos disponibles. Te respondo en menos de 24 horas.</p>
+      </div>
+
+      <div class="border border-brand-border rounded-2xl p-7 sm:p-10" style="background:#070707;">
+        <div id="form-success" class="hidden text-center py-8">
+          <p class="font-serif text-brand-white text-2xl mb-3" style="font-weight:400;">Recibido.</p>
+          <p class="text-brand-muted text-sm">Benjamín te va a escribir por WhatsApp en las próximas horas.</p>
+        </div>
+        <form id="lead-form" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Nombre *</label>
+              <input name="nombre" required type="text" placeholder="María González" class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm"/>
+            </div>
+            <div>
+              <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Negocio *</label>
+              <input name="negocio" required type="text" placeholder="Estética Silva" class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm"/>
+            </div>
+          </div>
+          <div>
+            <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Rubro *</label>
+            <input name="rubro" required type="text" placeholder="Estética, clínica, restaurante..." class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm"/>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">WhatsApp *</label>
+              <input name="whatsapp" required type="tel" placeholder="+56 9 1234 5678" class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm"/>
+            </div>
+            <div>
+              <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Email *</label>
+              <input name="email" required type="email" placeholder="correo@tuempresa.cl" class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm"/>
+            </div>
+          </div>
+          <div>
+            <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Presupuesto publicidad mensual *</label>
+            <select name="presupuesto" required class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:outline-none focus:border-brand-muted transition-colors text-sm">
+              <option value="" disabled selected class="bg-brand-dark">Selecciona un rango</option>
+              <option value="$150.000 – $300.000 / mes" class="bg-brand-dark">$150.000 – $300.000 / mes</option>
+              <option value="$300.000 – $500.000 / mes" class="bg-brand-dark">$300.000 – $500.000 / mes</option>
+              <option value="+$500.000 / mes" class="bg-brand-dark">+$500.000 / mes</option>
+              <option value="Aún no lo tengo claro" class="bg-brand-dark">Aún no lo tengo claro</option>
+            </select>
+          </div>
+          <div id="form-error" class="hidden border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
+          <button type="submit" id="submit-btn" class="w-full bg-brand-white text-brand-black py-4 rounded-full font-semibold hover:bg-brand-blue-dark transition-colors text-sm flex items-center justify-center gap-2">
+            <span id="btn-text">Reservar mi cupo</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+          </button>
+          <p class="text-center text-xs text-brand-muted">Sin compromisos. Benjamín te contacta para confirmar disponibilidad.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('sw-canvas') as HTMLCanvasElement;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d')!;
+      let W = 0, H = 0;
+      function resize() { W = canvas.offsetWidth; H = canvas.offsetHeight; canvas.width = W; canvas.height = H; }
+      resize(); window.addEventListener('resize', resize);
+      const blobs = [
+        {x:.2,y:.3,r:.55,vx:.00012,vy:.00008,color:'rgba(28,28,36,0.9)'},
+        {x:.8,y:.6,r:.60,vx:-.00010,vy:.00007,color:'rgba(20,20,28,0.95)'},
+        {x:.5,y:.9,r:.50,vx:.00009,vy:-.00013,color:'rgba(35,35,45,0.85)'},
+        {x:.1,y:.8,r:.45,vx:.00015,vy:-.00006,color:'rgba(15,15,22,0.9)'},
+        {x:.9,y:.1,r:.50,vx:-.00008,vy:.00014,color:'rgba(22,22,32,0.88)'},
+      ];
+      function draw() {
+        ctx.fillStyle='#020202'; ctx.fillRect(0,0,W,H);
+        blobs.forEach(b => {
+          b.x+=b.vx; b.y+=b.vy;
+          if(b.x<-.2){b.x=-.2;b.vx*=-1;} if(b.x>1.2){b.x=1.2;b.vx*=-1;}
+          if(b.y<-.2){b.y=-.2;b.vy*=-1;} if(b.y>1.2){b.y=1.2;b.vy*=-1;}
+          const cx=b.x*W,cy=b.y*H,r=b.r*Math.max(W,H);
+          const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+          g.addColorStop(0,b.color); g.addColorStop(1,'rgba(2,2,2,0)');
+          ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    const form = document.getElementById('lead-form') as HTMLFormElement;
+    const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+    const btnText = document.getElementById('btn-text') as HTMLElement;
+    const errBox = document.getElementById('form-error') as HTMLElement;
+    const successBox = document.getElementById('form-success') as HTMLElement;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errBox.classList.add('hidden');
+      btn.disabled = true; btnText.textContent = 'Enviando...';
+      const data = Object.fromEntries(new FormData(form));
+      try {
+        const res = await fetch('/api/leads/whatsapp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+        if (!res.ok) throw new Error();
+        form.classList.add('hidden'); successBox.classList.remove('hidden');
+        window.scrollTo({ top: successBox.getBoundingClientRect().top + window.scrollY - 100, behavior:'smooth' });
+      } catch {
+        errBox.textContent = 'Ocurrió un error. Escríbenos directamente al WhatsApp.';
+        errBox.classList.remove('hidden');
+        btn.disabled = false; btnText.textContent = 'Reservar mi cupo';
+      }
+    });
+  </script>
+</Layout>

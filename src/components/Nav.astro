@@ -1,116 +1,55 @@
 ---
-// Prefijo para links de ancla — desde otras páginas necesita ir a /#seccion
 const base = Astro.url.pathname === '/' ? '' : '/';
 ---
 
 <nav
   id="navbar"
-  class="fixed top-0 w-full z-50 transition-all duration-300 py-4 px-4"
-  style="padding-top: max(1rem, env(safe-area-inset-top));"
+  class="fixed top-0 w-full z-50 transition-all duration-300 py-5 px-6"
+  style="padding-top: max(1.25rem, env(safe-area-inset-top));"
 >
-  <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <!-- Logo -->
-    <a href="/" class="text-2xl font-bold tracking-tight">
-      Re<span class="text-brand-blue">Club</span>
+  <div class="max-w-6xl mx-auto flex items-center justify-between relative">
+
+    <!-- Logo izquierda -->
+    <a href="/" class="text-brand-white font-semibold text-lg tracking-tight flex-shrink-0">
+      ReClub
     </a>
 
-    <!-- Desktop links -->
-    <div class="hidden md:flex items-center gap-8">
-      <a
-        href={`${base}#servicios`}
-        class="text-brand-muted hover:text-brand-white transition-colors text-sm font-medium"
-      >
-        Servicios
-      </a>
-      <a
-        href={`${base}#por-que-reclub`}
-        class="text-brand-muted hover:text-brand-white transition-colors text-sm font-medium"
-      >
-        Por qué ReClub
-      </a>
-      <a
-        href="/portafolio"
-        class={`text-sm font-medium transition-colors ${Astro.url.pathname.startsWith('/portafolio') ? 'text-brand-white' : 'text-brand-muted hover:text-brand-white'}`}
-      >
-        Portafolio
-      </a>
+    <!-- Links centrados (desktop) — posición absoluta para centrado real -->
+    <div class="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+      <a href={`${base}#servicios`} class="text-brand-muted hover:text-brand-white transition-colors text-sm">Servicios</a>
+      <a href={`${base}#por-que-reclub`} class="text-brand-muted hover:text-brand-white transition-colors text-sm">Por qué ReClub</a>
+      <a href="/portafolio" class={`text-sm transition-colors ${Astro.url.pathname.startsWith('/portafolio') ? 'text-brand-white' : 'text-brand-muted hover:text-brand-white'}`}>Portafolio</a>
+      <a href="/sistema-90" class={`text-sm transition-colors ${Astro.url.pathname === '/sistema-90' ? 'text-brand-white' : 'text-brand-muted hover:text-brand-white'}`}>Sistema 90</a>
+    </div>
+
+    <!-- CTA derecha -->
+    <div class="flex items-center gap-3">
       <a
         href={`${base}#contacto`}
-        class="bg-brand-blue hover:bg-brand-blue-dark text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
+        class="hidden md:inline-flex text-brand-black bg-brand-white hover:bg-brand-blue-dark px-5 py-2.5 rounded-full text-sm font-semibold transition-colors"
       >
         Contáctenos
       </a>
+      <!-- Mobile hamburger -->
+      <button id="menu-btn" class="md:hidden text-brand-muted hover:text-brand-white transition-colors p-2" aria-label="Abrir menú">
+        <svg id="icon-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+        <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hidden">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
     </div>
-
-    <!-- Mobile hamburger -->
-    <button
-      id="menu-btn"
-      class="md:hidden text-brand-muted hover:text-brand-white transition-colors p-2"
-      aria-label="Abrir menú"
-    >
-      <svg
-        id="icon-open"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-6 h-6"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-        ></path>
-      </svg>
-      <svg
-        id="icon-close"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-6 h-6 hidden"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M6 18L18 6M6 6l12 12"
-        ></path>
-      </svg>
-    </button>
   </div>
 
   <!-- Mobile menu -->
-  <div
-    id="mobile-menu"
-    class="hidden md:hidden mt-4 pb-4 border-t border-brand-border"
-  >
-    <div class="flex flex-col gap-4 pt-4 px-4">
-      <a
-        href={`${base}#servicios`}
-        class="mobile-link text-brand-muted hover:text-brand-white transition-colors font-medium"
-      >
-        Servicios
-      </a>
-      <a
-        href={`${base}#por-que-reclub`}
-        class="mobile-link text-brand-muted hover:text-brand-white transition-colors font-medium"
-      >
-        Por qué ReClub
-      </a>
-      <a
-        href="/portafolio"
-        class="mobile-link text-brand-muted hover:text-brand-white transition-colors font-medium"
-      >
-        Portafolio
-      </a>
-      <a
-        href={`${base}#contacto`}
-        class="mobile-link bg-brand-blue hover:bg-brand-blue-dark text-white px-5 py-3 rounded-lg font-semibold text-center transition-colors"
-      >
-        Contáctenos
-      </a>
+  <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-brand-border">
+    <div class="flex flex-col gap-4 pt-5 px-2">
+      <a href={`${base}#servicios`} class="mobile-link text-brand-muted hover:text-brand-white transition-colors text-sm">Servicios</a>
+      <a href={`${base}#por-que-reclub`} class="mobile-link text-brand-muted hover:text-brand-white transition-colors text-sm">Por qué ReClub</a>
+      <a href="/portafolio" class="mobile-link text-brand-muted hover:text-brand-white transition-colors text-sm">Portafolio</a>
+      <a href="/sistema-90" class="mobile-link text-brand-muted hover:text-brand-white transition-colors text-sm">Sistema 90</a>
+      <a href={`${base}#contacto`} class="mobile-link mt-2 text-brand-black bg-brand-white text-center py-3 px-5 rounded-full font-semibold text-sm">Contáctenos</a>
     </div>
   </div>
 </nav>
@@ -122,38 +61,25 @@ const base = Astro.url.pathname === '/' ? '' : '/';
   const iconOpen = document.getElementById('icon-open') as HTMLElement;
   const iconClose = document.getElementById('icon-close') as HTMLElement;
 
-  // Scroll effect
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      nav.classList.add(
-        'bg-brand-dark/95',
-        'backdrop-blur-md',
-        'shadow-lg',
-        'shadow-black/20',
-        'py-2',
-      );
-      nav.classList.remove('py-4');
+    if (window.scrollY > 60) {
+      nav.style.background = 'rgba(2,2,2,0.88)';
+      nav.style.backdropFilter = 'blur(20px)';
+      nav.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
     } else {
-      nav.classList.remove(
-        'bg-brand-dark/95',
-        'backdrop-blur-md',
-        'shadow-lg',
-        'shadow-black/20',
-        'py-2',
-      );
-      nav.classList.add('py-4');
+      nav.style.background = '';
+      nav.style.backdropFilter = '';
+      nav.style.borderBottom = '';
     }
   });
 
-  // Mobile menu toggle
-  menuBtn.addEventListener('click', () => {
+  menuBtn?.addEventListener('click', () => {
     const isHidden = mobileMenu.classList.contains('hidden');
     mobileMenu.classList.toggle('hidden', !isHidden);
     iconOpen.classList.toggle('hidden', !isHidden);
     iconClose.classList.toggle('hidden', isHidden);
   });
 
-  // Close mobile menu on link click
   document.querySelectorAll('.mobile-link').forEach((link) => {
     link.addEventListener('click', () => {
       mobileMenu.classList.add('hidden');
