@@ -1,202 +1,131 @@
 ---
 ---
 
-<section id="contacto" class="py-28 px-4 bg-brand-black">
-  <div class="max-w-7xl mx-auto">
-    <!-- Section header -->
-    <div class="text-center mb-20" data-aos="fade-up">
-      <p class="text-brand-blue text-xs font-semibold tracking-widest uppercase mb-4">
-        Contacto
-      </p>
-      <h2 class="text-3xl md:text-5xl font-bold text-brand-white mb-5">
-        ¿Listo para dar el siguiente paso?
+<section id="contacto" class="py-24 sm:py-36 px-6" style="background:#020202; border-top: 1px solid #1C1C24;">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- Header editorial -->
+    <div class="mb-16 sm:mb-24" data-aos="fade-up">
+      <p class="text-brand-muted text-xs tracking-[0.22em] uppercase mb-5">Contacto</p>
+      <h2
+        class="font-serif text-brand-white"
+        style="font-size: clamp(36px, 4.5vw, 60px); font-weight: 400; line-height: 1.08; letter-spacing: -0.03em; max-width: 580px;"
+      >
+        Cuéntenos su proyecto. Le respondemos en menos de 24 horas.
       </h2>
-      <p class="text-brand-muted max-w-xl mx-auto leading-relaxed">
-        Cuéntenos sobre su proyecto. Le respondemos en menos de 24 horas con una propuesta sin costo.
-      </p>
-      <div class="w-12 h-0.5 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-8"></div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-      <!-- Left: info -->
-      <div data-aos="fade-right">
-        <h3 class="text-2xl font-bold text-brand-white mb-3">
-          Hablemos de su proyecto
-        </h3>
-        <p class="text-brand-muted leading-relaxed mb-10 text-sm">
-          Somos un equipo chileno con sede en Santiago. Atendemos a negocios de todo el país
-          y nos adaptamos a sus tiempos y necesidades. La primera consulta es completamente gratuita.
-        </p>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
 
-        <div class="space-y-5 mb-10">
-          <a
-            href="mailto:reclubcl@gmail.com"
-            class="flex items-center gap-4 group"
-          >
-            <div class="w-11 h-11 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue flex-shrink-0 group-hover:bg-brand-blue/20 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+      <!-- Izquierda: info -->
+      <div data-aos="fade-right">
+        <div class="space-y-8 mb-12">
+          <a href="mailto:reclubcl@gmail.com" class="flex items-start gap-5 group">
+            <div class="w-10 h-10 border border-brand-border rounded-lg flex items-center justify-center text-brand-muted group-hover:border-brand-muted group-hover:text-brand-white transition-all flex-shrink-0 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
               </svg>
             </div>
             <div>
-              <p class="text-brand-muted text-xs uppercase tracking-wider mb-0.5">Correo electrónico</p>
-              <p class="text-brand-white font-medium group-hover:text-brand-blue transition-colors">reclubcl@gmail.com</p>
+              <p class="text-brand-muted text-xs uppercase tracking-wider mb-1">Correo</p>
+              <p class="text-brand-white text-sm font-medium group-hover:text-brand-blue-dark transition-colors">reclubcl@gmail.com</p>
             </div>
           </a>
 
-          <a
-            href="https://wa.me/56938897621"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center gap-4 group"
-          >
-            <div class="w-11 h-11 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue flex-shrink-0 group-hover:bg-brand-blue/20 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+          <a href="https://wa.me/56938897621" target="_blank" rel="noopener noreferrer" class="flex items-start gap-5 group">
+            <div class="w-10 h-10 border border-brand-border rounded-lg flex items-center justify-center text-brand-muted group-hover:border-brand-muted group-hover:text-brand-white transition-all flex-shrink-0 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
               </svg>
             </div>
             <div>
-              <p class="text-brand-muted text-xs uppercase tracking-wider mb-0.5">WhatsApp</p>
-              <p class="text-brand-white font-medium group-hover:text-brand-blue transition-colors">+56 9 3889 7621</p>
+              <p class="text-brand-muted text-xs uppercase tracking-wider mb-1">WhatsApp</p>
+              <p class="text-brand-white text-sm font-medium group-hover:text-brand-blue-dark transition-colors">+56 9 3889 7621</p>
             </div>
           </a>
 
-          <div class="flex items-center gap-4">
-            <div class="w-11 h-11 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue flex-shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <div class="flex items-start gap-5">
+            <div class="w-10 h-10 border border-brand-border rounded-lg flex items-center justify-center text-brand-muted flex-shrink-0 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
               </svg>
             </div>
             <div>
-              <p class="text-brand-muted text-xs uppercase tracking-wider mb-0.5">Ubicación</p>
-              <p class="text-brand-white font-medium">Santiago, Chile</p>
+              <p class="text-brand-muted text-xs uppercase tracking-wider mb-1">Ubicación</p>
+              <p class="text-brand-white text-sm font-medium">Santiago, Chile</p>
             </div>
           </div>
         </div>
 
-        <!-- Horario -->
-        <div class="bg-brand-card border border-brand-border rounded-xl p-5">
-          <p class="text-brand-white text-sm font-semibold mb-3">Horario de atención</p>
-          <div class="space-y-1.5 text-sm text-brand-muted">
+        <div class="border border-brand-border rounded-xl p-6">
+          <p class="text-brand-white text-sm font-medium mb-3">Horario de atención</p>
+          <div class="space-y-2 text-sm">
             <div class="flex justify-between">
-              <span>Lunes — Viernes</span>
+              <span class="text-brand-muted">Lunes — Viernes</span>
               <span class="text-brand-white">9:00 — 19:00</span>
             </div>
             <div class="flex justify-between">
-              <span>Sábado</span>
+              <span class="text-brand-muted">Sábado</span>
               <span class="text-brand-white">10:00 — 14:00</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Right: form -->
+      <!-- Derecha: formulario -->
       <div data-aos="fade-left">
-        <div id="form-container" class="bg-brand-card border border-brand-border rounded-2xl p-8">
-          <h4 class="text-brand-white font-bold text-lg mb-6">Envíenos un mensaje</h4>
+        <div class="border border-brand-border rounded-2xl p-7 sm:p-10" style="background: #070707;">
           <form id="contact-form" class="space-y-5">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label for="nombre" class="block text-brand-muted text-xs font-semibold mb-2 uppercase tracking-wider">
-                  Nombre
-                </label>
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  required
-                  placeholder="Su nombre"
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/40 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-colors text-sm"
-                />
+                <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Nombre</label>
+                <input type="text" name="nombre" required placeholder="Su nombre"
+                  class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm"/>
               </div>
               <div>
-                <label for="empresa" class="block text-brand-muted text-xs font-semibold mb-2 uppercase tracking-wider">
-                  Empresa / Negocio
-                </label>
-                <input
-                  type="text"
-                  id="empresa"
-                  name="empresa"
-                  placeholder="Su empresa (opcional)"
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/40 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-colors text-sm"
-                />
+                <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Empresa</label>
+                <input type="text" name="empresa" placeholder="Su empresa (opcional)"
+                  class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm"/>
               </div>
             </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label for="email" class="block text-brand-muted text-xs font-semibold mb-2 uppercase tracking-wider">
-                  Correo electrónico
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  placeholder="correo@ejemplo.com"
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/40 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-colors text-sm"
-                />
+                <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Correo</label>
+                <input type="email" name="email" required placeholder="correo@ejemplo.com"
+                  class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm"/>
               </div>
               <div>
-                <label for="telefono" class="block text-brand-muted text-xs font-semibold mb-2 uppercase tracking-wider">
-                  Teléfono
-                </label>
-                <input
-                  type="tel"
-                  id="telefono"
-                  name="telefono"
-                  placeholder="+56 9 XXXX XXXX"
-                  class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/40 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-colors text-sm"
-                />
+                <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Teléfono</label>
+                <input type="tel" name="telefono" placeholder="+56 9 XXXX XXXX"
+                  class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm"/>
               </div>
             </div>
-
             <div>
-              <label for="servicio" class="block text-brand-muted text-xs font-semibold mb-2 uppercase tracking-wider">
-                Servicio de interés
-              </label>
-              <select
-                id="servicio"
-                name="servicio"
-                class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-colors text-sm"
-              >
+              <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Servicio de interés</label>
+              <select name="servicio" class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:outline-none focus:border-brand-muted transition-colors text-sm">
                 <option value="" class="bg-brand-dark">Seleccione un servicio</option>
                 <option value="Sitio Web" class="bg-brand-dark">Sitio Web Profesional</option>
+                <option value="Meta Ads" class="bg-brand-dark">Gestión de Meta Ads</option>
                 <option value="Fidelización Digital" class="bg-brand-dark">Fidelización Digital</option>
                 <option value="Producción de Contenido" class="bg-brand-dark">Producción de Contenido</option>
                 <option value="Todos los servicios" class="bg-brand-dark">Paquete completo</option>
-                <option value="Consulta general" class="bg-brand-dark">Consulta general</option>
               </select>
             </div>
-
             <div>
-              <label for="mensaje" class="block text-brand-muted text-xs font-semibold mb-2 uppercase tracking-wider">
-                Cuéntenos sobre su proyecto
-              </label>
-              <textarea
-                id="mensaje"
-                name="mensaje"
-                rows="4"
-                placeholder="Describa brevemente su negocio y qué necesita..."
-                class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/40 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-colors text-sm resize-none"
-              ></textarea>
+              <label class="block text-brand-muted text-xs uppercase tracking-wider mb-2">Mensaje</label>
+              <textarea name="mensaje" rows="4" placeholder="Cuéntenos sobre su proyecto..."
+                class="w-full bg-brand-black border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/30 focus:outline-none focus:border-brand-muted transition-colors text-sm resize-none"></textarea>
             </div>
-
-            <button
-              type="submit"
-              id="submit-btn"
-              class="w-full bg-gradient-to-r from-brand-blue to-brand-purple text-white py-4 rounded-xl font-semibold hover:scale-[1.02] transition-transform duration-200 shadow-lg shadow-brand-blue/20 flex items-center justify-center gap-2"
-            >
+            <button type="submit" id="submit-btn"
+              class="w-full bg-brand-white text-brand-black py-4 rounded-xl font-semibold hover:bg-brand-blue-dark transition-colors text-sm flex items-center justify-center gap-2">
               <span id="btn-text">Enviar por WhatsApp</span>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
               </svg>
             </button>
-
             <p class="text-brand-muted text-xs text-center">
-              O escríbanos directamente a
-              <a href="mailto:reclubcl@gmail.com" class="text-brand-blue hover:underline">reclubcl@gmail.com</a>
+              O escríbanos directamente a <a href="mailto:reclubcl@gmail.com" class="text-brand-white hover:underline">reclubcl@gmail.com</a>
             </p>
           </form>
         </div>
@@ -207,28 +136,24 @@
 
 <script>
   const form = document.getElementById('contact-form') as HTMLFormElement;
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-
-    const nombre = (document.getElementById('nombre') as HTMLInputElement).value.trim();
-    const empresa = (document.getElementById('empresa') as HTMLInputElement).value.trim();
-    const email = (document.getElementById('email') as HTMLInputElement).value.trim();
-    const telefono = (document.getElementById('telefono') as HTMLInputElement).value.trim();
-    const servicio = (document.getElementById('servicio') as HTMLSelectElement).value;
-    const mensaje = (document.getElementById('mensaje') as HTMLTextAreaElement).value.trim();
-
+    const nombre = (form.querySelector('[name="nombre"]') as HTMLInputElement).value.trim();
+    const empresa = (form.querySelector('[name="empresa"]') as HTMLInputElement).value.trim();
+    const email = (form.querySelector('[name="email"]') as HTMLInputElement).value.trim();
+    const telefono = (form.querySelector('[name="telefono"]') as HTMLInputElement).value.trim();
+    const servicio = (form.querySelector('[name="servicio"]') as HTMLSelectElement).value;
+    const mensaje = (form.querySelector('[name="mensaje"]') as HTMLTextAreaElement).value.trim();
     const lines = [
-      `Hola ReClub, me contacto desde su sitio web.`,
-      ``,
+      'Hola ReClub, me contacto desde su sitio web.',
+      '',
       `*Nombre:* ${nombre}`,
       empresa ? `*Empresa:* ${empresa}` : null,
       `*Email:* ${email}`,
       telefono ? `*Teléfono:* ${telefono}` : null,
-      servicio ? `*Servicio de interés:* ${servicio}` : null,
+      servicio ? `*Servicio:* ${servicio}` : null,
       mensaje ? `\n*Mensaje:*\n${mensaje}` : null,
     ].filter(Boolean).join('\n');
-
     window.open(`https://wa.me/56938897621?text=${encodeURIComponent(lines)}`, '_blank');
   });
 </script>

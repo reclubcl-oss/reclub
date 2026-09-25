@@ -1,0 +1,84 @@
+---
+export const prerender = false;
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Bazit — Panel de Gestión de Contenido">
+  <main class="min-h-screen bg-brand-black flex items-center justify-center px-4 py-8">
+    <div class="w-full max-w-sm">
+
+      <!-- Header -->
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-5">
+          <svg class="w-7 h-7 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+        </div>
+        <div class="flex items-center justify-center gap-2 mb-2">
+          <span class="text-xl font-bold text-brand-white">Bazit</span>
+          <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-medium">Contenido</span>
+        </div>
+        <p class="text-brand-muted text-sm">Gestión mensual de contenido</p>
+        <p class="text-brand-muted/50 text-xs mt-1">por <span class="text-brand-blue font-medium">Re<span class="text-brand-blue">Club</span></span></p>
+      </div>
+
+      <!-- Form -->
+      <form id="login-form" class="flex flex-col gap-4">
+        <input
+          type="email" id="login-email"
+          placeholder="Email"
+          required autocomplete="username"
+          class="bg-brand-card border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/60 focus:outline-none focus:border-emerald-500 transition-colors"
+        />
+        <input
+          type="password" id="login-password"
+          placeholder="Contraseña"
+          required autocomplete="current-password"
+          class="bg-brand-card border border-brand-border rounded-xl px-4 py-3 text-brand-white placeholder:text-brand-muted/60 focus:outline-none focus:border-emerald-500 transition-colors"
+        />
+        <p id="login-error" class="text-red-400 text-sm text-center hidden"></p>
+        <button
+          type="submit" id="login-btn"
+          class="bg-emerald-500 text-white font-semibold rounded-xl py-4 hover:bg-emerald-600 active:scale-95 transition-all"
+        >
+          Entrar al panel
+        </button>
+      </form>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { supabase } from '../../lib/supabase-browser';
+
+  const loginForm = document.getElementById('login-form') as HTMLFormElement;
+  const loginError = document.getElementById('login-error')!;
+  const loginBtn = document.getElementById('login-btn') as HTMLButtonElement;
+
+  // If already logged in, redirect
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) window.location.href = '/bazit/panel';
+  });
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loginBtn.textContent = 'Entrando...';
+    loginBtn.disabled = true;
+    loginError.classList.add('hidden');
+
+    const email = (document.getElementById('login-email') as HTMLInputElement).value;
+    const password = (document.getElementById('login-password') as HTMLInputElement).value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error || !data.session) {
+      loginError.textContent = 'Email o contraseña incorrectos';
+      loginError.classList.remove('hidden');
+      loginBtn.textContent = 'Entrar al panel';
+      loginBtn.disabled = false;
+    } else {
+      window.location.href = '/bazit/panel';
+    }
+  });
+</script>

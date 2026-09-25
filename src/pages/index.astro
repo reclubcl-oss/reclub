@@ -1,10 +1,9 @@
 ---
-export const prerender = true;
-
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import Servicios from '../components/Servicios.astro';
+import SobreReclub from '../components/SobreReclub.astro';
 import PorQueReclub from '../components/PorQueReclub.astro';
 import Contacto from '../components/Contacto.astro';
 import Footer from '../components/Footer.astro';
@@ -12,12 +11,14 @@ import WhatsAppButton from '../components/WhatsAppButton.astro';
 ---
 
 <Layout
-  title="ReClub — Agencia Digital · Santiago, Chile"
-  description="Soluciones digitales integrales para negocios chilenos. Diseño web profesional, fidelización digital y producción de contenido. Contáctenos hoy."
+  title="ReClub | Agencia Digital Santiago Chile — Diseño Web, Meta Ads y Marketing"
+  description="Agencia digital en Santiago, Chile. Diseño web profesional, gestión de Meta Ads en Facebook e Instagram, fidelización de clientes y producción de contenido. Más de 60 marcas confían en ReClub. Contáctenos hoy."
+  canonical="https://reclubcl.com/"
 >
   <Nav />
   <main>
     <Hero />
+    <SobreReclub />
     <Servicios />
     <PorQueReclub />
     <Contacto />

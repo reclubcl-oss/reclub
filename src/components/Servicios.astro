@@ -1,127 +1,83 @@
 ---
 const services = [
   {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>`,
-    color: 'text-brand-blue',
-    bgColor: 'bg-brand-blue/10',
-    borderHover: 'hover:border-brand-blue/40',
+    n: '01',
     title: 'Sitios Web Profesionales',
-    description:
-      'Desarrollo web a medida con diseño moderno y sistema de agendamiento integrado. Solución ideal para clínicas, salones, restaurantes y comercios locales que buscan proyectar una imagen sólida.',
-    features: [
-      'Diseño 100% personalizado y responsive',
-      'Sistema de agendamiento en línea',
-      'Optimización SEO para Google',
-    ],
+    description: 'Desarrollo web a medida con diseño moderno y sistema de agendamiento integrado. Solución ideal para clínicas, salones, restaurantes y comercios locales.',
+    features: ['Diseño 100% personalizado y responsive', 'Sistema de agendamiento en línea', 'Optimización SEO para Google'],
   },
   {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" /></svg>`,
-    color: 'text-brand-purple',
-    bgColor: 'bg-brand-purple/10',
-    borderHover: 'hover:border-brand-purple/40',
+    n: '02',
     title: 'Fidelización Digital',
-    description:
-      'Sistema de puntos y recompensas que fortalece la relación con sus clientes. Automatice su programa de lealtad y aumente la frecuencia de visitas sin esfuerzo operativo adicional.',
-    features: [
-      'Programa de puntos y recompensas',
-      'App móvil para sus clientes',
-      'Notificaciones y campañas automáticas',
-    ],
+    description: 'Sistema de puntos y recompensas que fortalece la relación con tus clientes. Automatiza tu programa de lealtad y aumenta la frecuencia de visitas.',
+    features: ['Programa de puntos y recompensas', 'App móvil para tus clientes', 'Notificaciones y campañas automáticas'],
   },
   {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" /></svg>`,
-    color: 'text-emerald-400',
-    bgColor: 'bg-emerald-400/10',
-    borderHover: 'hover:border-emerald-400/40',
+    n: '03',
     title: 'Producción de Contenido',
-    description:
-      'Creación de contenido profesional para posicionar su marca en redes sociales. Fotografía, video y diseño gráfico ejecutado con estándares de calidad que generan confianza y conversión.',
-    features: [
-      'Fotografía y video profesional',
-      'Diseño gráfico para redes sociales',
-      'Gestión y estrategia de contenido',
-    ],
+    description: 'Fotografía, video y diseño gráfico ejecutado con estándares de calidad para posicionar tu marca en redes sociales y generar confianza.',
+    features: ['Fotografía y video profesional', 'Diseño gráfico para redes sociales', 'Gestión y estrategia de contenido'],
+  },
+  {
+    n: '04',
+    title: 'Gestión de Meta Ads',
+    description: 'Campañas en Facebook e Instagram diseñadas para atraer clientes reales. Estrategia, segmentación precisa y optimización continua para maximizar tu retorno.',
+    features: ['Campañas en Facebook e Instagram', 'Segmentación por audiencia y zona', 'Reportes de resultados mensuales'],
   },
 ];
 ---
 
-<section id="servicios" class="py-28 px-4 bg-brand-black">
-  <div class="max-w-7xl mx-auto">
-    <!-- Section header -->
-    <div class="text-center mb-20" data-aos="fade-up">
-      <p class="text-brand-blue text-xs font-semibold tracking-widest uppercase mb-4">
-        Nuestros Servicios
-      </p>
-      <h2 class="text-3xl md:text-5xl font-bold text-brand-white mb-5">
-        Todo lo que su negocio necesita
+<section id="servicios" class="py-24 sm:py-36 px-6" style="background:#020202;">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- Header editorial -->
+    <div class="mb-16 sm:mb-24" data-aos="fade-up">
+      <p class="text-brand-muted text-xs tracking-[0.22em] uppercase mb-5">Nuestros Servicios</p>
+      <h2
+        class="font-serif text-brand-white"
+        style="font-size: clamp(36px, 4.5vw, 60px); font-weight: 400; line-height: 1.08; letter-spacing: -0.03em; max-width: 640px;"
+      >
+        Todo lo que necesita un negocio para crecer en digital.
       </h2>
-      <p class="text-brand-muted max-w-xl mx-auto leading-relaxed">
-        Tres servicios integrados bajo una sola agencia, diseñados para impulsar el crecimiento digital de su empresa.
-      </p>
-      <div class="w-12 h-0.5 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-8"></div>
     </div>
 
-    <!-- Cards grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {
-        services.map((service, i) => (
-          <div
-            class={`bg-brand-card border border-brand-border rounded-2xl p-8 transition-all duration-300 group ${service.borderHover} hover:-translate-y-2 hover:shadow-xl hover:shadow-black/30`}
-            data-aos="fade-up"
-            data-aos-delay={i * 100}
+    <!-- Grid de servicios -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-px bg-brand-border">
+      {services.map((s, i) => (
+        <div
+          class="bg-brand-black p-8 sm:p-10 group hover:bg-brand-dark transition-colors duration-300"
+          data-aos="fade-up"
+          data-aos-delay={i * 60}
+        >
+          <span class="text-brand-muted text-xs font-medium tracking-widest">{s.n}</span>
+          <h3
+            class="font-serif text-brand-white mt-4 mb-5"
+            style="font-size: clamp(22px, 2vw, 28px); font-weight: 400; letter-spacing: -0.02em; line-height: 1.15;"
           >
-            <!-- Icon -->
-            <div class={`w-14 h-14 ${service.bgColor} rounded-xl flex items-center justify-center mb-7 ${service.color}`}>
-              <Fragment set:html={service.icon} />
-            </div>
-
-            <!-- Title -->
-            <h3 class="text-xl font-bold text-brand-white mb-3">
-              {service.title}
-            </h3>
-
-            <!-- Description -->
-            <p class="text-brand-muted leading-relaxed mb-7 text-sm">
-              {service.description}
-            </p>
-
-            <!-- Divider -->
-            <div class="border-t border-brand-border mb-6"></div>
-
-            <!-- Features -->
-            <ul class="space-y-3">
-              {service.features.map((feature) => (
-                <li class="flex items-start gap-3 text-brand-muted text-sm">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    class={`w-4 h-4 ${service.color} flex-shrink-0 mt-0.5`}
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  {feature}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
+            {s.title}
+          </h3>
+          <p class="text-brand-muted text-sm leading-relaxed mb-7">{s.description}</p>
+          <ul class="space-y-2.5">
+            {s.features.map(f => (
+              <li class="flex items-center gap-3 text-xs text-brand-muted">
+                <span class="w-1 h-1 rounded-full bg-brand-muted flex-shrink-0"></span>
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
 
-    <!-- Bottom CTA -->
-    <div class="text-center mt-14" data-aos="fade-up">
+    <!-- CTA inferior -->
+    <div class="mt-14 text-center" data-aos="fade-up">
       <a
         href="#contacto"
-        class="inline-flex items-center gap-2 text-brand-blue hover:text-brand-white text-sm font-medium transition-colors border border-brand-blue/30 hover:border-brand-blue hover:bg-brand-blue/10 px-6 py-3 rounded-xl"
+        class="inline-flex items-center gap-2 text-brand-muted hover:text-brand-white transition-colors text-sm"
       >
         Solicitar información detallada
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-          <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
         </svg>
       </a>
     </div>

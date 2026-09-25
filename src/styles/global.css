@@ -1,65 +1,52 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-black: #0A0A0A;
-  --color-brand-dark: #111111;
-  --color-brand-card: #1A1A1A;
-  --color-brand-blue: #3B82F6;
-  --color-brand-blue-dark: #2563EB;
-  --color-brand-purple: #8B5CF6;
-  --color-brand-white: #F8FAFC;
-  --color-brand-muted: #94A3B8;
-  --color-brand-border: #1E293B;
+  --color-brand-black:      #020202;
+  --color-brand-dark:       #070707;
+  --color-brand-card:       #0D0D0D;
+  --color-brand-blue:       #F5F5F7;
+  --color-brand-blue-dark:  #C8C8CC;
+  --color-brand-purple:     #888899;
+  --color-brand-white:      #F5F5F7;
+  --color-brand-muted:      #5C5C6A;
+  --color-brand-border:     #1C1C24;
+  --color-brand-light:      #FAFAFA;
+  --color-brand-light-2:    #F2F2F5;
+  --color-brand-light-text: #111118;
+  --color-brand-light-muted:#6B6B80;
+  --color-brand-light-border:#E2E2EA;
 
-  --font-family-sans: 'Inter', system-ui, sans-serif;
-
-  --animate-blob: blob 8s infinite ease-in-out;
+  --font-family-sans:   'Inter', system-ui, sans-serif;
+  --font-family-serif:  'Instrument Serif', Georgia, serif;
 
   @keyframes blob {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(20px, -20px) scale(1.05); }
-    66% { transform: translate(-10px, 10px) scale(0.97); }
+    50%       { transform: translate(20px, -20px) scale(1.05); }
   }
 }
 
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 }
 
 body {
+  background-color: #020202;
+  color: #F5F5F7;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
 
-/* Scrollbar desktop */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0a0a0a;
-}
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #020202; }
+::-webkit-scrollbar-thumb { background: #1C1C24; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #2C2C3A; }
 
-/* Touch targets mínimos 44px (Apple HIG) */
-a, button {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  -webkit-user-select: none;
-  user-select: none;
-}
+button, nav a, .btn { min-height: 44px; cursor: pointer; }
+button { -webkit-user-select: none; user-select: none; }
+a { -webkit-tap-highlight-color: transparent; }
 
-/* Inputs: font-size 16px mínimo para evitar zoom en iOS */
 input, select, textarea {
   font-size: 16px !important;
   -webkit-appearance: none;
@@ -67,16 +54,14 @@ input, select, textarea {
   border-radius: 12px;
 }
 
-/* Scroll horizontal con momentum en iOS */
 .scroll-touch {
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
 }
-.scroll-touch > * {
-  scroll-snap-align: start;
-}
+.scroll-touch > * { scroll-snap-align: start; }
 
-/* Animaciones desactivadas si el usuario prefiere */
+.font-serif { font-family: 'Instrument Serif', Georgia, serif; }
+
 @media (prefers-reduced-motion: reduce) {
   [data-aos] {
     transition: none !important;
@@ -84,15 +69,7 @@ input, select, textarea {
     opacity: 1 !important;
     transform: none !important;
   }
-  .animate-blob, .animate-bounce, .animate-pulse {
-    animation: none !important;
-  }
+  .animate-pulse, .animate-bounce { animation: none !important; }
 }
 
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
+.animation-delay-2000 { animation-delay: 2s; }

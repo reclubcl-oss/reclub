@@ -1,0 +1,1406 @@
+---
+export const prerender = false;
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Panel Bazit — Gestión de Contenido">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg:        #070710;
+  --bg2:       #0c0c1c;
+  --bg3:       #101022;
+  --card:      #13132a;
+  --border:    rgba(255,255,255,0.055);
+  --border2:   rgba(255,255,255,0.10);
+  --text:      #e8e8f8;
+  --muted:     rgba(232,232,248,0.42);
+  --dim:       rgba(232,232,248,0.22);
+  --green:     #10b981;
+  --green2:    #059669;
+  --green-glow:rgba(16,185,129,0.4);
+  --font:      'Poppins', system-ui, sans-serif;
+}
+
+/* ─── LIGHT THEME ─── */
+.app[data-theme="light"] {
+  --bg:        #f0f2f9;
+  --bg2:       #ffffff;
+  --bg3:       #f7f8fc;
+  --card:      #ffffff;
+  --border:    rgba(0,0,0,0.07);
+  --border2:   rgba(0,0,0,0.13);
+  --text:      #0f0f1e;
+  --muted:     rgba(15,15,30,0.5);
+  --dim:       rgba(15,15,30,0.32);
+  --green-glow:rgba(16,185,129,0.25);
+}
+.app[data-theme="light"] .cal-dow { background: var(--bg3); }
+.app[data-theme="light"] .day-cell:hover { background: rgba(0,0,0,0.025); }
+.app[data-theme="light"] .day-cell.has-ev { background: rgba(16,185,129,0.04); }
+.app[data-theme="light"] .day-cell.has-ev:hover { background: rgba(16,185,129,0.08); }
+.app[data-theme="light"] .day-cell.sel { background: rgba(16,185,129,0.1) !important; }
+.app[data-theme="light"] .modal-box { background: #ffffff; border-color: rgba(0,0,0,0.1); }
+.app[data-theme="light"] .modal-head { background: #ffffff; }
+.app[data-theme="light"] .finput { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text); }
+.app[data-theme="light"] .finput:focus { background: rgba(16,185,129,0.04); border-color: rgba(16,185,129,0.5); }
+.app[data-theme="light"] .finput::placeholder { color: rgba(0,0,0,0.25); }
+.app[data-theme="light"] select.finput { background: rgba(0,0,0,0.04); }
+.app[data-theme="light"] .mob-nav { background: rgba(255,255,255,0.97); }
+.app[data-theme="light"] .mob-sheet-box { background: var(--bg2); }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── ROOT ─── */
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: 228px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sb-brand { padding: 26px 20px 22px; border-bottom: 1px solid var(--border); }
+.sb-reclub { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--dim); text-decoration: none; }
+.sb-reclub b { color: #3b82f6; font-weight: 700; }
+.sb-client { display: flex; align-items: center; gap: 11px; margin-top: 18px; }
+.sb-avatar {
+  width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--green), var(--green2));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 16px; color: #fff;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+}
+.sb-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
+.sb-sub  { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+.sb-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
+.sb-btn {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 13px; border-radius: 10px;
+  font-size: 13.5px; font-weight: 500; color: var(--muted);
+  background: none; border: none; cursor: pointer; width: 100%;
+  transition: all 0.15s; position: relative; font-family: var(--font);
+  min-height: auto;
+}
+.sb-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.sb-btn.on { color: var(--text); background: rgba(16,185,129,0.1); }
+.sb-btn.on::before {
+  content: ''; position: absolute; left: 0; top: 8px; bottom: 8px;
+  width: 3px; background: var(--green); border-radius: 0 3px 3px 0;
+}
+.sb-badge {
+  margin-left: auto; padding: 1px 7px; border-radius: 20px;
+  font-size: 10px; font-weight: 600;
+  background: rgba(245,158,11,0.15); color: #f59e0b;
+}
+
+.sb-foot { padding: 12px 10px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+.sb-theme {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 13px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  width: 100%; font-family: var(--font); min-height: auto;
+  border: none; background: none; cursor: pointer; transition: all 0.15s;
+}
+.sb-theme:hover { color: var(--text); background: rgba(128,128,128,0.08); }
+.theme-pill {
+  width: 38px; height: 21px; border-radius: 20px;
+  background: rgba(128,128,128,0.2); position: relative;
+  transition: background 0.22s; flex-shrink: 0; pointer-events: none;
+}
+.theme-pill.on { background: var(--green); }
+.theme-pill::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: #fff; transition: transform 0.22s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.theme-pill.on::after { transform: translateX(17px); }
+.sb-logout {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 9px 13px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; color: var(--dim);
+  background: none; border: none; cursor: pointer;
+  transition: all 0.15s; font-family: var(--font); min-height: auto;
+}
+.sb-logout:hover { color: var(--muted); background: rgba(255,255,255,0.04); }
+
+/* ─── MAIN AREA ─── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+/* ─── MOBILE HEADER ─── */
+.mob-header {
+  display: none; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  background: var(--bg2); flex-shrink: 0;
+}
+@media (max-width: 1023px) {
+  .sidebar { display: none; }
+  .mob-header { display: flex; }
+  .day-pane { display: none !important; }
+}
+
+/* ─── VIEWS CONTAINER ─── */
+.views { flex: 1; display: flex; overflow: hidden; }
+
+/* ─── CALENDAR VIEW ─── */
+.cal-view {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  padding: 24px 24px 0;
+}
+.cal-view.hidden { display: none; }
+
+.cal-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; flex-shrink: 0;
+}
+.cal-left { display: flex; align-items: baseline; gap: 10px; }
+.cal-month-name { font-size: 24px; font-weight: 700; letter-spacing: -0.03em; }
+.cal-year-num   { font-size: 24px; font-weight: 300; color: var(--dim); }
+.cal-right { display: flex; align-items: center; gap: 8px; }
+.cal-nav {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid var(--border2); background: none;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); cursor: pointer; transition: all 0.15s; min-height: auto;
+}
+.cal-nav:hover { border-color: var(--green); color: var(--green); background: rgba(16,185,129,0.08); }
+.cal-today {
+  padding: 6px 16px; border-radius: 8px;
+  border: 1px solid var(--border2); background: none;
+  font-size: 12.5px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all 0.15s; font-family: var(--font); min-height: auto;
+}
+.cal-today:hover { border-color: var(--green); color: var(--green); background: rgba(16,185,129,0.08); }
+.cal-stat {
+  font-size: 12px; color: var(--dim);
+  background: rgba(255,255,255,0.04);
+  padding: 5px 12px; border-radius: 20px;
+}
+
+/* Calendar outer box */
+.cal-box {
+  flex: 1; display: flex; flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Day-of-week header */
+.cal-dow {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg2);
+}
+.cal-dow-cell {
+  text-align: center; padding: 13px 0;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* The grid itself — fills remaining height */
+.cal-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+  grid-auto-rows: 1fr;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Individual day cell */
+.day-cell {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 10px 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+  min-height: 0;
+}
+.day-cell:nth-child(7n)         { border-right: none; }
+.day-cell:hover                 { background: rgba(255,255,255,0.025); }
+.day-cell.has-ev                { background: rgba(16,185,129,0.025); }
+.day-cell.has-ev:hover          { background: rgba(16,185,129,0.05); }
+.day-cell.sel                   { background: rgba(16,185,129,0.07) !important; outline: 1.5px inset rgba(16,185,129,0.3); }
+.day-cell.ghost                 { opacity: 0.15; pointer-events: none; }
+
+.day-num {
+  font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55);
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; line-height: 1;
+}
+.day-num.is-today {
+  background: var(--green); color: #fff; font-weight: 700;
+  box-shadow: 0 0 14px var(--green-glow);
+}
+.day-num.is-sel { color: #6ee7b7; font-weight: 600; }
+
+/* Event block inside cell */
+.ev-block {
+  display: flex; align-items: center; gap: 5px;
+  padding: 3px 7px 3px 5px;
+  border-radius: 6px;
+  font-size: 11px; font-weight: 500;
+  white-space: nowrap; overflow: hidden;
+  border-left: 3px solid transparent;
+  flex-shrink: 0;
+  line-height: 1.3;
+}
+.ev-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.ev-time { font-size: 10px; font-weight: 600; opacity: 0.7; flex-shrink: 0; }
+.ev-more { font-size: 10px; color: var(--dim); padding: 2px 5px; }
+
+/* ─── DAY PANEL (always-on right column in calendar view) ─── */
+.day-pane {
+  width: 360px; flex-shrink: 0;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.dp-head {
+  padding: 28px 22px 22px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: linear-gradient(160deg, rgba(16,185,129,0.09) 0%, transparent 60%);
+}
+.dp-dow  { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+.dp-date { font-size: 28px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.dp-year { font-size: 13px; color: var(--dim); margin-top: 4px; }
+.dp-count{ display: inline-flex; align-items: center; gap: 5px; margin-top: 12px; font-size: 12px; color: var(--muted); background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 20px; }
+
+.dp-body  { flex: 1; overflow-y: auto; padding: 16px 16px 8px; }
+.dp-foot  { padding: 14px 16px; border-top: 1px solid var(--border); flex-shrink: 0; }
+
+/* Content cards */
+.ev-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+.ev-card:hover { border-color: var(--border2); }
+.ev-card-top {
+  display: flex; gap: 0;
+}
+.ev-card-bar { width: 4px; flex-shrink: 0; border-radius: 14px 0 0 0; }
+.ev-card-body { flex: 1; padding: 13px 14px 12px; min-width: 0; }
+.ev-platform { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.ev-title { font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.88); line-height: 1.4; margin-bottom: 4px; }
+.ev-time-row { font-size: 12px; color: var(--dim); }
+.ev-caption { font-size: 12px; color: var(--muted); line-height: 1.5; padding: 10px 14px; border-top: 1px solid var(--border); }
+
+details.ev-script > summary {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 14px; font-size: 11.5px; color: var(--dim);
+  cursor: pointer; list-style: none; border-top: 1px solid var(--border);
+  transition: color 0.15s;
+}
+details.ev-script > summary:hover { color: var(--muted); }
+details.ev-script > summary::marker,
+details.ev-script > summary::-webkit-details-marker { display: none; }
+.ev-script-body {
+  padding: 0 14px 14px;
+  font-size: 12px; color: var(--muted); line-height: 1.7;
+  white-space: pre-wrap; font-family: var(--font);
+}
+.ev-notes { padding: 8px 14px; font-size: 11px; color: var(--dim); font-style: italic; border-top: 1px solid var(--border); }
+.ev-actions { display: flex; border-top: 1px solid var(--border); }
+.ev-action {
+  flex: 1; padding: 9px; font-size: 11.5px; font-weight: 500;
+  color: var(--dim); background: none; border: none; cursor: pointer;
+  transition: all 0.15s; font-family: var(--font); min-height: auto;
+}
+.ev-action:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.ev-action.del:hover { color: #f87171; background: rgba(248,113,113,0.06); }
+.ev-action-sep { width: 1px; background: var(--border); }
+
+/* ─── TASKS / IMPROVEMENTS VIEWS ─── */
+.list-view {
+  flex: 1; overflow-y: auto;
+  padding: 32px 32px 56px;
+  display: none;
+}
+.list-view.show { display: block; }
+
+.lv-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.lv-title { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; }
+.lv-sub   { font-size: 13px; color: var(--dim); margin-top: 3px; }
+
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; }
+.ftab {
+  padding: 6px 16px; border-radius: 8px;
+  border: 1px solid var(--border); background: none;
+  font-size: 12.5px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all 0.15s; font-family: var(--font); min-height: auto;
+}
+.ftab:hover { color: var(--text); border-color: var(--border2); }
+.ftab.fa { background: rgba(245,158,11,0.1); color: #f59e0b; border-color: rgba(245,158,11,0.2); }
+.ftab.fp { background: rgba(139,92,246,0.1); color: #a78bfa; border-color: rgba(139,92,246,0.2); }
+.ftab.fg { background: rgba(16,185,129,0.1); color: #34d399; border-color: rgba(16,185,129,0.2); }
+
+/* Task card */
+.task-card {
+  display: flex; align-items: flex-start; gap: 13px;
+  padding: 15px 16px; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: 14px;
+  margin-bottom: 8px; transition: border-color 0.15s;
+}
+.task-card:hover { border-color: var(--border2); }
+.tc-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.15); flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; background: none; transition: all 0.15s; min-height: auto;
+}
+.tc-check.done { background: var(--green); border-color: var(--green); }
+.tc-check:not(.done):hover { border-color: rgba(16,185,129,0.5); }
+.tc-title { font-size: 13.5px; font-weight: 500; line-height: 1.4; }
+.tc-title.done { text-decoration: line-through; color: var(--dim); }
+.tc-desc  { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.tc-meta  { display: flex; align-items: center; gap: 10px; margin-top: 7px; }
+
+/* Improve card */
+.imp-card {
+  padding: 15px 16px; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: 14px;
+  margin-bottom: 8px; transition: border-color 0.15s;
+}
+.imp-card:hover { border-color: var(--border2); }
+
+/* ─── BADGES ─── */
+.badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.b-pend { background: rgba(245,158,11,0.12); color: #f59e0b;  border: 1px solid rgba(245,158,11,0.2); }
+.b-prog { background: rgba(59,130,246,0.12);  color: #60a5fa;  border: 1px solid rgba(59,130,246,0.2); }
+.b-done { background: rgba(16,185,129,0.12);  color: #34d399;  border: 1px solid rgba(16,185,129,0.2); }
+.b-film { background: rgba(14,165,233,0.12);  color: #38bdf8;  border: 1px solid rgba(14,165,233,0.2); }
+.b-edit { background: rgba(139,92,246,0.12);  color: #a78bfa;  border: 1px solid rgba(139,92,246,0.2); }
+.b-pub  { background: rgba(16,185,129,0.12);  color: #34d399;  border: 1px solid rgba(16,185,129,0.2); }
+.b-c { background: rgba(236,72,153,0.1);  color: #f472b6; border: 1px solid rgba(236,72,153,0.15); }
+.b-d { background: rgba(139,92,246,0.1);  color: #a78bfa; border: 1px solid rgba(139,92,246,0.15); }
+.b-e { background: rgba(59,130,246,0.1);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.15); }
+.b-p { background: rgba(245,158,11,0.1);  color: #fbbf24; border: 1px solid rgba(245,158,11,0.15); }
+.b-o { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--border); }
+
+/* ─── BUTTONS ─── */
+.btn-green {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--green); color: #fff;
+  font-size: 13.5px; font-weight: 600; border: none; border-radius: 11px;
+  padding: 11px 18px; cursor: pointer; transition: all 0.15s;
+  font-family: var(--font); width: 100%; min-height: auto;
+}
+.btn-green:hover { background: var(--green2); }
+.btn-green:active { transform: scale(0.98); }
+.btn-add {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--green); color: #fff;
+  font-size: 13px; font-weight: 600; border: none; border-radius: 10px;
+  padding: 9px 18px; cursor: pointer; transition: all 0.15s;
+  font-family: var(--font); min-height: auto;
+}
+.btn-add:hover { background: var(--green2); }
+.btn-cancel {
+  flex: 1; background: rgba(255,255,255,0.06); color: var(--muted);
+  font-size: 14px; font-weight: 500; border: 1px solid var(--border);
+  border-radius: 11px; padding: 12px; cursor: pointer;
+  transition: all 0.15s; font-family: var(--font); min-height: auto;
+}
+.btn-cancel:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.btn-save {
+  flex: 1.5; background: var(--green); color: #fff;
+  font-size: 14px; font-weight: 600; border: none;
+  border-radius: 11px; padding: 12px; cursor: pointer;
+  transition: all 0.15s; font-family: var(--font); min-height: auto;
+}
+.btn-save:hover { background: var(--green2); }
+
+/* ─── MODALS ─── */
+.modal {
+  position: fixed; inset: 0;
+  display: none; align-items: flex-end; justify-content: center;
+  z-index: 60;
+}
+@media (min-width: 1024px) { .modal { align-items: center; padding: 16px; } }
+.modal.open { display: flex; }
+.modal-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(8px); }
+.modal-box {
+  position: relative; background: #141428;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 22px 22px 0 0; width: 100%;
+  max-height: 94vh; overflow-y: auto;
+}
+@media (min-width: 1024px) { .modal-box { border-radius: 18px; max-width: 500px; } }
+.modal-head {
+  position: sticky; top: 0; background: #141428;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 22px; border-bottom: 1px solid var(--border);
+}
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-x {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: rgba(255,255,255,0.07); border: none;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); cursor: pointer; transition: all 0.15s; min-height: auto;
+}
+.modal-x:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+.modal-form { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+.f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.flabel { display: block; font-size: 10.5px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px; }
+.finput {
+  width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  border-radius: 11px; padding: 11px 14px; color: var(--text);
+  font-size: 14px; outline: none; transition: border-color 0.15s;
+  font-family: var(--font); -webkit-appearance: none;
+}
+.finput:focus { border-color: rgba(16,185,129,0.55); background: rgba(16,185,129,0.04); }
+.finput::placeholder { color: rgba(255,255,255,0.2); }
+select.finput { background: rgba(255,255,255,0.05); }
+textarea.finput { resize: none; }
+.frow { display: flex; gap: 10px; margin-top: 4px; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state { text-align: center; padding: 44px 24px; }
+.empty-icon { width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.empty-msg  { font-size: 13.5px; color: var(--muted); }
+.empty-sub  { font-size: 12px; color: var(--dim); margin-top: 4px; }
+
+/* ─── MOBILE BOTTOM NAV ─── */
+.mob-nav {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(12,12,28,0.97); backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border); z-index: 30;
+}
+.mob-tab {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 11px 0 13px; color: var(--dim);
+  background: none; border: none; cursor: pointer;
+  font-size: 10px; font-weight: 500; font-family: var(--font);
+  transition: color 0.15s; min-height: auto;
+}
+.mob-tab.on { color: var(--green); }
+@media (max-width: 1023px) {
+  .mob-nav { display: flex; }
+  .main { padding-bottom: 64px; }
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+
+/* ─── PRIORITY ─── */
+.pri-h { font-size: 11px; font-weight: 600; color: #f87171; }
+.pri-n { font-size: 11px; color: var(--dim); }
+.pri-l { font-size: 11px; color: #34d399; }
+
+/* ─── MOBILE DAY PANEL (bottom sheet) ─── */
+.mob-sheet {
+  position: fixed; inset: 0; z-index: 55; display: none;
+}
+.mob-sheet.open { display: flex; flex-direction: column; justify-content: flex-end; }
+.mob-sheet-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.7); }
+.mob-sheet-box {
+  position: relative; background: var(--bg2);
+  border-radius: 20px 20px 0 0; max-height: 85vh;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+</style>
+
+<div class="app">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <a href="/" class="sb-reclub">Re<b>Club</b></a>
+      <div class="sb-client">
+        <div class="sb-avatar">B</div>
+        <div>
+          <div class="sb-name">Bazit</div>
+          <div class="sb-sub">Contenido digital</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <button class="sb-btn on" data-view="calendar" onclick="setView('calendar')">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+        Calendario
+      </button>
+      <button class="sb-btn" data-view="tasks" onclick="setView('tasks')">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Tareas
+        <span id="tasks-badge" class="sb-badge" style="display:none"></span>
+      </button>
+      <button class="sb-btn" data-view="improvements" onclick="setView('improvements')">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+        Mejoras
+        <span id="impr-badge" class="sb-badge" style="display:none;background:rgba(139,92,246,0.15);color:#a78bfa;"></span>
+      </button>
+    </nav>
+    <div class="sb-foot">
+      <button id="theme-toggle" class="sb-theme">
+        <span id="theme-label" style="display:flex;align-items:center;gap:8px;">
+          <svg id="theme-icon-sun" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="display:none"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+          <svg id="theme-icon-moon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+          <span id="theme-text">Modo claro</span>
+        </span>
+        <div id="theme-pill" class="theme-pill"></div>
+      </button>
+      <button id="logout-btn" class="sb-logout">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="main">
+
+    <!-- Mobile header -->
+    <header class="mob-header">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <div class="sb-avatar" style="width:30px;height:30px;font-size:13px;border-radius:9px;">B</div>
+        <span style="font-size:14px;font-weight:600;">Bazit</span>
+      </div>
+      <span id="mob-view-label" style="font-size:13px;color:var(--dim);font-weight:500;">Calendario</span>
+      <button id="logout-mob" style="color:var(--dim);background:none;border:none;cursor:pointer;min-height:auto;padding:4px;">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+      </button>
+    </header>
+
+    <div class="views">
+
+      <!-- ─── CALENDAR VIEW ─── -->
+      <div id="view-calendar" class="cal-view">
+
+        <div class="cal-topbar">
+          <div class="cal-left">
+            <button id="prev-month" class="cal-nav">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+            </button>
+            <span id="cal-month-name" class="cal-month-name"></span>
+            <span id="cal-year-num" class="cal-year-num"></span>
+            <button id="next-month" class="cal-nav">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </button>
+          </div>
+          <div class="cal-right">
+            <span id="cal-stat" class="cal-stat" style="display:none"></span>
+            <button id="today-btn" class="cal-today">Hoy</button>
+          </div>
+        </div>
+
+        <div class="cal-box">
+          <div class="cal-dow">
+            {['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'].map(d => (
+              <div class="cal-dow-cell">{d}</div>
+            ))}
+          </div>
+          <div id="cal-grid" class="cal-grid"></div>
+        </div>
+
+      </div>
+
+      <!-- ─── TASKS VIEW ─── -->
+      <div id="view-tasks" class="list-view" style="max-width:680px;margin:0 auto;">
+        <div class="lv-header">
+          <div>
+            <div class="lv-title">Tareas</div>
+            <div class="lv-sub">Pendientes y en progreso</div>
+          </div>
+          <button class="btn-add" onclick="openModal('task')">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Nueva tarea
+          </button>
+        </div>
+        <div class="filters" id="task-filters">
+          <button class="ftab fa" data-f="pendiente" onclick="setTaskFilter(this,'pendiente')">Pendientes</button>
+          <button class="ftab" data-f="en_progreso" onclick="setTaskFilter(this,'en_progreso')">En progreso</button>
+          <button class="ftab" data-f="completado" onclick="setTaskFilter(this,'completado')">Completadas</button>
+          <button class="ftab" data-f="all" onclick="setTaskFilter(this,'all')">Todas</button>
+        </div>
+        <div id="tasks-list"></div>
+      </div>
+
+      <!-- ─── IMPROVEMENTS VIEW ─── -->
+      <div id="view-improvements" class="list-view" style="max-width:680px;margin:0 auto;">
+        <div class="lv-header">
+          <div>
+            <div class="lv-title">Mejoras</div>
+            <div class="lv-sub">Optimizaciones y propuestas</div>
+          </div>
+          <button class="btn-add" onclick="openModal('improvement')">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Nueva mejora
+          </button>
+        </div>
+        <div class="filters" id="impr-filters">
+          <button class="ftab fp" data-f="all" onclick="setImprFilter(this,'all')">Todas</button>
+          <button class="ftab" data-f="contenido" onclick="setImprFilter(this,'contenido')">Contenido</button>
+          <button class="ftab" data-f="diseño" onclick="setImprFilter(this,'diseño')">Diseño</button>
+          <button class="ftab" data-f="estrategia" onclick="setImprFilter(this,'estrategia')">Estrategia</button>
+          <button class="ftab" data-f="produccion" onclick="setImprFilter(this,'produccion')">Producción</button>
+        </div>
+        <div id="impr-list"></div>
+      </div>
+
+      <!-- ─── DAY PANEL (always-on right) ─── -->
+      <aside class="day-pane" id="day-pane">
+        <div class="dp-head">
+          <div id="dp-dow" class="dp-dow"></div>
+          <div id="dp-date" class="dp-date"></div>
+          <div id="dp-year" class="dp-year"></div>
+          <div id="dp-count" class="dp-count" style="display:none"></div>
+        </div>
+        <div id="dp-body" class="dp-body"></div>
+        <div class="dp-foot">
+          <button class="btn-green" onclick="openModal('content')">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Agregar contenido
+          </button>
+        </div>
+      </aside>
+
+    </div><!-- /views -->
+
+    <!-- Mobile bottom nav -->
+    <nav class="mob-nav">
+      <button class="mob-tab on" data-view="calendar" onclick="setView('calendar')">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+        Calendario
+      </button>
+      <button class="mob-tab" data-view="tasks" onclick="setView('tasks')">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Tareas
+      </button>
+      <button class="mob-tab" data-view="improvements" onclick="setView('improvements')">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+        Mejoras
+      </button>
+    </nav>
+  </div><!-- /main -->
+
+  <!-- ─── MOBILE BOTTOM SHEET ─── -->
+  <div id="mob-sheet" class="mob-sheet">
+    <div class="mob-sheet-bg" onclick="closeMobSheet()"></div>
+    <div class="mob-sheet-box">
+      <div class="dp-head" style="padding:20px 18px 16px;">
+        <div id="ms-dow" class="dp-dow"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div id="ms-date" class="dp-date" style="font-size:22px;"></div>
+          <button onclick="closeMobSheet()" style="color:var(--dim);background:rgba(255,255,255,0.07);border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;min-height:auto;">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="ms-body" class="dp-body"></div>
+      <div class="dp-foot">
+        <button class="btn-green" onclick="openModal('content');closeMobSheet();">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Agregar contenido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CONTENT MODAL ═══ -->
+  <div id="modal-content" class="modal">
+    <div class="modal-bg" onclick="closeModal('content')"></div>
+    <div class="modal-box" style="max-width:520px;">
+      <div class="modal-head">
+        <span id="mc-title" class="modal-title">Nuevo contenido</span>
+        <button class="modal-x" onclick="closeModal('content')"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <form id="form-content" class="modal-form">
+        <input type="hidden" id="fc-id" />
+        <div class="f2">
+          <div><label class="flabel">Fecha</label><input type="date" id="fc-date" class="finput" required /></div>
+          <div><label class="flabel">Hora de publicación</label><input type="time" id="fc-time" class="finput" /></div>
+        </div>
+        <div>
+          <label class="flabel">Plataforma</label>
+          <select id="fc-platform" class="finput">
+            <option value="instagram_reel">Instagram Reel</option>
+            <option value="instagram_post">Instagram Post</option>
+            <option value="instagram_story">Instagram Story</option>
+            <option value="tiktok">TikTok</option>
+            <option value="facebook">Facebook</option>
+            <option value="youtube">YouTube</option>
+          </select>
+        </div>
+        <div><label class="flabel">Título / Descripción</label><input type="text" id="fc-title" class="finput" placeholder="De qué trata este contenido..." required /></div>
+        <div><label class="flabel">Guión / Script</label><textarea id="fc-script" rows="5" class="finput" placeholder="Escribe el guión completo aquí..."></textarea></div>
+        <div><label class="flabel">Caption</label><textarea id="fc-caption" rows="2" class="finput" placeholder="Texto para la publicación..."></textarea></div>
+        <div>
+          <label class="flabel">Estado</label>
+          <select id="fc-status" class="finput">
+            <option value="pendiente">Pendiente</option>
+            <option value="filmado">Filmado</option>
+            <option value="editado">Editado</option>
+            <option value="publicado">Publicado</option>
+          </select>
+        </div>
+        <div><label class="flabel">Notas</label><textarea id="fc-notes" rows="2" class="finput" placeholder="Referencias, ideas..."></textarea></div>
+        <p id="fc-err" style="color:#f87171;font-size:12px;display:none;"></p>
+        <div class="frow">
+          <button type="button" class="btn-cancel" onclick="closeModal('content')">Cancelar</button>
+          <button type="submit" id="fc-save" class="btn-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ TASK MODAL ═══ -->
+  <div id="modal-task" class="modal">
+    <div class="modal-bg" onclick="closeModal('task')"></div>
+    <div class="modal-box" style="max-width:440px;">
+      <div class="modal-head">
+        <span id="mt-title" class="modal-title">Nueva tarea</span>
+        <button class="modal-x" onclick="closeModal('task')"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <form id="form-task" class="modal-form">
+        <input type="hidden" id="ft-id" />
+        <div><label class="flabel">Tarea</label><input type="text" id="ft-title" class="finput" placeholder="¿Qué hay que hacer?" required /></div>
+        <div><label class="flabel">Detalle</label><textarea id="ft-desc" rows="3" class="finput" placeholder="Información adicional..."></textarea></div>
+        <div class="f2">
+          <div><label class="flabel">Prioridad</label><select id="ft-pri" class="finput"><option value="alta">Alta</option><option value="normal" selected>Normal</option><option value="baja">Baja</option></select></div>
+          <div><label class="flabel">Estado</label><select id="ft-status" class="finput"><option value="pendiente">Pendiente</option><option value="en_progreso">En progreso</option><option value="completado">Completado</option></select></div>
+        </div>
+        <div><label class="flabel">Fecha límite</label><input type="date" id="ft-due" class="finput" /></div>
+        <div class="frow">
+          <button type="button" class="btn-cancel" onclick="closeModal('task')">Cancelar</button>
+          <button type="submit" id="ft-save" class="btn-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ IMPROVEMENT MODAL ═══ -->
+  <div id="modal-improvement" class="modal">
+    <div class="modal-bg" onclick="closeModal('improvement')"></div>
+    <div class="modal-box" style="max-width:440px;">
+      <div class="modal-head">
+        <span id="mi-title" class="modal-title">Nueva mejora</span>
+        <button class="modal-x" onclick="closeModal('improvement')"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <form id="form-improvement" class="modal-form">
+        <input type="hidden" id="fi-id" />
+        <div><label class="flabel">Mejora</label><input type="text" id="fi-title" class="finput" placeholder="¿Qué se puede mejorar?" required /></div>
+        <div><label class="flabel">Descripción</label><textarea id="fi-desc" rows="3" class="finput" placeholder="Problema y solución propuesta..."></textarea></div>
+        <div class="f2">
+          <div><label class="flabel">Categoría</label><select id="fi-cat" class="finput"><option value="contenido">Contenido</option><option value="diseño">Diseño</option><option value="estrategia">Estrategia</option><option value="produccion">Producción</option><option value="otro">Otro</option></select></div>
+          <div><label class="flabel">Estado</label><select id="fi-status" class="finput"><option value="pendiente">Pendiente</option><option value="en_proceso">En proceso</option><option value="implementado">Implementado</option></select></div>
+        </div>
+        <div class="frow">
+          <button type="button" class="btn-cancel" onclick="closeModal('improvement')">Cancelar</button>
+          <button type="submit" id="fi-save" class="btn-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+</Layout>
+
+<script>
+import { supabase } from '../../lib/supabase-browser';
+
+// ── AUTH ──
+const { data: { session } } = await supabase.auth.getSession();
+if (!session) { window.location.href = '/bazit'; }
+
+// ── STATE ──
+const S = {
+  year: new Date().getFullYear(),
+  month: new Date().getMonth(),
+  view: 'calendar',
+  selDate: todayStr(),
+  monthData: [] as any[],
+  tasks: [] as any[],
+  taskFilter: 'pendiente',
+  imprs: [] as any[],
+  imprFilter: 'all',
+  editContent: null as any,
+  editTask: null as any,
+  editImpr: null as any,
+};
+
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAYS3  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+// Platform config
+const PC: Record<string,{ short:string; color:string; bg:string; bar:string }> = {
+  instagram_reel:  { short:'IG Reel',  color:'#f472b6', bg:'rgba(244,114,182,0.14)', bar:'#ec4899' },
+  instagram_post:  { short:'IG Post',  color:'#f9a8d4', bg:'rgba(249,168,212,0.12)', bar:'#ec4899' },
+  instagram_story: { short:'IG Story', color:'#c084fc', bg:'rgba(192,132,252,0.13)', bar:'#a855f7' },
+  tiktok:          { short:'TikTok',   color:'#f87171', bg:'rgba(248,113,113,0.14)', bar:'#ef4444' },
+  facebook:        { short:'Facebook', color:'#60a5fa', bg:'rgba(96,165,250,0.13)',  bar:'#3b82f6' },
+  youtube:         { short:'YouTube',  color:'#fca5a5', bg:'rgba(252,165,165,0.13)', bar:'#dc2626' },
+};
+
+const SC: Record<string,{ label:string; cls:string }> = {
+  pendiente: { label:'Pendiente', cls:'b-pend' },
+  filmado:   { label:'Filmado',   cls:'b-film' },
+  editado:   { label:'Editado',   cls:'b-edit' },
+  publicado: { label:'Publicado', cls:'b-pub'  },
+};
+
+const TC: Record<string,{ label:string; cls:string }> = {
+  pendiente:   { label:'Pendiente',   cls:'b-pend' },
+  en_progreso: { label:'En progreso', cls:'b-prog' },
+  completado:  { label:'Completado',  cls:'b-done' },
+};
+
+const IC: Record<string,{ label:string; cls:string }> = {
+  pendiente:    { label:'Pendiente',    cls:'b-pend' },
+  en_proceso:   { label:'En proceso',   cls:'b-prog' },
+  implementado: { label:'Implementado', cls:'b-done' },
+};
+
+const CAT: Record<string,{ label:string; cls:string }> = {
+  contenido:  { label:'Contenido',  cls:'b-c' },
+  diseño:     { label:'Diseño',     cls:'b-d' },
+  estrategia: { label:'Estrategia', cls:'b-e' },
+  produccion: { label:'Producción', cls:'b-p' },
+  otro:       { label:'Otro',       cls:'b-o' },
+};
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function pad(n:number) { return String(n).padStart(2,'0'); }
+function esc(s:string) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(s:string) {
+  const [y,m,d] = s.split('-').map(Number);
+  return `${d} ${MONTHS[m-1].slice(0,3)} ${y}`;
+}
+
+// ── VIEW SWITCHING ──
+(window as any).setView = function(view: string) {
+  S.view = view;
+  // Calendar view
+  const cv = document.getElementById('view-calendar')!;
+  cv.classList.toggle('cal-view', view==='calendar');
+  cv.classList.toggle('hidden', view!=='calendar');
+  if (view==='calendar') cv.style.display='';
+
+  document.getElementById('view-tasks')!.classList.toggle('show', view==='tasks');
+  document.getElementById('view-improvements')!.classList.toggle('show', view==='improvements');
+
+  // Day panel only visible in calendar
+  const dp = document.getElementById('day-pane')!;
+  dp.style.display = view==='calendar' ? '' : 'none';
+
+  // Nav buttons
+  document.querySelectorAll('.sb-btn, .mob-tab').forEach(b => {
+    b.classList.toggle('on', (b as HTMLElement).dataset.view === view);
+  });
+
+  const labels: Record<string,string> = { calendar:'Calendario', tasks:'Tareas', improvements:'Mejoras' };
+  const lbl = document.getElementById('mob-view-label');
+  if (lbl) lbl.textContent = labels[view]||'';
+
+  if (view==='tasks') loadTasks();
+  if (view==='improvements') loadImprs();
+};
+
+// ── CALENDAR ──
+async function loadMonth() {
+  const start = `${S.year}-${pad(S.month+1)}-01`;
+  const last = new Date(S.year, S.month+1, 0).getDate();
+  const end = `${S.year}-${pad(S.month+1)}-${pad(last)}`;
+  const { data } = await supabase.from('bazit_content')
+    .select('id,date,platform,title,publish_time,status')
+    .gte('date',start).lte('date',end)
+    .order('publish_time',{ascending:true});
+  S.monthData = data||[];
+  renderCal();
+  await renderDayPane(S.selDate);
+}
+
+function renderCal() {
+  const mn = document.getElementById('cal-month-name')!;
+  const yn = document.getElementById('cal-year-num')!;
+  mn.textContent = MONTHS[S.month];
+  yn.textContent = String(S.year);
+
+  const grid = document.getElementById('cal-grid')!;
+  const today = todayStr();
+  const startDow = (new Date(S.year, S.month, 1).getDay()+6)%7;
+  const lastDay  = new Date(S.year, S.month+1, 0).getDate();
+
+  // Group by date
+  const byDate: Record<string,any[]> = {};
+  S.monthData.forEach(i => { if(!byDate[i.date]) byDate[i.date]=[]; byDate[i.date].push(i); });
+
+  let html = '';
+
+  // Ghost cells before start
+  for (let i=0; i<startDow; i++) html += `<div class="day-cell ghost"></div>`;
+
+  for (let d=1; d<=lastDay; d++) {
+    const ds = `${S.year}-${pad(S.month+1)}-${pad(d)}`;
+    const items = byDate[ds]||[];
+    const isToday = ds===today;
+    const isSel   = ds===S.selDate;
+
+    const numCls = isToday ? 'day-num is-today' : isSel ? 'day-num is-sel' : 'day-num';
+    const cellCls = ['day-cell', items.length?'has-ev':'', isSel?'sel':''].filter(Boolean).join(' ');
+
+    // Event blocks (max 3)
+    const evHtml = items.slice(0,3).map(item => {
+      const p = PC[item.platform] || { short:item.platform, color:'rgba(255,255,255,0.5)', bg:'rgba(255,255,255,0.08)', bar:'#666' };
+      const time = item.publish_time ? item.publish_time.slice(0,5) : '';
+      return `<div class="ev-block" style="background:${p.bg};border-left-color:${p.bar};">
+        <span class="ev-time" style="color:${p.color};">${time}</span>
+        <span class="ev-text" style="color:${p.color};">${esc(p.short)}</span>
+      </div>`;
+    }).join('');
+    const more = items.length>3 ? `<div class="ev-more">+${items.length-3} más</div>` : '';
+
+    html += `<div class="${cellCls}" onclick="selectDay('${ds}')">
+      <div class="${numCls}">${d}</div>
+      ${evHtml}${more}
+    </div>`;
+  }
+
+  // Fill remainder
+  const total = startDow + lastDay;
+  const rem = total%7===0 ? 0 : 7-(total%7);
+  for (let i=0; i<rem; i++) html += `<div class="day-cell ghost"></div>`;
+
+  grid.innerHTML = html;
+
+  // Stat
+  const stat = document.getElementById('cal-stat')!;
+  const n = S.monthData.length;
+  if (n>0) { stat.textContent = `${n} publicación${n!==1?'es':''}`; stat.style.display=''; }
+  else stat.style.display='none';
+}
+
+// ── SELECT DAY ──
+(window as any).selectDay = function(ds: string) {
+  S.selDate = ds;
+  renderCal();
+  // Mobile: open sheet
+  if (window.innerWidth < 1024) {
+    openMobSheet(ds);
+  } else {
+    renderDayPane(ds);
+  }
+};
+
+// ── DAY PANE (desktop) ──
+async function renderDayPane(ds: string) {
+  const [y,m,d] = ds.split('-').map(Number);
+  const dow = DAYS3[new Date(y,m-1,d).getDay()];
+
+  const dpDow  = document.getElementById('dp-dow')!;
+  const dpDate = document.getElementById('dp-date')!;
+  const dpYear = document.getElementById('dp-year')!;
+  const dpCount= document.getElementById('dp-count')!;
+  const dpBody = document.getElementById('dp-body')!;
+
+  dpDow.textContent  = dow;
+  dpDate.textContent = `${d} de ${MONTHS[m-1]}`;
+  dpYear.textContent = String(y);
+  dpBody.innerHTML   = '<div class="empty-state"><div class="empty-msg">Cargando...</div></div>';
+  dpCount.style.display = 'none';
+
+  const { data: items } = await supabase.from('bazit_content').select('*').eq('date',ds).order('publish_time',{ascending:true});
+
+  if (!items || !items.length) {
+    dpBody.innerHTML = `<div class="empty-state">
+      <div class="empty-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="rgba(255,255,255,0.3)"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></div>
+      <div class="empty-msg">Sin publicaciones</div>
+      <div class="empty-sub">Agrega el primer contenido del día</div>
+    </div>`;
+    return;
+  }
+
+  dpCount.innerHTML = `<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg> ${items.length} publicación${items.length!==1?'es':''}`;
+  dpCount.style.display = 'inline-flex';
+
+  dpBody.innerHTML = buildCards(items);
+}
+
+function buildCards(items: any[]) {
+  return items.map(item => {
+    const p = PC[item.platform]||{ short:item.platform, color:'rgba(255,255,255,0.5)', bg:'rgba(255,255,255,0.06)', bar:'#555' };
+    const s = SC[item.status]||SC.pendiente;
+    const time = item.publish_time ? item.publish_time.slice(0,5) : null;
+    const itemJson = JSON.stringify(item).replace(/"/g,'&quot;');
+
+    return `<div class="ev-card">
+      <div class="ev-card-top">
+        <div class="ev-card-bar" style="background:${p.bar};border-radius:14px 0 0 ${item.caption||item.script||item.notes?'0':'14px'};"></div>
+        <div class="ev-card-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+            <span class="ev-platform" style="color:${p.color}">${esc(p.short)}</span>
+            <span class="badge ${s.cls}">${s.label}</span>
+          </div>
+          <div class="ev-title">${esc(item.title)}</div>
+          ${time ? `<div class="ev-time-row">${time} hrs</div>` : ''}
+        </div>
+      </div>
+      ${item.caption ? `<div class="ev-caption">${esc(item.caption)}</div>` : ''}
+      ${item.script ? `
+        <details class="ev-script">
+          <summary>
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+            Ver guión completo
+          </summary>
+          <pre class="ev-script-body">${esc(item.script)}</pre>
+        </details>
+      ` : ''}
+      ${item.notes ? `<div class="ev-notes">${esc(item.notes)}</div>` : ''}
+      <div class="ev-actions">
+        <button class="ev-action" onclick="editContent(${itemJson})">Editar</button>
+        <div class="ev-action-sep"></div>
+        <button class="ev-action del" onclick="delContent('${item.id}','${item.date}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── MOBILE SHEET ──
+(window as any).openMobSheet = async function(ds: string) {
+  const sheet = document.getElementById('mob-sheet')!;
+  const msDow  = document.getElementById('ms-dow')!;
+  const msDate = document.getElementById('ms-date')!;
+  const msBody = document.getElementById('ms-body')!;
+  const [y,m,d] = ds.split('-').map(Number);
+  const dow = DAYS3[new Date(y,m-1,d).getDay()];
+  msDow.textContent  = dow;
+  msDate.textContent = `${d} de ${MONTHS[m-1]}`;
+  msBody.innerHTML   = '<div class="empty-state"><div class="empty-msg">Cargando...</div></div>';
+  sheet.classList.add('open');
+  const { data: items } = await supabase.from('bazit_content').select('*').eq('date',ds).order('publish_time',{ascending:true});
+  msBody.innerHTML = items?.length ? buildCards(items) : `<div class="empty-state"><div class="empty-msg">Sin publicaciones para este día</div></div>`;
+};
+
+(window as any).closeMobSheet = function() {
+  document.getElementById('mob-sheet')!.classList.remove('open');
+};
+
+// ── CONTENT CRUD ──
+(window as any).editContent = function(item: any) {
+  S.editContent = item;
+  openModal('content', item);
+};
+(window as any).delContent = async function(id: string, ds: string) {
+  if (!confirm('¿Eliminar este contenido?')) return;
+  await supabase.from('bazit_content').delete().eq('id',id);
+  await loadMonth();
+};
+
+(window as any).openModal = function(type: string, data?: any) {
+  if (type==='content') {
+    document.getElementById('mc-title')!.textContent = data ? 'Editar contenido' : 'Nuevo contenido';
+    (document.getElementById('fc-id') as HTMLInputElement).value = data?.id||'';
+    (document.getElementById('fc-date') as HTMLInputElement).value = data?.date || S.selDate || '';
+    (document.getElementById('fc-time') as HTMLInputElement).value = data?.publish_time?.slice(0,5)||'';
+    (document.getElementById('fc-platform') as HTMLSelectElement).value = data?.platform||'instagram_reel';
+    (document.getElementById('fc-title') as HTMLInputElement).value = data?.title||'';
+    (document.getElementById('fc-script') as HTMLTextAreaElement).value = data?.script||'';
+    (document.getElementById('fc-caption') as HTMLTextAreaElement).value = data?.caption||'';
+    (document.getElementById('fc-status') as HTMLSelectElement).value = data?.status||'pendiente';
+    (document.getElementById('fc-notes') as HTMLTextAreaElement).value = data?.notes||'';
+  }
+  if (type==='task') {
+    document.getElementById('mt-title')!.textContent = data ? 'Editar tarea' : 'Nueva tarea';
+    (document.getElementById('ft-id') as HTMLInputElement).value = data?.id||'';
+    (document.getElementById('ft-title') as HTMLInputElement).value = data?.title||'';
+    (document.getElementById('ft-desc') as HTMLTextAreaElement).value = data?.description||'';
+    (document.getElementById('ft-pri') as HTMLSelectElement).value = data?.priority||'normal';
+    (document.getElementById('ft-status') as HTMLSelectElement).value = data?.status||'pendiente';
+    (document.getElementById('ft-due') as HTMLInputElement).value = data?.due_date||'';
+  }
+  if (type==='improvement') {
+    document.getElementById('mi-title')!.textContent = data ? 'Editar mejora' : 'Nueva mejora';
+    (document.getElementById('fi-id') as HTMLInputElement).value = data?.id||'';
+    (document.getElementById('fi-title') as HTMLInputElement).value = data?.title||'';
+    (document.getElementById('fi-desc') as HTMLTextAreaElement).value = data?.description||'';
+    (document.getElementById('fi-cat') as HTMLSelectElement).value = data?.category||'contenido';
+    (document.getElementById('fi-status') as HTMLSelectElement).value = data?.status||'pendiente';
+  }
+  document.getElementById(`modal-${type}`)!.classList.add('open');
+};
+
+(window as any).closeModal = function(type: string) {
+  document.getElementById(`modal-${type}`)!.classList.remove('open');
+};
+
+document.getElementById('form-content')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('fc-save') as HTMLButtonElement;
+  const errEl = document.getElementById('fc-err')!;
+  btn.textContent = 'Guardando...'; btn.disabled = true;
+  errEl.style.display = 'none';
+
+  const id = (document.getElementById('fc-id') as HTMLInputElement).value;
+  const payload = {
+    date:         (document.getElementById('fc-date') as HTMLInputElement).value,
+    publish_time: (document.getElementById('fc-time') as HTMLInputElement).value || null,
+    platform:     (document.getElementById('fc-platform') as HTMLSelectElement).value,
+    title:        (document.getElementById('fc-title') as HTMLInputElement).value,
+    script:       (document.getElementById('fc-script') as HTMLTextAreaElement).value || null,
+    caption:      (document.getElementById('fc-caption') as HTMLTextAreaElement).value || null,
+    status:       (document.getElementById('fc-status') as HTMLSelectElement).value,
+    notes:        (document.getElementById('fc-notes') as HTMLTextAreaElement).value || null,
+  };
+
+  const { error } = id
+    ? await supabase.from('bazit_content').update(payload).eq('id', id)
+    : await supabase.from('bazit_content').insert(payload);
+
+  if (error) {
+    errEl.textContent = `Error al guardar: ${error.message}`;
+    errEl.style.display = '';
+    btn.textContent = 'Guardar'; btn.disabled = false;
+    return;
+  }
+
+  // Actualizar fecha seleccionada al día guardado
+  S.selDate = payload.date;
+  (window as any).closeModal('content');
+
+  // Re-fetch data para el mes actual y re-renderizar
+  const start = `${S.year}-${pad(S.month+1)}-01`;
+  const lastDay2 = new Date(S.year, S.month+1, 0).getDate();
+  const end = `${S.year}-${pad(S.month+1)}-${pad(lastDay2)}`;
+  const { data: fresh } = await supabase
+    .from('bazit_content')
+    .select('id,date,platform,title,publish_time,status')
+    .gte('date', start).lte('date', end)
+    .order('publish_time', { ascending: true });
+  S.monthData = fresh || [];
+  renderCal();
+  await renderDayPane(S.selDate);
+
+  btn.textContent = 'Guardar'; btn.disabled = false;
+});
+
+// ── TASKS ──
+async function loadTasks() {
+  const list = document.getElementById('tasks-list')!;
+  list.innerHTML='<div class="empty-state"><div class="empty-msg">Cargando...</div></div>';
+  let q = supabase.from('bazit_tasks').select('*').order('created_at',{ascending:false});
+  if (S.taskFilter!=='all') q = q.eq('status',S.taskFilter);
+  const { data } = await q; S.tasks = data||[];
+  const { count } = await supabase.from('bazit_tasks').select('*',{count:'exact',head:true}).in('status',['pendiente','en_progreso']);
+  const b = document.getElementById('tasks-badge')!;
+  b.textContent = String(count||0); b.style.display = count ? '' : 'none';
+
+  if (!S.tasks.length) { list.innerHTML='<div class="empty-state"><div class="empty-msg">Sin tareas aquí</div></div>'; return; }
+  const priCls: Record<string,string> = {alta:'pri-h',normal:'pri-n',baja:'pri-l'};
+  const priLbl: Record<string,string> = {alta:'↑ Alta',normal:'→ Normal',baja:'↓ Baja'};
+
+  list.innerHTML = S.tasks.map(t => {
+    const s = TC[t.status]||TC.pendiente;
+    const done = t.status==='completado';
+    const due = t.due_date ? `<span style="font-size:11px;color:rgba(255,255,255,0.28);">📅 ${fmtDate(t.due_date)}</span>` : '';
+    return `<div class="task-card">
+      <button class="tc-check${done?' done':''}" onclick="toggleTask('${t.id}','${t.status}')">
+        ${done?'<svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="white"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>':''}
+      </button>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <p class="tc-title${done?' done':''}">${esc(t.title)}</p>
+          <span class="badge ${s.cls}">${s.label}</span>
+        </div>
+        ${t.description ? `<p class="tc-desc">${esc(t.description)}</p>` : ''}
+        <div class="tc-meta">
+          <span class="${priCls[t.priority]||'pri-n'}">${priLbl[t.priority]||'Normal'}</span>
+          ${due}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <button onclick="openModal('task',${JSON.stringify(t).replace(/"/g,'&quot;')})" style="color:rgba(255,255,255,0.25);background:none;border:none;cursor:pointer;padding:4px;min-height:auto;border-radius:6px;transition:all 0.15s;" onmouseover="this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.25)'">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+        </button>
+        <button onclick="delTask('${t.id}')" style="color:rgba(248,113,113,0.3);background:none;border:none;cursor:pointer;padding:4px;min-height:auto;border-radius:6px;transition:all 0.15s;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='rgba(248,113,113,0.3)'">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+(window as any).toggleTask = async function(id: string, cur: string) {
+  const next = cur==='completado'?'pendiente':cur==='pendiente'?'en_progreso':'completado';
+  await supabase.from('bazit_tasks').update({status:next}).eq('id',id);
+  loadTasks();
+};
+(window as any).delTask = async function(id: string) {
+  if (!confirm('¿Eliminar tarea?')) return;
+  await supabase.from('bazit_tasks').delete().eq('id',id);
+  loadTasks();
+};
+
+document.getElementById('form-task')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('ft-save') as HTMLButtonElement;
+  btn.textContent='Guardando...'; btn.disabled=true;
+  const id = (document.getElementById('ft-id') as HTMLInputElement).value;
+  const payload = {
+    title: (document.getElementById('ft-title') as HTMLInputElement).value,
+    description: (document.getElementById('ft-desc') as HTMLTextAreaElement).value||null,
+    priority: (document.getElementById('ft-pri') as HTMLSelectElement).value,
+    status: (document.getElementById('ft-status') as HTMLSelectElement).value,
+    due_date: (document.getElementById('ft-due') as HTMLInputElement).value||null,
+  };
+  if (id) await supabase.from('bazit_tasks').update(payload).eq('id',id);
+  else    await supabase.from('bazit_tasks').insert(payload);
+  (window as any).closeModal('task');
+  loadTasks();
+  btn.textContent='Guardar'; btn.disabled=false;
+});
+
+(window as any).setTaskFilter = function(btn: HTMLElement, f: string) {
+  S.taskFilter = f;
+  document.querySelectorAll('#task-filters .ftab').forEach(b => { b.className='ftab'; });
+  btn.className = 'ftab fa'; loadTasks();
+};
+
+// ── IMPROVEMENTS ──
+async function loadImprs() {
+  const list = document.getElementById('impr-list')!;
+  list.innerHTML='<div class="empty-state"><div class="empty-msg">Cargando...</div></div>';
+  let q = supabase.from('bazit_improvements').select('*').order('created_at',{ascending:false});
+  if (S.imprFilter!=='all') q = q.eq('category',S.imprFilter);
+  const { data } = await q; S.imprs = data||[];
+  const { count } = await supabase.from('bazit_improvements').select('*',{count:'exact',head:true}).in('status',['pendiente','en_proceso']);
+  const b = document.getElementById('impr-badge')!;
+  b.textContent=String(count||0); b.style.display=count?'':'none';
+
+  if (!S.imprs.length) { list.innerHTML='<div class="empty-state"><div class="empty-msg">Sin mejoras en esta categoría</div></div>'; return; }
+
+  list.innerHTML = S.imprs.map(imp => {
+    const s = IC[imp.status]||IC.pendiente;
+    const c = CAT[imp.category]||CAT.otro;
+    const done = imp.status==='implementado';
+    return `<div class="imp-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;">
+        <p style="font-size:13.5px;font-weight:500;color:${done?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.88)'};${done?'text-decoration:line-through':''};line-height:1.4;">${esc(imp.title)}</p>
+        <span class="badge ${s.cls}">${s.label}</span>
+      </div>
+      ${imp.description?`<p style="font-size:12px;color:rgba(255,255,255,0.4);line-height:1.5;margin-bottom:10px;">${esc(imp.description)}</p>`:''}
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+        <span class="badge ${c.cls}">${c.label}</span>
+        <div style="display:flex;gap:5px;">
+          <button onclick="openModal('improvement',${JSON.stringify(imp).replace(/"/g,'&quot;')})" style="font-size:11.5px;color:rgba(255,255,255,0.3);background:none;border:1px solid rgba(255,255,255,0.08);border-radius:7px;padding:4px 11px;cursor:pointer;min-height:auto;transition:all 0.15s;font-family:var(--font);" onmouseover="this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.18)'" onmouseout="this.style.color='rgba(255,255,255,0.3)';this.style.borderColor='rgba(255,255,255,0.08)'">Editar</button>
+          <button onclick="delImpr('${imp.id}')" style="font-size:11.5px;color:rgba(248,113,113,0.35);background:none;border:1px solid rgba(248,113,113,0.12);border-radius:7px;padding:4px 11px;cursor:pointer;min-height:auto;transition:all 0.15s;font-family:var(--font);" onmouseover="this.style.color='#f87171';this.style.borderColor='rgba(248,113,113,0.3)'" onmouseout="this.style.color='rgba(248,113,113,0.35)';this.style.borderColor='rgba(248,113,113,0.12)'">Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+(window as any).delImpr = async function(id: string) {
+  if (!confirm('¿Eliminar mejora?')) return;
+  await supabase.from('bazit_improvements').delete().eq('id',id);
+  loadImprs();
+};
+
+document.getElementById('form-improvement')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('fi-save') as HTMLButtonElement;
+  btn.textContent='Guardando...'; btn.disabled=true;
+  const id = (document.getElementById('fi-id') as HTMLInputElement).value;
+  const payload = {
+    title: (document.getElementById('fi-title') as HTMLInputElement).value,
+    description: (document.getElementById('fi-desc') as HTMLTextAreaElement).value||null,
+    category: (document.getElementById('fi-cat') as HTMLSelectElement).value,
+    status: (document.getElementById('fi-status') as HTMLSelectElement).value,
+  };
+  if (id) await supabase.from('bazit_improvements').update(payload).eq('id',id);
+  else    await supabase.from('bazit_improvements').insert(payload);
+  (window as any).closeModal('improvement');
+  loadImprs();
+  btn.textContent='Guardar'; btn.disabled=false;
+});
+
+(window as any).setImprFilter = function(btn: HTMLElement, f: string) {
+  S.imprFilter = f;
+  document.querySelectorAll('#impr-filters .ftab').forEach(b => { b.className='ftab'; });
+  btn.className = 'ftab fp'; loadImprs();
+};
+
+// ── LOGOUT ──
+const logout = async () => { await supabase.auth.signOut(); window.location.href='/bazit'; };
+document.getElementById('logout-btn')?.addEventListener('click', logout);
+document.getElementById('logout-mob')?.addEventListener('click', logout);
+
+// ── MONTH NAV ──
+document.getElementById('prev-month')?.addEventListener('click', () => {
+  if (S.month===0) { S.month=11; S.year--; } else S.month--;
+  loadMonth();
+});
+document.getElementById('next-month')?.addEventListener('click', () => {
+  if (S.month===11) { S.month=0; S.year++; } else S.month++;
+  loadMonth();
+});
+document.getElementById('today-btn')?.addEventListener('click', () => {
+  S.year=new Date().getFullYear(); S.month=new Date().getMonth();
+  S.selDate=todayStr();
+  loadMonth();
+});
+
+// ── THEME ──
+const appEl     = document.querySelector('.app') as HTMLElement;
+const themePill = document.getElementById('theme-pill')!;
+const themeText = document.getElementById('theme-text')!;
+const iconSun   = document.getElementById('theme-icon-sun')!;
+const iconMoon  = document.getElementById('theme-icon-moon')!;
+
+function applyTheme(light: boolean) {
+  appEl.dataset.theme = light ? 'light' : 'dark';
+  themePill.classList.toggle('on', light);
+  themeText.textContent = light ? 'Modo oscuro' : 'Modo claro';
+  (iconSun  as HTMLElement).style.display = light ? '' : 'none';
+  (iconMoon as HTMLElement).style.display = light ? 'none' : '';
+  localStorage.setItem('bazit-theme', light ? 'light' : 'dark');
+}
+
+const savedTheme = localStorage.getItem('bazit-theme');
+applyTheme(savedTheme === 'light');
+
+document.getElementById('theme-toggle')?.addEventListener('click', () => {
+  applyTheme(appEl.dataset.theme !== 'light');
+});
+
+// ── INIT ──
+const calView = document.getElementById('view-calendar')!;
+calView.style.display = '';
+document.getElementById('day-pane')!.style.display = '';
+
+loadMonth();
+</script>

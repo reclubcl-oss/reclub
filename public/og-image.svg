@@ -1,0 +1,64 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A0A0A"/>
+      <stop offset="100%" style="stop-color:#0F1729"/>
+    </linearGradient>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2563EB"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB;stop-opacity:0.15"/>
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0.05"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Grid pattern -->
+  <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#1E293B" stroke-width="0.5"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.4"/>
+  <!-- Glow -->
+  <ellipse cx="600" cy="200" rx="500" ry="300" fill="url(#glow)"/>
+  <!-- Left accent bar -->
+  <rect x="80" y="80" width="4" height="470" rx="2" fill="url(#grad)"/>
+  <!-- Logo text -->
+  <text x="112" y="155" font-family="system-ui,-apple-system,sans-serif" font-weight="800" font-size="72" fill="white">Re</text>
+  <text x="208" y="155" font-family="system-ui,-apple-system,sans-serif" font-weight="800" font-size="72" fill="url(#grad)">Club</text>
+  <!-- Tagline -->
+  <text x="112" y="215" font-family="system-ui,-apple-system,sans-serif" font-weight="400" font-size="22" fill="#94A3B8" letter-spacing="2">AGENCIA DIGITAL · SANTIAGO, CHILE</text>
+  <!-- Divider -->
+  <rect x="112" y="250" width="80" height="3" rx="2" fill="url(#grad)"/>
+  <!-- Headline -->
+  <text x="112" y="330" font-family="system-ui,-apple-system,sans-serif" font-weight="700" font-size="46" fill="white">Diseño Web · Meta Ads</text>
+  <text x="112" y="390" font-family="system-ui,-apple-system,sans-serif" font-weight="700" font-size="46" fill="white">Fidelización · Contenido</text>
+  <!-- Description -->
+  <text x="112" y="450" font-family="system-ui,-apple-system,sans-serif" font-weight="400" font-size="22" fill="#64748B">Soluciones digitales integrales para negocios chilenos</text>
+  <!-- Stats -->
+  <text x="112" y="540" font-family="system-ui,-apple-system,sans-serif" font-weight="800" font-size="36" fill="white">60+</text>
+  <text x="112" y="570" font-family="system-ui,-apple-system,sans-serif" font-weight="400" font-size="16" fill="#64748B">Marcas</text>
+  <text x="240" y="540" font-family="system-ui,-apple-system,sans-serif" font-weight="800" font-size="36" fill="white">5+</text>
+  <text x="240" y="570" font-family="system-ui,-apple-system,sans-serif" font-weight="400" font-size="16" fill="#64748B">Años</text>
+  <text x="340" y="540" font-family="system-ui,-apple-system,sans-serif" font-weight="800" font-size="36" fill="white">4</text>
+  <text x="340" y="570" font-family="system-ui,-apple-system,sans-serif" font-weight="400" font-size="16" fill="#64748B">Servicios</text>
+  <!-- URL -->
+  <text x="1120" y="570" font-family="system-ui,-apple-system,sans-serif" font-weight="600" font-size="18" fill="#2563EB" text-anchor="end">reclubcl.com</text>
+  <!-- Right card decoration -->
+  <rect x="900" y="120" width="220" height="130" rx="16" fill="#1A1A1A" stroke="#1E293B" stroke-width="1"/>
+  <rect x="920" y="140" width="40" height="40" rx="10" fill="#2563EB" opacity="0.15"/>
+  <rect x="928" y="152" width="24" height="16" rx="3" fill="#3B82F6" opacity="0.6"/>
+  <text x="970" y="168" font-family="system-ui,-apple-system,sans-serif" font-weight="700" font-size="16" fill="white">Diseño Web</text>
+  <text x="970" y="188" font-family="system-ui,-apple-system,sans-serif" font-weight="400" font-size="13" fill="#64748B">Profesional y rápido</text>
+  <rect x="900" y="270" width="220" height="130" rx="16" fill="#1A1A1A" stroke="#1E293B" stroke-width="1"/>
+  <rect x="920" y="290" width="40" height="40" rx="10" fill="#7C3AED" opacity="0.15"/>
+  <rect x="928" y="302" width="24" height="16" rx="3" fill="#8B5CF6" opacity="0.6"/>
+  <text x="970" y="318" font-family="system-ui,-apple-system,sans-serif" font-weight="700" font-size="16" fill="white">Meta Ads</text>
+  <text x="970" y="338" font-family="system-ui,-apple-system,sans-serif" font-weight="400" font-size="13" fill="#64748B">Facebook e Instagram</text>
+  <rect x="900" y="420" width="220" height="130" rx="16" fill="#1A1A1A" stroke="#1E293B" stroke-width="1"/>
+  <rect x="920" y="440" width="40" height="40" rx="10" fill="#059669" opacity="0.15"/>
+  <rect x="928" y="452" width="24" height="16" rx="3" fill="#34D399" opacity="0.6"/>
+  <text x="970" y="468" font-family="system-ui,-apple-system,sans-serif" font-weight="700" font-size="16" fill="white">Contenido</text>
+  <text x="970" y="488" font-family="system-ui,-apple-system,sans-serif" font-weight="400" font-size="13" fill="#64748B">Foto, video y diseño</text>
+</svg>

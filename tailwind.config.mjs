@@ -5,29 +5,20 @@ export default {
     extend: {
       colors: {
         brand: {
-          black:  '#0A0A0A',
-          dark:   '#111111',
-          card:   '#1A1A1A',
-          blue:   '#3B82F6',
-          'blue-dark': '#2563EB',
-          purple: '#8B5CF6',
-          white:  '#F8FAFC',
-          muted:  '#94A3B8',
-          border: '#1E293B',
+          black:       '#020202',
+          dark:        '#070707',
+          card:        '#0D0D0D',
+          blue:        '#F5F5F7',
+          'blue-dark': '#C8C8CC',
+          purple:      '#888899',
+          white:       '#F5F5F7',
+          muted:       '#5C5C6A',
+          border:      '#1C1C24',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-      },
-      keyframes: {
-        blob: {
-          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
-          '33%': { transform: 'translate(20px, -20px) scale(1.05)' },
-          '66%': { transform: 'translate(-10px, 10px) scale(0.97)' },
-        },
-      },
-      animation: {
-        blob: 'blob 8s infinite ease-in-out',
+        sans:  ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['Instrument Serif', 'Georgia', 'serif'],
       },
     },
   },

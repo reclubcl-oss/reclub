@@ -1,40 +1,129 @@
 ---
 import '../styles/global.css';
+import sql from '../lib/db';
 
 export interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
 }
 
 const {
-  title = 'ReClub — Agencia Digital Chilena',
-  description = 'Digitaliza tu negocio con ReClub. Webs profesionales, fidelización digital y contenido para redes sociales. Todo en un solo lugar.',
+  title = 'ReClub | Agencia Digital Santiago Chile — Diseño Web y Marketing',
+  description = 'Agencia digital en Santiago, Chile. Diseño web profesional, gestión de Meta Ads, fidelización digital y producción de contenido. +60 marcas confían en ReClub.',
+  canonical,
 } = Astro.props;
+
+const canonicalUrl = canonical ?? `https://reclubcl.com${Astro.url.pathname}`;
+const ogImage = 'https://reclubcl.com/og-image.svg';
+
+let siteTheme = 'light';
+try {
+  const rows = await sql`SELECT value FROM site_config WHERE key = 'theme' LIMIT 1`;
+  if (rows[0]) siteTheme = (rows[0] as any).value;
+} catch {}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: 'ReClub',
+  description: 'Agencia digital en Santiago, Chile. Diseño web, Meta Ads, fidelización y contenido.',
+  url: 'https://reclubcl.com',
+  telephone: '+56938897621',
+  email: 'reclubcl@gmail.com',
+  logo: 'https://reclubcl.com/favicon.svg',
+  image: ogImage,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Santiago',
+    addressRegion: 'Región Metropolitana',
+    addressCountry: 'CL',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: '-33.4569',
+    longitude: '-70.6483',
+  },
+  areaServed: {
+    '@type': 'Country',
+    name: 'Chile',
+  },
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Servicios Digitales',
+    itemListElement: [
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Diseño Web Profesional' } },
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Gestión de Meta Ads' } },
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Fidelización Digital' } },
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Producción de Contenido' } },
+    ],
+  },
+  sameAs: ['https://www.instagram.com/reclubcl'],
+  priceRange: '$$',
+  openingHours: 'Mo-Fr 09:00-18:00',
+};
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme={siteTheme}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#0A0A0A" />
+    <meta name="theme-color" content="#060C0F" />
+
+    <!-- SEO primario -->
+    <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="ReClub" />
+    <meta name="geo.region" content="CL-RM" />
+    <meta name="geo.placename" content="Santiago, Chile" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <title>{title}</title>
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_CL" />
+    <meta property="og:site_name" content="ReClub" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
   <body class="bg-brand-black text-brand-white font-sans antialiased">
-    <slot />
+    <!-- Gradiente atmosférico fijo — luz suave desde arriba, casi imperceptible -->
+    <div
+      class="fixed inset-0 pointer-events-none"
+      style="z-index:0; background: radial-gradient(ellipse 80% 40% at 50% -8%, rgba(0,180,200,0.07) 0%, transparent 60%);"
+      aria-hidden="true"
+    ></div>
+    <div class="relative" style="z-index:1;">
+      <slot />
+    </div>
   </body>
 </html>
 

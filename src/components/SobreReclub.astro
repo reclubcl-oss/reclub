@@ -1,0 +1,68 @@
+---
+import sql from '../lib/db';
+
+let aboutPhotoUrl = '';
+let aboutName = 'Benjamín Tapia';
+
+try {
+  const rows = await sql`SELECT key, value FROM site_config WHERE key IN ('about_photo_url','about_name')`;
+  for (const row of rows as any[]) {
+    if (row.key === 'about_photo_url') aboutPhotoUrl = row.value;
+    if (row.key === 'about_name') aboutName = row.value;
+  }
+} catch {}
+---
+
+<section class="py-24 sm:py-36 px-6" style="background:#FAFAFA; border-top: 1px solid #E2E2EA;">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+      <!-- Foto -->
+      <div data-aos="fade-right">
+        {aboutPhotoUrl ? (
+          <div class="relative">
+            <img
+              src={aboutPhotoUrl}
+              alt={aboutName}
+              class="w-full max-w-md rounded-2xl object-cover"
+              style="aspect-ratio: 4/5;"
+            />
+          </div>
+        ) : (
+          <div
+            class="w-full max-w-md rounded-2xl flex items-center justify-center"
+            style="aspect-ratio: 4/5; background:#F2F2F5; border: 1px solid #E2E2EA;"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-16 h-16 opacity-20" style="color:#111118;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </div>
+        )}
+      </div>
+
+      <!-- Texto -->
+      <div data-aos="fade-left" data-aos-delay="80">
+        <p class="text-xs tracking-[0.22em] uppercase mb-6" style="color:#6B6B80;">Sobre ReClub</p>
+        <h2
+          class="font-serif mb-8"
+          style="font-size: clamp(32px, 3.8vw, 52px); font-weight: 400; line-height: 1.1; letter-spacing: -0.03em; color:#111118;"
+        >
+          Por qué construimos ReClub.
+        </h2>
+        <div class="space-y-5 text-sm leading-relaxed mb-10 max-w-md" style="color:#6B6B80;">
+          <p>
+            Vimos cómo negocios con productos excelentes perdían clientes por no tener presencia digital coherente. El problema no era el producto — era la visibilidad.
+          </p>
+          <p>
+            ReClub nació para cambiar eso. Combinamos diseño web, publicidad pagada y fidelización en un solo equipo que trabaja directamente con usted, sin intermediarios.
+          </p>
+        </div>
+        <p class="font-serif" style="font-size: 22px; font-weight: 400; font-style: italic; letter-spacing: -0.01em; color:#111118;">
+          {aboutName}
+        </p>
+        <p class="text-xs tracking-wider uppercase mt-1" style="color:#6B6B80;">Fundador, ReClub</p>
+      </div>
+
+    </div>
+  </div>
+</section>

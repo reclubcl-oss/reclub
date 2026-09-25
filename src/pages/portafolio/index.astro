@@ -5,8 +5,6 @@ import Footer from '../../components/Footer.astro';
 import WhatsAppButton from '../../components/WhatsAppButton.astro';
 import sql from '../../lib/db';
 
-Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
-
 let videos: any[] = [];
 let brands: any[] = [];
 
@@ -18,11 +16,22 @@ try {
 } catch (_) {}
 
 const totalBrands = brands.length;
+
+function getInstaShortcode(url: string): string | null {
+  const m = url?.match(/(?:reel|p)\/([A-Za-z0-9_-]+)/);
+  return m ? m[1] : null;
+}
+
+function getEmbedUrl(url: string): string | null {
+  const code = getInstaShortcode(url);
+  return code ? `https://www.instagram.com/p/${code}/embed/` : null;
+}
 ---
 
 <Layout
-  title="Portafolio — ReClub Agencia Digital"
-  description="Videos y marcas atendidas por ReClub. Más de 60 empresas han confiado en nosotros."
+  title="Portafolio | ReClub — Trabajos de Diseño Web y Contenido en Chile"
+  description="Portafolio de ReClub: más de 60 marcas chilenas confían en nosotros. Videos de producción, reels de Instagram y logos de clientes reales en Santiago, Chile."
+  canonical="https://reclubcl.com/portafolio"
 >
   <Nav />
   <main>
@@ -60,16 +69,12 @@ const totalBrands = brands.length;
           </a>
         </div>
 
-        <div class="mt-20 grid grid-cols-3 gap-8 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="400">
+        <div class="mt-20 grid grid-cols-2 gap-8 max-w-xs mx-auto" data-aos="fade-up" data-aos-delay="400">
           <div class="text-center">
-            <p class="text-3xl font-bold text-brand-white">{videos.length > 0 ? `${videos.length}+` : '—'}</p>
-            <p class="text-brand-muted text-xs mt-1 tracking-wide uppercase">Videos</p>
-          </div>
-          <div class="text-center border-x border-brand-border">
             <p class="text-3xl font-bold text-brand-white">{totalBrands > 60 ? `${totalBrands}+` : '60+'}</p>
             <p class="text-brand-muted text-xs mt-1 tracking-wide uppercase">Marcas</p>
           </div>
-          <div class="text-center">
+          <div class="text-center border-l border-brand-border">
             <p class="text-3xl font-bold text-brand-white">5+</p>
             <p class="text-brand-muted text-xs mt-1 tracking-wide uppercase">Años</p>
           </div>
@@ -83,135 +88,142 @@ const totalBrands = brands.length;
       </div>
     </section>
 
-    <!-- VIDEOS -->
-    <section id="videos" class="py-28 px-4 bg-brand-black">
+    <!-- VIDEOS INSTAGRAM -->
+    <section id="videos" class="py-16 sm:py-28 px-4 bg-brand-black">
       <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-20" data-aos="fade-up">
+        <div class="text-center mb-10 sm:mb-20" data-aos="fade-up">
           <p class="text-brand-blue text-xs font-semibold tracking-widest uppercase mb-4">Producción</p>
-          <h2 class="text-3xl md:text-5xl font-bold text-brand-white mb-5">Nuestros Videos</h2>
-          <p class="text-brand-muted max-w-xl mx-auto">Cada proyecto cuenta una historia. Aquí están las nuestras.</p>
-          <div class="w-12 h-0.5 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-8"></div>
+          <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold text-brand-white mb-4 sm:mb-5">Nuestros Videos</h2>
+          <p class="text-brand-muted text-sm sm:text-base max-w-xl mx-auto">Cada proyecto cuenta una historia. Aquí están las nuestras.</p>
+          <div class="w-12 h-0.5 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-6 sm:mt-8"></div>
         </div>
 
         {videos.length === 0 ? (
           <div class="text-center py-32 text-brand-muted">
-            <svg class="w-14 h-14 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.369A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            <svg class="w-14 h-14 mx-auto mb-4 opacity-20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
             </svg>
             <p class="text-lg font-medium">Videos próximamente</p>
+            <p class="text-sm mt-2 opacity-60">Agrega videos desde el panel admin</p>
           </div>
         ) : (
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {videos.map((v, i) => (
-              <article
-                class="group relative bg-brand-card border border-brand-border rounded-2xl overflow-hidden cursor-pointer hover:border-brand-blue/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_40px_rgba(59,130,246,0.12)]"
-                data-aos="fade-up"
-                data-aos-delay={Math.min(i * 80, 400)}
-                data-video-url={v.video_url}
-                data-video-title={v.title}
-                data-video-desc={v.description}
-              >
-                <div class="aspect-video bg-brand-dark relative overflow-hidden">
-                  {v.thumbnail_url ? (
-                    <img src={v.thumbnail_url} alt={v.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+            {videos.map((v, i) => {
+              const embedUrl = getEmbedUrl(v.video_url);
+              const shortcode = getInstaShortcode(v.video_url);
+              return (
+                <article
+                  class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden hover:border-brand-blue/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_40px_rgba(59,130,246,0.10)]"
+                  data-aos="fade-up"
+                  data-aos-delay={Math.min(i * 80, 400)}
+                >
+                  {embedUrl ? (
+                    <div class="instagram-embed-wrapper" style="padding-bottom: 120%;">
+                      <iframe
+                        src={embedUrl}
+                        class="instagram-embed-frame"
+                        frameborder="0"
+                        scrolling="no"
+                        allowtransparency
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                        loading="lazy"
+                      ></iframe>
+                    </div>
                   ) : (
-                    <div class="w-full h-full flex items-center justify-center">
-                      <svg class="w-12 h-12 text-brand-muted/20" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-                      </svg>
+                    <div class="aspect-video bg-brand-dark flex items-center justify-center">
+                      <p class="text-brand-muted text-xs">Link inválido</p>
                     </div>
                   )}
-                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                      <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
+                  <div class="p-4 border-t border-brand-border flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                      <h3 class="font-semibold text-brand-white text-sm truncate">{v.title}</h3>
+                      {v.category && v.category !== 'general' && (
+                        <span class="text-xs text-brand-blue">{v.category}</span>
+                      )}
                     </div>
-                  </div>
-                </div>
-                <div class="p-5">
-                  <div class="flex items-start justify-between gap-2">
-                    <h3 class="font-bold text-brand-white text-sm leading-tight">{v.title}</h3>
-                    {v.category && v.category !== 'general' && (
-                      <span class="text-xs text-brand-blue bg-brand-blue/10 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">{v.category}</span>
+                    {shortcode && (
+                      <a
+                        href={`https://www.instagram.com/reel/${shortcode}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="shrink-0 text-brand-muted hover:text-[#E1306C] transition-colors"
+                        title="Ver en Instagram"
+                      >
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                        </svg>
+                      </a>
                     )}
                   </div>
-                  {v.description && (
-                    <p class="text-brand-muted text-xs mt-2 leading-relaxed line-clamp-2">{v.description}</p>
-                  )}
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </div>
     </section>
 
     <!-- BRANDS -->
-    <section id="marcas" class="py-28 px-4 bg-brand-dark">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-20" data-aos="fade-up">
+    <section id="marcas" class="py-16 sm:py-28 bg-brand-dark overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-10 sm:mb-16" data-aos="fade-up">
           <p class="text-brand-blue text-xs font-semibold tracking-widest uppercase mb-4">Clientes</p>
-          <h2 class="text-3xl md:text-5xl font-bold text-brand-white mb-5">
+          <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold text-brand-white mb-4 sm:mb-5">
             {totalBrands > 60 ? `${totalBrands}+` : '60+'} marcas han confiado en ReClub
           </h2>
-          <p class="text-brand-muted max-w-xl mx-auto">Empresas y emprendimientos que eligieron ReClub para crecer digitalmente.</p>
-          <div class="w-12 h-0.5 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-8"></div>
+          <p class="text-brand-muted text-sm sm:text-base max-w-xl mx-auto">Empresas y emprendimientos que eligieron ReClub para crecer digitalmente.</p>
+          <div class="w-12 h-0.5 bg-gradient-to-r from-brand-blue to-brand-purple rounded mx-auto mt-6 sm:mt-8"></div>
         </div>
+      </div>
 
-        {brands.length === 0 ? (
-          <p class="text-center text-brand-muted py-16">Marcas próximamente</p>
-        ) : (
-          <>
-            <div id="brands-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-              {brands.slice(0, 48).map((b, i) => (
-                <div
-                  class="bg-brand-card border border-brand-border rounded-xl p-4 flex items-center justify-center aspect-square hover:border-brand-blue/30 transition-all duration-300 hover:-translate-y-0.5"
-                  data-aos="fade-up"
-                  data-aos-delay={Math.min(i * 20, 300)}
-                >
+      {brands.length === 0 ? (
+        <p class="text-center text-brand-muted py-16">Marcas próximamente</p>
+      ) : (
+        <div class="relative">
+          <!-- fade edges -->
+          <div class="absolute left-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-r from-brand-dark to-transparent pointer-events-none"></div>
+          <div class="absolute right-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-l from-brand-dark to-transparent pointer-events-none"></div>
+
+          <!-- Row 1 — left to right -->
+          <div class="marquee-track mb-4" data-speed="35">
+            <div class="marquee-inner flex gap-4">
+              {[...brands, ...brands].map((b, i) => (
+                <div class="marquee-item flex-shrink-0 w-28 h-20 bg-brand-card border border-brand-border rounded-xl p-3 flex items-center justify-center">
                   {b.logo_url ? (
-                    <img src={b.logo_url} alt={b.name} class="w-full h-full object-contain" loading="lazy" title={b.name} />
+                    <img src={b.logo_url} alt={b.name} class="max-w-full max-h-full object-contain" loading="lazy" title={b.name} />
                   ) : (
                     <span class="text-brand-muted text-xs text-center font-medium leading-tight">{b.name}</span>
                   )}
                 </div>
               ))}
             </div>
+          </div>
 
-            {brands.length > 48 && (
-              <div id="brands-extra" class="hidden mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-                {brands.slice(48).map((b) => (
-                  <div class="bg-brand-card border border-brand-border rounded-xl p-4 flex items-center justify-center aspect-square hover:border-brand-blue/30 transition-all duration-300">
-                    {b.logo_url ? (
-                      <img src={b.logo_url} alt={b.name} class="w-full h-full object-contain" loading="lazy" title={b.name} />
-                    ) : (
-                      <span class="text-brand-muted text-xs text-center font-medium leading-tight">{b.name}</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {brands.length > 48 && (
-              <div class="text-center mt-10">
-                <button id="show-more-brands" class="border border-brand-border text-brand-muted hover:text-brand-white hover:border-brand-blue/40 px-8 py-3 rounded-xl text-sm font-medium transition-all">
-                  Ver todas las marcas ({brands.length})
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+          <!-- Row 2 — right to left (reverse) -->
+          <div class="marquee-track" data-speed="28" data-reverse="true">
+            <div class="marquee-inner flex gap-4">
+              {[...brands, ...brands].reverse().map((b, i) => (
+                <div class="marquee-item flex-shrink-0 w-28 h-20 bg-brand-card border border-brand-border rounded-xl p-3 flex items-center justify-center">
+                  {b.logo_url ? (
+                    <img src={b.logo_url} alt={b.name} class="max-w-full max-h-full object-contain" loading="lazy" title={b.name} />
+                  ) : (
+                    <span class="text-brand-muted text-xs text-center font-medium leading-tight">{b.name}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
 
     <!-- CTA -->
-    <section class="py-28 px-4 bg-brand-black">
+    <section class="py-16 sm:py-28 px-4 bg-brand-black">
       <div class="max-w-3xl mx-auto text-center" data-aos="fade-up">
-        <h2 class="text-3xl md:text-4xl font-bold text-brand-white mb-5">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-white mb-4 sm:mb-5">
           ¿Su marca podría estar aquí?
         </h2>
-        <p class="text-brand-muted mb-10 leading-relaxed">
+        <p class="text-brand-muted text-sm sm:text-base mb-8 sm:mb-10 leading-relaxed">
           Contáctenos y le explicamos cómo podemos ayudarle a crecer digitalmente.
         </p>
         <a
@@ -233,60 +245,61 @@ const totalBrands = brands.length;
   <WhatsAppButton />
 </Layout>
 
-<!-- Video modal -->
-<div id="video-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
-  <div class="relative w-full max-w-4xl">
-    <button id="close-modal" class="absolute -top-12 right-0 text-white/60 hover:text-white transition-colors">
-      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
-    <video id="modal-video" controls class="w-full rounded-2xl shadow-2xl max-h-[80vh]" preload="metadata"></video>
-    <div class="mt-4 text-center">
-      <h3 id="modal-title" class="text-brand-white font-bold text-lg"></h3>
-      <p id="modal-desc" class="text-brand-muted text-sm mt-1"></p>
-    </div>
-  </div>
-</div>
+<style>
+  /* Marquee */
+  .marquee-track { overflow: hidden; }
+  .marquee-inner { display: flex; gap: 1rem; width: max-content; will-change: transform; }
+  .marquee-item { flex-shrink: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-inner { animation: none !important; }
+  }
+
+  /* Instagram embed */
+  .instagram-embed-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  .instagram-embed-frame {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>
 
 <script>
-  // Video modal
-  const modal = document.getElementById('video-modal')!;
-  const modalVideo = document.getElementById('modal-video') as HTMLVideoElement;
-  const modalTitle = document.getElementById('modal-title')!;
-  const modalDesc = document.getElementById('modal-desc')!;
+  // Marquee animation
+  document.querySelectorAll<HTMLElement>('.marquee-track').forEach(track => {
+    const inner = track.querySelector<HTMLElement>('.marquee-inner')!;
+    const speed = Number(track.dataset.speed ?? 40); // px/s
+    const reverse = track.dataset.reverse === 'true';
 
-  document.querySelectorAll('[data-video-url]').forEach(card => {
-    card.addEventListener('click', () => {
-      const url = (card as HTMLElement).dataset.videoUrl!;
-      const title = (card as HTMLElement).dataset.videoTitle ?? '';
-      const desc = (card as HTMLElement).dataset.videoDesc ?? '';
-      modalVideo.src = url;
-      modalTitle.textContent = title;
-      modalDesc.textContent = desc;
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      modalVideo.play();
-    });
+    // The inner contains 2 copies of the list — scroll by half = one full loop
+    let pos = reverse ? -inner.scrollWidth / 2 : 0;
+    let raf: number;
+    let paused = false;
+
+    const items = inner.querySelectorAll('.marquee-item');
+    const halfWidth = inner.scrollWidth / 2;
+
+    function tick(last: number, ts: number) {
+      const dt = Math.min(ts - last, 50); // cap delta to avoid jump after tab switch
+      if (!paused) {
+        pos += reverse ? (speed * dt) / 1000 : -(speed * dt) / 1000;
+        // loop
+        if (!reverse && pos <= -halfWidth) pos += halfWidth;
+        if (reverse && pos >= 0) pos -= halfWidth;
+        inner.style.transform = `translateX(${pos}px)`;
+      }
+      raf = requestAnimationFrame((ts2) => tick(ts, ts2));
+    }
+
+    raf = requestAnimationFrame((ts) => tick(ts, ts));
+
+    // Pause on hover
+    track.addEventListener('mouseenter', () => { paused = true; });
+    track.addEventListener('mouseleave', () => { paused = false; });
   });
-
-  document.getElementById('close-modal')!.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-
-  function closeModal() {
-    modalVideo.pause();
-    modalVideo.src = '';
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-  }
-
-  // Show more brands
-  const showMore = document.getElementById('show-more-brands');
-  if (showMore) {
-    showMore.addEventListener('click', () => {
-      document.getElementById('brands-extra')?.classList.remove('hidden');
-      showMore.remove();
-    });
-  }
 </script>

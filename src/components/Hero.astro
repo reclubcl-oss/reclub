@@ -1,123 +1,168 @@
 ---
+import sql from '../lib/db';
+
+let aboutPhotoUrl = '';
+let aboutName = 'Benjamín Tapia';
+
+try {
+  const rows = await sql`SELECT key, value FROM site_config WHERE key IN ('about_photo_url','about_name')`;
+  for (const row of rows as any[]) {
+    if (row.key === 'about_photo_url') aboutPhotoUrl = row.value;
+    if (row.key === 'about_name') aboutName = row.value;
+  }
+} catch {}
 ---
 
 <section
-  class="relative flex flex-col items-center justify-center overflow-hidden bg-brand-black pt-20"
-  style="min-height: 100svh;"
+  class="relative flex flex-col items-center justify-center overflow-hidden"
+  style="min-height: 100svh; background: #020202;"
 >
-  <!-- Background grid -->
-  <div
-    class="absolute inset-0 bg-[linear-gradient(rgba(30,41,59,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,41,59,0.2)_1px,transparent_1px)] bg-[size:60px_60px]"
-  >
-  </div>
+  <!-- Canvas animado con formas fluidas oscuras (estilo Skalers) -->
+  <canvas id="hero-canvas" class="absolute inset-0 w-full h-full" aria-hidden="true"></canvas>
 
-  <!-- Radial glow -->
-  <div
-    class="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(59,130,246,0.12),transparent)]"
-  >
-  </div>
+  <!-- Viñeta y overlay para texto legible -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true" style="background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 30%, rgba(2,2,2,0.65) 100%);"></div>
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true" style="background: linear-gradient(to bottom, rgba(2,2,2,0.2) 0%, transparent 20%, transparent 70%, rgba(2,2,2,0.5) 100%);"></div>
 
-  <!-- Subtle blobs -->
-  <div
-    class="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-blue/8 rounded-full blur-3xl animate-blob"
-  >
-  </div>
-  <div
-    class="absolute top-1/3 right-1/4 w-96 h-96 bg-brand-purple/8 rounded-full blur-3xl animate-blob animation-delay-2000"
-  >
-  </div>
+  <!-- Contenido -->
+  <div class="relative z-10 w-full max-w-5xl mx-auto px-6 text-center flex flex-col items-center">
 
-  <!-- Content -->
-  <div class="relative z-10 max-w-5xl mx-auto px-4 text-center">
-    <!-- Badge -->
-    <div
-      class="inline-flex items-center gap-2 border border-brand-blue/25 bg-brand-blue/8 text-brand-blue text-xs px-4 py-2 rounded-full mb-10 tracking-wider uppercase font-medium"
+    <!-- Eyebrow minimalista -->
+    <p
+      class="text-brand-muted text-xs font-medium tracking-[0.22em] uppercase mb-10 sm:mb-14"
       data-aos="fade-down"
     >
-      <span class="w-1.5 h-1.5 bg-brand-blue rounded-full animate-pulse"></span>
-      Agencia Digital · Santiago, Chile
-    </div>
-
-    <!-- Headline -->
-    <h1
-      class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] mb-6 tracking-tight"
-      data-aos="fade-up"
-      data-aos-delay="100"
-    >
-      Soluciones digitales para{' '}
-      <span
-        class="bg-gradient-to-r from-brand-blue to-brand-purple bg-clip-text text-transparent"
-      >
-        negocios que crecen
-      </span>
-    </h1>
-
-    <!-- Subtitle -->
-    <p
-      class="text-brand-muted text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
-      data-aos="fade-up"
-      data-aos-delay="200"
-    >
-      Diseño web profesional, sistemas de fidelización y producción de contenido.
-      Un equipo chileno dedicado a transformar su negocio digitalmente.
+      Agencia Digital — Santiago, Chile
     </p>
 
-    <!-- CTAs -->
-    <div
-      class="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-sm sm:max-w-none mx-auto"
+    <!-- Titular serif masivo -->
+    <h1
+      class="font-serif text-brand-white mb-10 sm:mb-14"
+      style="font-size: clamp(42px, 6.5vw, 88px); font-weight: 400; line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance; text-shadow: rgba(0,0,0,0.9) 0px 4px 40px, rgba(0,0,0,0.5) 0px 1px 4px;"
       data-aos="fade-up"
-      data-aos-delay="300"
+      data-aos-delay="80"
+    >
+      Marketing digital<br/>que convierte<br/><em style="font-style:italic; color: rgba(245,245,247,0.75);">en clientes reales.</em>
+    </h1>
+
+    <!-- Stats con separador | estilo Skalers -->
+    <div
+      class="flex flex-col sm:flex-row items-center gap-3 sm:gap-0 text-brand-muted text-sm mb-12 sm:mb-16"
+      data-aos="fade-up"
+      data-aos-delay="160"
+    >
+      <span class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5 opacity-50 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"/></svg>
+        Fundada en 2020
+      </span>
+      <span class="hidden sm:block mx-5 text-brand-border opacity-60">|</span>
+      <span class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5 opacity-50 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+        +60 marcas chilenas
+      </span>
+      <span class="hidden sm:block mx-5 text-brand-border opacity-60">|</span>
+      <span class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5 opacity-50 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        4 servicios especializados
+      </span>
+    </div>
+
+    <!-- CTA centrado estilo Skalers -->
+    <div
+      class="flex flex-col sm:flex-row gap-3 items-center"
+      data-aos="fade-up"
+      data-aos-delay="240"
     >
       <a
         href="#contacto"
-        class="bg-gradient-to-r from-brand-blue to-brand-purple text-white px-10 py-4 rounded-xl font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 shadow-lg shadow-brand-blue/20 w-full sm:w-auto text-center"
+        class="inline-flex items-center gap-2 bg-brand-white text-brand-black font-semibold px-8 py-4 rounded-full text-sm hover:bg-brand-blue-dark transition-colors"
+        style="letter-spacing: 0.01em;"
       >
-        Solicitar Cotización
-      </a>
-      <a
-        href="#servicios"
-        class="border border-brand-border text-brand-white px-10 py-4 rounded-xl font-semibold hover:border-brand-blue/40 hover:bg-brand-blue/5 active:bg-brand-blue/10 transition-all duration-200 w-full sm:w-auto text-center"
-      >
-        Ver Servicios
+        Solicitar cotización
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
       </a>
     </div>
 
-    <!-- Stats row -->
-    <div
-      class="mt-20 grid grid-cols-3 gap-8 max-w-md mx-auto"
-      data-aos="fade-up"
-      data-aos-delay="400"
-    >
-      <div class="text-center">
-        <p class="text-3xl font-bold text-brand-white">5+</p>
-        <p class="text-brand-muted text-xs mt-1 tracking-wide uppercase">Años de experiencia</p>
-      </div>
-      <div class="text-center border-x border-brand-border">
-        <p class="text-3xl font-bold text-brand-white">60+</p>
-        <p class="text-brand-muted text-xs mt-1 tracking-wide uppercase">Marcas atendidas</p>
-      </div>
-      <div class="text-center">
-        <p class="text-3xl font-bold text-brand-white">3</p>
-        <p class="text-brand-muted text-xs mt-1 tracking-wide uppercase">Servicios integrados</p>
-      </div>
-    </div>
   </div>
 
   <!-- Scroll indicator -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce opacity-40">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke-width="1.5"
-      stroke="currentColor"
-      class="w-5 h-5 text-brand-muted"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-      ></path>
-    </svg>
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-20 animate-bounce" style="z-index:10;">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
   </div>
 </section>
+
+<script>
+(function() {
+  const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  let W = 0, H = 0;
+  function resize() {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W;
+    canvas.height = H;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Blobs oscuros con diferentes tonos de gris muy oscuro
+  const blobs = [
+    { x: 0.2, y: 0.3, r: 0.55, vx: 0.00012, vy: 0.00008, color: 'rgba(28,28,36,0.9)' },
+    { x: 0.8, y: 0.6, r: 0.60, vx: -0.00010, vy: 0.00007, color: 'rgba(20,20,28,0.95)' },
+    { x: 0.5, y: 0.9, r: 0.50, vx: 0.00009, vy: -0.00013, color: 'rgba(35,35,45,0.85)' },
+    { x: 0.1, y: 0.8, r: 0.45, vx: 0.00015, vy: -0.00006, color: 'rgba(15,15,22,0.9)' },
+    { x: 0.9, y: 0.1, r: 0.50, vx: -0.00008, vy: 0.00014, color: 'rgba(22,22,32,0.88)' },
+    { x: 0.5, y: 0.3, r: 0.40, vx: 0.00007, vy: 0.00010, color: 'rgba(40,40,52,0.7)' },
+  ];
+
+  let t = 0;
+  function draw() {
+    t++;
+    ctx.fillStyle = '#020202';
+    ctx.fillRect(0, 0, W, H);
+
+    // Dibujar blobs con gradientes radiales
+    blobs.forEach(b => {
+      b.x += b.vx;
+      b.y += b.vy;
+      // Rebote suave
+      if (b.x < -0.2) { b.x = -0.2; b.vx *= -1; }
+      if (b.x > 1.2)  { b.x = 1.2;  b.vx *= -1; }
+      if (b.y < -0.2) { b.y = -0.2; b.vy *= -1; }
+      if (b.y > 1.2)  { b.y = 1.2;  b.vy *= -1; }
+
+      const cx = b.x * W;
+      const cy = b.y * H;
+      const radius = b.r * Math.max(W, H);
+
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      grad.addColorStop(0, b.color);
+      grad.addColorStop(1, 'rgba(2,2,2,0)');
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Textura de ruido sutil encima (simulada con pequeños puntos)
+    if (t % 3 === 0) {
+      ctx.globalCompositeOperation = 'source-over';
+      for (let i = 0; i < 800; i++) {
+        const nx = Math.random() * W;
+        const ny = Math.random() * H;
+        const alpha = Math.random() * 0.025;
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fillRect(nx, ny, 1, 1);
+      }
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
