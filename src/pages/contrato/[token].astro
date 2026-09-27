@@ -1,0 +1,300 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import sql from '../../lib/db';
+
+const { token } = Astro.params;
+const rows = await sql`SELECT * FROM s90_clients WHERE client_token = ${token!} LIMIT 1`;
+if (!rows[0]) return Astro.redirect('/sistema-90');
+
+const client = rows[0] as any;
+const onbRows = await sql`SELECT data FROM s90_onboarding WHERE client_id = ${client.id} ORDER BY submitted_at DESC LIMIT 1`;
+const onb = (onbRows[0] as any)?.data ?? {};
+
+// Fechas
+const start = new Date(client.start_date);
+const end = new Date(start); end.setDate(end.getDate() + 89);
+const fmt = (d: Date) => d.toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+const today = fmt(new Date());
+const startStr = fmt(start);
+const endStr = fmt(end);
+
+// Cuotas Día 30 y Día 60
+const day30 = new Date(start); day30.setDate(day30.getDate() + 29);
+const day60 = new Date(start); day60.setDate(day60.getDate() + 59);
+
+const planA = client.plan === 'unico';
+const clinicName = client.clinic_name ?? '_______________';
+const contactName = onb.contact_name ?? client.contact_name ?? '_______________';
+const contactRole = onb.contact_role ?? '_______________';
+const rut = onb.rut ?? '_______________';
+const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune : ''}` : '_______________';
+---
+
+<Layout title={`Contrato Sistema 90 — ${clinicName}`} noindex>
+<div class="min-h-screen bg-brand-black text-brand-white">
+
+  <!-- Barra acciones (no imprime) -->
+  <div class="no-print sticky top-0 z-50 bg-brand-black/95 backdrop-blur border-b border-brand-border px-4 py-3 flex items-center justify-between">
+    <div>
+      <p class="text-sm font-semibold text-brand-white">Contrato Sistema 90</p>
+      <p class="text-xs text-brand-muted">{clinicName}</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href={`/panel/${token}`} class="text-xs text-brand-muted hover:text-brand-white transition-colors">← Mi panel</a>
+      <button onclick="window.print()"
+        class="bg-brand-white text-brand-black text-xs font-semibold px-4 py-2 rounded-full hover:bg-brand-blue-dark transition-colors">
+        Imprimir / PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Documento -->
+  <div class="max-w-3xl mx-auto px-6 py-12 print:px-0 print:py-0">
+
+    <!-- Membrete -->
+    <div class="flex items-start justify-between mb-12 pb-6 border-b border-brand-border print:border-gray-300">
+      <div>
+        <p class="text-xl font-black text-brand-white tracking-tight">ReClub</p>
+        <p class="text-xs text-brand-muted mt-1">reclubcl.com</p>
+      </div>
+      <div class="text-right">
+        <p class="text-xs text-brand-muted uppercase tracking-widest">Sistema 90 · Contrato</p>
+        <p class="text-xs text-brand-muted mt-1">{today}</p>
+      </div>
+    </div>
+
+    <!-- Título -->
+    <div class="mb-10">
+      <h1 class="font-serif text-brand-white mb-2" style="font-size:clamp(24px,4vw,36px);font-weight:400;letter-spacing:-0.02em;line-height:1.15;">
+        Contrato de Prestación<br>de Servicios
+      </h1>
+      <p class="text-brand-muted text-sm">Programa Sistema 90 — Contenido, Meta Ads y ventas por WhatsApp para clínicas estéticas</p>
+    </div>
+
+    <!-- Comparecientes -->
+    <div class="mb-8 space-y-4 text-sm leading-relaxed text-brand-muted">
+      <p>En Viña del Mar, a {today}, comparecen:</p>
+      <p>
+        <span class="text-brand-white font-semibold">PRESTADOR:</span> Benjamín Tapia Riquelme, RUT _______________, con domicilio en Viña del Mar, quien presta servicios bajo la marca ReClub (en adelante, "el Prestador").
+      </p>
+      <p>
+        <span class="text-brand-white font-semibold">CLIENTE:</span> <span class="text-brand-white">{clinicName}</span>, RUT <span class="text-brand-white">{rut}</span>, representada por <span class="text-brand-white">{contactName}</span>{contactRole !== '_______________' ? `, ${contactRole}` : ''}, con domicilio en <span class="text-brand-white">{address}</span> (en adelante, "el Cliente").
+      </p>
+      <p>Las partes acuerdan el siguiente contrato de prestación de servicios, que se regirá por las cláusulas que siguen.</p>
+    </div>
+
+    <!-- Cláusulas -->
+    {[
+      {
+        num: 'PRIMERO', title: 'Objeto',
+        body: `El Prestador se obliga a ejecutar para el Cliente el programa "Sistema 90", que comprende la producción de contenido audiovisual, la gestión de campañas publicitarias en Meta (Facebook e Instagram), la configuración de WhatsApp Business y asesoría comercial, con el objetivo de aumentar las consultas y pacientes agendados de la clínica del Cliente.`
+      },
+      {
+        num: 'SEGUNDO', title: 'Duración',
+        body: `El programa dura 90 días corridos. Comienza el <strong>${startStr}</strong> (Día 1), fecha de la reunión de estrategia inicial, la que solo se realizará una vez recibido el pago inicial indicado en la cláusula Séptima, y termina el <strong>${endStr}</strong> (Día 90).`
+      },
+    ].map(c => (
+      <div class="mb-8">
+        <h2 class="text-brand-white font-semibold text-sm uppercase tracking-widest mb-3">
+          {c.num}. {c.title}
+        </h2>
+        <p class="text-brand-muted text-sm leading-relaxed" set:html={c.body}></p>
+      </div>
+    ))}
+
+    <!-- TERCERO Entregables -->
+    <div class="mb-8">
+      <h2 class="text-brand-white font-semibold text-sm uppercase tracking-widest mb-3">TERCERO. Entregables</h2>
+      <p class="text-brand-muted text-sm leading-relaxed mb-4">El Prestador entregará lo siguiente durante los 90 días:</p>
+      <div class="border border-brand-border rounded-xl overflow-hidden">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="border-b border-brand-border">
+              <th class="text-left px-4 py-3 text-brand-white font-semibold w-40">Entregable</th>
+              <th class="text-left px-4 py-3 text-brand-white font-semibold">Detalle</th>
+              <th class="text-right px-4 py-3 text-brand-white font-semibold w-32">Cantidad</th>
+            </tr>
+          </thead>
+          <tbody class="text-brand-muted">
+            {[
+              ['Reunión de estrategia inicial', 'Diagnóstico de la clínica, definición de tratamientos foco, público objetivo y metas del programa.', '1'],
+              ['Jornadas de grabación', 'Grabación en la clínica de hasta 4 horas cada una, una por mes.', '3'],
+              ['Reels editados', 'Edición profesional, subtítulos, música apta para redes sociales y portada. Incluye una ronda de ajustes por reel.', '24 a 30'],
+              ['Campañas Meta Ads', 'Estructura, creación de anuncios, segmentación y optimización continua con objetivo de mensajes.', '90 días'],
+              ['WhatsApp Business', 'Perfil, catálogo de tratamientos, respuestas rápidas, etiquetas y mensaje de bienvenida.', '1'],
+              ['Asesoría en ventas', 'Guion de respuesta y cierre adaptado a la clínica y revisión de conversaciones.', 'Guion + 3 revisiones'],
+              ['Reuniones de revisión', 'Reporte de resultados del mes y ajuste de la hoja de ruta.', '3 (Días 30, 60 y 90)'],
+              ['Reporte final', 'Resultados de los 90 días y recomendaciones para continuar.', '1'],
+            ].map(([ent, det, cant], i) => (
+              <tr class={i % 2 === 0 ? 'bg-brand-dark/30' : ''}>
+                <td class="px-4 py-3 border-b border-brand-border/50 align-top font-medium text-brand-white/70">{ent}</td>
+                <td class="px-4 py-3 border-b border-brand-border/50 align-top leading-relaxed">{det}</td>
+                <td class="px-4 py-3 border-b border-brand-border/50 align-top text-right">{cant}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CUARTO Fases -->
+    <div class="mb-8">
+      <h2 class="text-brand-white font-semibold text-sm uppercase tracking-widest mb-3">CUARTO. Fases del proyecto</h2>
+      <div class="border border-brand-border rounded-xl overflow-hidden">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="border-b border-brand-border">
+              <th class="text-left px-4 py-3 text-brand-white font-semibold w-28">Fase</th>
+              <th class="text-left px-4 py-3 text-brand-white font-semibold w-28">Período</th>
+              <th class="text-left px-4 py-3 text-brand-white font-semibold">Qué se hace</th>
+            </tr>
+          </thead>
+          <tbody class="text-brand-muted">
+            {[
+              ['0. Activación', 'Días 1 a 7', 'Formulario de bienvenida, entrega de accesos, reunión de estrategia, configuración de WhatsApp Business y guion de la primera grabación.'],
+              ['1. Lanzar', 'Días 1 a 30', 'Primera grabación, entrega de 8 a 10 reels, lanzamiento de campañas y entrega del guion de ventas. Cierra con la revisión del Día 30.'],
+              ['2. Optimizar', 'Días 31 a 60', 'Segunda grabación basada en el contenido que mejor funcionó, optimización de anuncios y revisión de conversaciones. Cierra con la revisión del Día 60.'],
+              ['3. Escalar', 'Días 61 a 90', 'Tercera grabación, concentración del presupuesto en los anuncios ganadores, reporte final y reunión de cierre del Día 90 con propuesta de continuidad.'],
+            ].map(([fase, periodo, desc], i) => (
+              <tr class={i % 2 === 0 ? 'bg-brand-dark/30' : ''}>
+                <td class="px-4 py-3 border-b border-brand-border/50 align-top font-medium text-brand-white/70">{fase}</td>
+                <td class="px-4 py-3 border-b border-brand-border/50 align-top">{periodo}</td>
+                <td class="px-4 py-3 border-b border-brand-border/50 align-top leading-relaxed">{desc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- QUINTO y SEXTO -->
+    {[
+      {
+        num: 'QUINTO', title: 'Obligaciones del Cliente',
+        items: [
+          'Pagar la inversión publicitaria directamente a Meta con su propio medio de pago. Se recomienda un mínimo de $150.000 mensuales. Este monto no está incluido en el precio del programa.',
+          'Entregar los accesos necesarios dentro de los primeros 3 días hábiles desde la firma.',
+          'Coordinar y facilitar las jornadas de grabación: espacio, disponibilidad de los profesionales y, cuando corresponda, pacientes que acepten participar.',
+          'Obtener la autorización escrita de toda persona (pacientes y personal) que aparezca en el contenido.',
+          'Aprobar u observar los contenidos dentro de 48 horas hábiles desde su envío. Pasado ese plazo sin respuesta, se entenderán aprobados.',
+          'Responder oportunamente las consultas generadas por las campañas. La conversión de consultas en pacientes depende de la gestión comercial del Cliente.',
+          'Entregar información veraz sobre tratamientos y precios, y contar con las autorizaciones sanitarias que exija la normativa.',
+        ]
+      },
+      {
+        num: 'SEXTO', title: 'Obligaciones del Prestador',
+        items: [
+          'Ejecutar los entregables con diligencia y dentro de los plazos de cada fase.',
+          'Crear los anuncios conforme a las Políticas de Publicidad de Meta, incluidas las restricciones aplicables a la publicidad de tratamientos estéticos y de salud.',
+          'Informar los resultados en cada reunión de revisión y mantener comunicación por el canal acordado (WhatsApp).',
+          'Guardar reserva de la información del Cliente según la cláusula Undécima.',
+        ]
+      },
+    ].map(c => (
+      <div class="mb-8">
+        <h2 class="text-brand-white font-semibold text-sm uppercase tracking-widest mb-3">{c.num}. {c.title}</h2>
+        <ol class="space-y-2 text-sm text-brand-muted">
+          {c.items.map((item, i) => (
+            <li class="flex gap-3 leading-relaxed">
+              <span class="text-brand-white/40 shrink-0 font-mono text-xs mt-0.5">{String.fromCharCode(97 + i)})</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    ))}
+
+    <!-- SÉPTIMO Precio -->
+    <div class="mb-8">
+      <h2 class="text-brand-white font-semibold text-sm uppercase tracking-widest mb-3">SÉPTIMO. Precio y forma de pago</h2>
+      <p class="text-brand-muted text-sm leading-relaxed mb-4">El Cliente elige una de las siguientes modalidades:</p>
+      <div class="border border-brand-border rounded-xl overflow-hidden mb-4">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="border-b border-brand-border">
+              <th class="text-left px-4 py-3 text-brand-white font-semibold">Modalidad</th>
+              <th class="text-left px-4 py-3 text-brand-white font-semibold">Pago inicial</th>
+              <th class="text-left px-4 py-3 text-brand-white font-semibold">Pagos siguientes</th>
+              <th class="text-right px-4 py-3 text-brand-white font-semibold">Total</th>
+            </tr>
+          </thead>
+          <tbody class="text-brand-muted">
+            <tr class={planA ? 'bg-brand-white/5' : ''}>
+              <td class="px-4 py-3 border-b border-brand-border/50">
+                {planA && <span class="text-green-400 mr-1">✓</span>}A. Pago único
+              </td>
+              <td class="px-4 py-3 border-b border-brand-border/50">$990.000 al firmar (100%)</td>
+              <td class="px-4 py-3 border-b border-brand-border/50">—</td>
+              <td class="px-4 py-3 border-b border-brand-border/50 text-right font-semibold text-brand-white/70">$990.000</td>
+            </tr>
+            <tr class={!planA ? 'bg-brand-white/5' : ''}>
+              <td class="px-4 py-3">
+                {!planA && <span class="text-green-400 mr-1">✓</span>}B. Tres cuotas
+              </td>
+              <td class="px-4 py-3">$400.000 al firmar (33%)</td>
+              <td class="px-4 py-3">$400.000 el Día 30 ({day30.toLocaleDateString('es-CL',{day:'numeric',month:'short'})}) y $400.000 el Día 60 ({day60.toLocaleDateString('es-CL',{day:'numeric',month:'short'})})</td>
+              <td class="px-4 py-3 text-right font-semibold text-brand-white/70">$1.200.000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-brand-muted text-sm leading-relaxed">
+        <span class="text-brand-white font-semibold">Modalidad elegida: {planA ? 'A — Pago único.' : 'B — Tres cuotas.'}</span> El pago inicial es requisito para iniciar el programa. Los pagos podrán realizarse por transferencia bancaria, tarjeta de débito o tarjeta de crédito. Si una cuota se atrasa más de 5 días hábiles, el Prestador podrá suspender los servicios hasta que se regularice el pago, sin que la suspensión extienda la duración del programa.
+      </p>
+    </div>
+
+    <!-- Cláusulas restantes -->
+    {[
+      { num: 'OCTAVO', title: 'Resultados', body: 'El Prestador se compromete a ejecutar los entregables aplicando buenas prácticas de contenido y publicidad. No garantiza un número específico de pacientes, ventas ni costo por resultado, ya que estos dependen también de factores externos al Prestador, como el funcionamiento de las plataformas de Meta, la competencia, los precios y la gestión comercial del Cliente.' },
+      { num: 'NOVENO', title: 'Propiedad del contenido', body: 'Pagado íntegramente el programa, el Cliente será dueño del material editado entregado y podrá usarlo libremente. El material en bruto quedará en poder del Prestador por 60 días desde el término. El Prestador podrá mostrar los contenidos y métricas en su portafolio, salvo oposición escrita del Cliente, y sin revelar en ningún caso datos de pacientes.' },
+      { num: 'DÉCIMO', title: 'Cuentas y accesos', body: 'Las campañas se ejecutarán en la cuenta publicitaria del Cliente. El Prestador accederá como socio a través de su Business Manager. El Cliente conserva en todo momento la propiedad de sus cuentas, páginas, audiencias y datos, y podrá retirar los accesos al término del contrato.' },
+      { num: 'UNDÉCIMO', title: 'Confidencialidad y datos personales', body: 'Las partes mantendrán reserva sobre la información de la otra a la que accedan con motivo de este contrato. El Prestador usará los datos de pacientes a los que tenga acceso solo para prestar el servicio y conforme a la normativa chilena vigente sobre protección de datos personales.' },
+      { num: 'DUODÉCIMO', title: 'Reprogramaciones', body: 'Las jornadas de grabación y reuniones podrán reprogramarse con al menos 48 horas de aviso. Una grabación cancelada con menos aviso, salvo caso fortuito o fuerza mayor, podrá reprogramarse una sola vez dentro de la misma fase; de lo contrario, se considerará realizada.' },
+      { num: 'DECIMOTERCERO', title: 'Término anticipado', body: 'Cualquiera de las partes podrá poner término al contrato con un aviso escrito de 15 días. Los montos pagados corresponden a trabajo ya realizado o comprometido y no son reembolsables. En la modalidad B, el Cliente pagará las cuotas vencidas a la fecha de término. Si una de las partes incumple gravemente sus obligaciones, la otra podrá poner término de inmediato mediante aviso escrito.' },
+      { num: 'DECIMOCUARTO', title: 'Continuidad', body: 'En la reunión del Día 90, el Prestador presentará una propuesta de continuidad. El contrato no se renueva automáticamente.' },
+      { num: 'DECIMOQUINTO', title: 'Domicilio', body: 'Para todos los efectos de este contrato, las partes fijan su domicilio en la ciudad de Viña del Mar y se someten a la competencia de sus tribunales ordinarios.' },
+    ].map(c => (
+      <div class="mb-8">
+        <h2 class="text-brand-white font-semibold text-sm uppercase tracking-widest mb-3">{c.num}. {c.title}</h2>
+        <p class="text-brand-muted text-sm leading-relaxed">{c.body}</p>
+      </div>
+    ))}
+
+    <!-- Firmas -->
+    <div class="mt-16 pt-8 border-t border-brand-border grid grid-cols-2 gap-12">
+      <div>
+        <div class="h-16 border-b border-brand-border mb-3"></div>
+        <p class="text-brand-white text-sm font-semibold">Benjamín Tapia Riquelme</p>
+        <p class="text-brand-muted text-xs mt-0.5">RUT _______________</p>
+        <p class="text-brand-muted text-xs">Prestador — ReClub</p>
+      </div>
+      <div>
+        <div class="h-16 border-b border-brand-border mb-3"></div>
+        <p class="text-brand-white text-sm font-semibold">{contactName}</p>
+        <p class="text-brand-muted text-xs mt-0.5">RUT {rut}</p>
+        <p class="text-brand-muted text-xs">Cliente — {clinicName}</p>
+      </div>
+    </div>
+
+    <!-- Footer doc -->
+    <div class="mt-12 pt-6 border-t border-brand-border/50 flex justify-between text-xs text-brand-muted">
+      <span>Benjamín Tapia Riquelme · ReClub · reclubcl.com</span>
+      <span>Sistema 90 · Contrato</span>
+    </div>
+
+  </div>
+</div>
+</Layout>
+
+<style>
+@media print {
+  .no-print { display: none !important; }
+  body { background: white !important; color: #111 !important; }
+  * { color: inherit; border-color: #ddd !important; background: transparent !important; }
+  h1, h2, .text-brand-white { color: #111 !important; }
+  p, td, th, li, span { color: #444 !important; }
+  h2 { color: #111 !important; font-size: 11px !important; }
+  table { border-collapse: collapse; }
+  td, th { border: 1px solid #ddd !important; }
+}
+</style>
