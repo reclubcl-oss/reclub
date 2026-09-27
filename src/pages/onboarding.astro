@@ -16,15 +16,30 @@ const clinic = Astro.url.searchParams.get('clinic') ?? '';
       </div>
 
       <!-- Estado de enviado -->
-      <div id="successScreen" class="hidden text-center py-20">
+      <div id="successScreen" class="hidden text-center py-16">
         <div class="w-16 h-16 rounded-full border border-green-500/30 bg-green-500/10 flex items-center justify-center mx-auto mb-6">
           <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
         </div>
-        <h2 class="font-serif text-brand-white mb-2" style="font-size:28px;font-weight:400;">¡Listo! Recibimos todo.</h2>
-        <p class="text-brand-muted text-sm mb-8">Nos pondremos en contacto contigo pronto para coordinar los detalles.</p>
-        <a href="/bienvenida" class="inline-flex bg-brand-white text-brand-black font-semibold px-6 py-3 rounded-full hover:bg-brand-blue-dark transition-colors text-sm">
-          Volver al inicio
-        </a>
+        <h2 class="font-serif text-brand-white mb-2" style="font-size:28px;font-weight:400;">¡Tu panel está listo!</h2>
+        <p class="text-brand-muted text-sm mb-8 leading-relaxed">Guarda este link — es tu acceso directo al panel<br>del Sistema 90. No necesitas contraseña.</p>
+
+        <!-- Link del panel -->
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-5 mb-6 text-left">
+          <p class="text-xs text-brand-muted uppercase tracking-wider mb-3">Tu link de acceso</p>
+          <div class="flex items-center gap-3 bg-brand-dark border border-brand-border rounded-xl px-4 py-3">
+            <span id="panelUrl" class="text-brand-white text-sm flex-1 break-all"></span>
+          </div>
+          <button id="copyBtn"
+            class="mt-3 w-full bg-brand-white text-brand-black font-semibold py-3 rounded-full text-sm hover:bg-brand-blue-dark transition-colors">
+            Copiar link
+          </button>
+          <a id="panelLink" href="#" target="_blank"
+            class="mt-2 flex items-center justify-center gap-2 text-xs text-brand-muted hover:text-brand-white transition-colors py-2">
+            Ir a mi panel →
+          </a>
+        </div>
+
+        <p class="text-xs text-brand-muted">También te llegará el link a tu correo pronto.</p>
       </div>
 
       <form id="onboardingForm" class="space-y-8" enctype="multipart/form-data">
@@ -257,6 +272,18 @@ document.getElementById('onboardingForm')?.addEventListener('submit', async (e) 
   try {
     const res = await fetch('/api/s90/onboarding', { method: 'POST', body: fd });
     if (res.ok) {
+      const { client_token } = await res.json();
+      const url = `https://reclubcl.com/panel/${client_token}`;
+      const urlEl = document.getElementById('panelUrl')!;
+      const linkEl = document.getElementById('panelLink') as HTMLAnchorElement;
+      const copyBtn = document.getElementById('copyBtn')!;
+      urlEl.textContent = url;
+      linkEl.href = url;
+      copyBtn.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(url);
+        copyBtn.textContent = '✓ Link copiado';
+        setTimeout(() => { copyBtn.textContent = 'Copiar link'; }, 2500);
+      });
       form.classList.add('hidden');
       document.getElementById('successScreen')!.classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
