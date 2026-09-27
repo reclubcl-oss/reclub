@@ -36,7 +36,23 @@ const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <script>document.documentElement.setAttribute('style','background:#fff!important');document.addEventListener('DOMContentLoaded',function(){document.body.setAttribute('style','background:#fff!important;color:#1a1a1a!important');});</script>
+  <script is:inline>
+    function _enforceWhite() {
+      document.documentElement.style.setProperty('background', '#ffffff', 'important');
+      if (document.body) {
+        document.body.classList.remove('bg-brand-black','text-brand-white','font-sans','antialiased');
+        document.body.style.setProperty('background', '#ffffff', 'important');
+        document.body.style.setProperty('color', '#1a1a1a', 'important');
+      }
+    }
+    document.addEventListener('astro:after-swap', _enforceWhite);
+    document.addEventListener('astro:page-load', _enforceWhite);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', _enforceWhite);
+    } else {
+      _enforceWhite();
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <style is:global>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
