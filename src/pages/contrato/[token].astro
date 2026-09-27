@@ -36,10 +36,12 @@ const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script>document.documentElement.setAttribute('style','background:#fff!important');document.addEventListener('DOMContentLoaded',function(){document.body.setAttribute('style','background:#fff!important;color:#1a1a1a!important');});</script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { background: #FFFFFF !important; color: #1A1A1A !important; font-family: 'Inter', sans-serif; }
+    html, body { background: #FFFFFF !important; color: #1A1A1A !important; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+    #page-root { background: #FFFFFF; min-height: 100vh; position: relative; z-index: 0; }
 
     /* Barra superior */
     .topbar { background: #0A0A0F; color: #F5F5F7; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
@@ -125,6 +127,7 @@ const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune 
   </style>
 </head>
 <body>
+<div id="page-root">
 
   <!-- Barra -->
   <div class="topbar no-print">
@@ -321,6 +324,7 @@ const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune 
   </div>
   </div>
 
+</div><!-- /page-root -->
 </body>
 <script>
 document.getElementById('btnDescarga')?.addEventListener('click', async () => {
