@@ -39,7 +39,7 @@ const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune 
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #F0F0F0; font-family: 'Inter', sans-serif; color: #1A1A1A; }
+    body { background: #FFFFFF; font-family: 'Inter', sans-serif; color: #1A1A1A; }
 
     /* Barra superior */
     .topbar { background: #0A0A0F; color: #F5F5F7; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
@@ -53,14 +53,14 @@ const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune 
     .btn-download:hover { background: #D0D0D0; }
 
     /* Página del documento */
-    .page-wrap { padding: 40px 20px 80px; }
+    .page-wrap { padding: 0 20px 80px; }
     #documento {
       background: #fff;
       max-width: 760px;
       margin: 0 auto;
       padding: 64px 72px;
-      box-shadow: 0 4px 40px rgba(0,0,0,0.12);
-      border-radius: 4px;
+      box-shadow: none;
+      border-radius: 0;
     }
 
     /* Membrete */
