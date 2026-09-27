@@ -1,0 +1,394 @@
+---
+import sql from '../../lib/db';
+
+const { token } = Astro.params;
+const rows = await sql`SELECT * FROM s90_clients WHERE client_token = ${token!} LIMIT 1`;
+if (!rows[0]) return Astro.redirect('/sistema-90');
+
+const client = rows[0] as any;
+const onbRows = await sql`SELECT data FROM s90_onboarding WHERE client_id = ${client.id} ORDER BY submitted_at DESC LIMIT 1`;
+const onb = (onbRows[0] as any)?.data ?? {};
+
+const start = new Date(client.start_date);
+const end = new Date(start); end.setDate(end.getDate() + 89);
+const day30 = new Date(start); day30.setDate(day30.getDate() + 29);
+const day60 = new Date(start); day60.setDate(day60.getDate() + 59);
+
+const fmt = (d: Date) => d.toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+const fmtShort = (d: Date) => d.toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const today = new Date();
+const vence = new Date(today); vence.setDate(vence.getDate() + 7);
+
+const planA = client.plan === 'unico';
+const clinicName = client.clinic_name ?? '_______________';
+const contactName = onb.contact_name ?? client.contact_name ?? '_______________';
+const clientRut = onb.rut ?? '_______________';
+const clientEmail = onb.email ?? client.email ?? '_______________';
+const cobroNum = String(client.id).padStart(4, '0');
+
+// Datos fijos ReClub — actualizar aquí
+const RECLUB_RUT = '12.345.678-9';        // ← reemplazar
+const RECLUB_EMAIL = 'benjamin@reclubcl.com';
+const RECLUB_WHATSAPP = '+56 9 3889 7621';
+const BANCO = 'Banco BCI';                // ← reemplazar
+const TIPO_CUENTA = 'Cuenta corriente';   // ← reemplazar
+const NUM_CUENTA = '12345678';            // ← reemplazar
+const LINK_PAGO = 'https://reclubcl.com/pagar'; // ← reemplazar
+---
+
+<!doctype html>
+<html lang="es" style="background:#fff!important;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Cuenta de Cobro N°{cobroNum} — {clinicName}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script is:inline>
+    function _enforceWhite() {
+      document.documentElement.style.setProperty('background', '#ffffff', 'important');
+      if (document.body) {
+        document.body.classList.remove('bg-brand-black','text-brand-white','font-sans','antialiased');
+        document.body.style.setProperty('background', '#ffffff', 'important');
+        document.body.style.setProperty('color', '#1a1a1a', 'important');
+      }
+    }
+    document.addEventListener('astro:after-swap', _enforceWhite);
+    document.addEventListener('astro:page-load', _enforceWhite);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', _enforceWhite);
+    } else {
+      _enforceWhite();
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #ffffff !important; color: #1a1a1a !important; font-family: 'Inter', sans-serif; }
+
+    /* Barra superior */
+    .topbar { background: #0A0A0F; color: #F5F5F7; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+    .topbar-left { display: flex; flex-direction: column; }
+    .topbar-title { font-size: 13px; font-weight: 600; }
+    .topbar-sub { font-size: 11px; color: #5C5C6A; margin-top: 2px; }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .btn-back { font-size: 12px; color: #5C5C6A; text-decoration: none; }
+    .btn-back:hover { color: #F5F5F7; }
+    .btn-download { background: #F5F5F7; color: #0A0A0F; font-size: 13px; font-weight: 600; padding: 9px 20px; border-radius: 100px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .btn-download:hover { background: #D0D0D0; }
+
+    /* Documento */
+    .page-wrap { padding: 0 20px 80px; background: #fff; }
+    #documento { background: #fff; max-width: 760px; margin: 0 auto; padding: 56px 72px; }
+
+    /* Membrete */
+    .membrete { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 24px; border-bottom: 2px solid #0A0A0F; margin-bottom: 36px; }
+    .membrete-logo { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; color: #0A0A0F; }
+    .membrete-right { text-align: right; font-size: 10px; color: #888; line-height: 1.5; }
+    .membrete-right span { color: #0A0A0F; }
+
+    /* Header */
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+    .doc-title { font-family: 'Instrument Serif', serif; font-size: 38px; font-weight: 400; color: #0A0A0F; line-height: 1.1; }
+    .doc-meta { text-align: right; }
+    .doc-meta .num { font-size: 18px; font-weight: 700; color: #0A0A0F; margin-bottom: 4px; }
+    .doc-meta .fecha { font-size: 12px; color: #666; line-height: 1.8; }
+    .doc-subtitle { font-size: 13px; color: #666; margin-bottom: 32px; }
+
+    /* Partes */
+    .partes { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid #E0E0E0; border-radius: 8px; overflow: hidden; margin-bottom: 32px; }
+    .parte { padding: 20px 24px; }
+    .parte:first-child { border-right: 1px solid #E0E0E0; }
+    .parte-label { font-size: 10px; font-weight: 700; color: #0A0A0F; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
+    .parte-data { font-size: 13px; color: #444; line-height: 1.8; }
+    .parte-data strong { color: #0A0A0F; font-weight: 600; display: block; }
+
+    /* Sección */
+    .seccion { margin-bottom: 28px; }
+    .seccion-titulo { font-size: 11px; font-weight: 700; color: #0A0A0F; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #E8E8E8; }
+
+    /* Tabla detalle */
+    .tabla { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tabla thead tr { background: #0A0A0F; color: #fff; }
+    .tabla thead th { padding: 10px 14px; text-align: left; font-weight: 500; font-size: 11px; letter-spacing: 0.05em; }
+    .tabla tbody td { padding: 14px; border-bottom: 1px solid #F0F0F0; color: #444; line-height: 1.6; vertical-align: top; }
+    .tabla tbody tr:last-child td { border-bottom: none; }
+    .tabla-nota { font-size: 11px; color: #888; margin-top: 8px; }
+
+    /* Planes */
+    .planes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .plan-card { border: 2px solid #E0E0E0; border-radius: 10px; padding: 20px; }
+    .plan-card.activo { border-color: #0A0A0F; background: #FAFAFA; }
+    .plan-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; margin-bottom: 8px; }
+    .plan-card.activo .plan-label { color: #0A0A0F; }
+    .plan-precio { font-size: 28px; font-weight: 700; color: #0A0A0F; margin-bottom: 6px; }
+    .plan-desc { font-size: 12px; color: #666; line-height: 1.6; }
+    .plan-hoy { font-size: 13px; font-weight: 600; color: #0A0A0F; margin-top: 12px; }
+    .recomendado { font-size: 11px; color: #888; margin-bottom: 20px; }
+
+    /* Calendario */
+    .calendario { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .calendario thead tr { background: #F5F5F7; }
+    .calendario thead th { padding: 9px 14px; text-align: left; font-weight: 600; color: #0A0A0F; font-size: 11px; letter-spacing: 0.03em; }
+    .calendario tbody td { padding: 11px 14px; border-bottom: 1px solid #F0F0F0; color: #444; }
+    .calendario tbody tr:last-child td { border-bottom: none; }
+    .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #F0F0F0; color: #888; }
+
+    /* Medios de pago */
+    .medios { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .medios td { padding: 12px 14px; border-bottom: 1px solid #F0F0F0; vertical-align: top; line-height: 1.7; color: #444; }
+    .medios td:first-child { font-weight: 600; color: #0A0A0F; width: 32%; }
+    .medios tr:last-child td { border-bottom: none; }
+
+    /* Pasos */
+    .pasos { list-style: none; counter-reset: paso; }
+    .pasos li { counter-increment: paso; display: flex; gap: 14px; margin-bottom: 12px; font-size: 13px; color: #444; }
+    .pasos li::before { content: counter(paso); width: 24px; height: 24px; background: #0A0A0F; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    /* Footer legal */
+    .legal { font-size: 10px; color: #AAA; line-height: 1.6; margin-top: 32px; padding-top: 20px; border-top: 1px solid #E8E8E8; }
+    .footer-doc { display: flex; justify-content: space-between; font-size: 10px; color: #BBB; margin-top: 40px; padding-top: 16px; border-top: 1px solid #E8E8E8; }
+
+    @media print {
+      .topbar { display: none; }
+      .page-wrap { padding: 0; }
+      body { background: #fff; }
+    }
+    @media (max-width: 640px) {
+      #documento { padding: 32px 20px; }
+      .doc-header { flex-direction: column; gap: 16px; }
+      .doc-meta { text-align: left; }
+      .partes { grid-template-columns: 1fr; }
+      .parte:first-child { border-right: none; border-bottom: 1px solid #E0E0E0; }
+      .planes { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body style="background:#ffffff!important;color:#1a1a1a!important;">
+<div class="topbar no-print">
+  <div class="topbar-left">
+    <span class="topbar-title">Cuenta de Cobro N°{cobroNum}</span>
+    <span class="topbar-sub">{clinicName}</span>
+  </div>
+  <div class="topbar-actions">
+    <a href={`/panel/${token}`} class="btn-back">← Mi panel</a>
+    <button class="btn-download" id="btnDescarga">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+      Descargar PDF
+    </button>
+  </div>
+</div>
+
+<div class="page-wrap">
+<div id="documento">
+
+  <!-- Membrete -->
+  <div class="membrete">
+    <div class="membrete-logo">ReClub</div>
+    <div class="membrete-right">
+      Sistema 90 · Cuenta de cobro<br>
+      reclubcl.com
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div>
+      <h1 class="doc-title">Cuenta<br>de Cobro</h1>
+    </div>
+    <div class="doc-meta">
+      <div class="num">N° {cobroNum}</div>
+      <div class="fecha">
+        Emisión: {fmt(today)}<br>
+        Vence: {fmt(vence)}
+      </div>
+    </div>
+  </div>
+  <p class="doc-subtitle">Programa Sistema 90 — pago inicial para activar tu programa</p>
+
+  <!-- Partes -->
+  <div class="partes">
+    <div class="parte">
+      <div class="parte-label">DE</div>
+      <div class="parte-data">
+        <strong>Benjamín Tapia Riquelme · ReClub</strong>
+        RUT {RECLUB_RUT}<br>
+        {RECLUB_EMAIL}<br>
+        WhatsApp {RECLUB_WHATSAPP}
+      </div>
+    </div>
+    <div class="parte">
+      <div class="parte-label">PARA</div>
+      <div class="parte-data">
+        <strong>{clinicName}</strong>
+        RUT {clientRut}<br>
+        Atención: {contactName}<br>
+        {clientEmail}
+      </div>
+    </div>
+  </div>
+
+  <!-- Detalle -->
+  <div class="seccion">
+    <div class="seccion-titulo">Detalle</div>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th style="width:70%">Concepto</th>
+          <th>Período</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            Programa Sistema 90: 3 jornadas de grabación, 24 a 30 reels editados,
+            gestión de campañas en Meta Ads, configuración de WhatsApp Business,
+            asesoría en ventas y 3 reuniones de revisión.
+          </td>
+          <td style="white-space:nowrap;">{fmtShort(start)}<br>al {fmtShort(end)}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="tabla-nota">La inversión publicitaria en Meta no está incluida: la pagas directamente a Meta con tu tarjeta.</p>
+  </div>
+
+  <!-- Planes -->
+  <div class="seccion">
+    <div class="seccion-titulo">Elige cómo pagar</div>
+    <div class="planes">
+      <div class={`plan-card ${planA ? 'activo' : ''}`}>
+        <div class="plan-label">Opción A · Pago único</div>
+        <div class="plan-precio">$990.000</div>
+        <div class="plan-desc">
+          Ahorras $210.000 frente a las cuotas.<br>
+          Puedes pagarlo con <strong>tarjeta de crédito</strong> y dividirlo
+          en las cuotas de tu tarjeta, según las condiciones de tu banco.
+        </div>
+        <div class="plan-hoy">Pagas hoy: $990.000</div>
+      </div>
+      <div class={`plan-card ${!planA ? 'activo' : ''}`}>
+        <div class="plan-label">Opción B · Tres cuotas</div>
+        <div class="plan-precio">3 × $400.000</div>
+        <div class="plan-desc">
+          Total $1.200.000.<br>
+          Anticipo de $400.000 (33%) hoy, $400.000 el Día 30 y $400.000 el Día 60.
+        </div>
+        <div class="plan-hoy">Pagas hoy: $400.000</div>
+      </div>
+    </div>
+    <p class="recomendado">Recomendado: Opción A.</p>
+
+    {!planA && (
+      <div class="seccion">
+        <div class="seccion-titulo">Calendario de pagos (Opción B)</div>
+        <table class="calendario">
+          <thead>
+            <tr>
+              <th>Cuota</th>
+              <th>Fecha</th>
+              <th>Monto</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1 · Anticipo</td>
+              <td>{fmtShort(start)}</td>
+              <td>$400.000</td>
+              <td><span class="badge">Pendiente</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>{fmtShort(day30)} (Día 30)</td>
+              <td>$400.000</td>
+              <td><span class="badge">Pendiente</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>{fmtShort(day60)} (Día 60)</td>
+              <td>$400.000</td>
+              <td><span class="badge">Pendiente</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+
+  <!-- Medios de pago -->
+  <div class="seccion">
+    <div class="seccion-titulo">Medios de pago</div>
+    <table class="medios">
+      <tbody>
+        <tr>
+          <td>Transferencia bancaria</td>
+          <td>
+            Banco: {BANCO}<br>
+            Tipo de cuenta: {TIPO_CUENTA}<br>
+            N° de cuenta: {NUM_CUENTA}<br>
+            Titular: Benjamín Tapia Riquelme · RUT {RECLUB_RUT}<br>
+            Correo para comprobante: {RECLUB_EMAIL}
+          </td>
+        </tr>
+        <tr>
+          <td>Tarjeta de crédito o débito</td>
+          <td>
+            Link de pago: <a href={LINK_PAGO} style="color:#0A0A0F;">{LINK_PAGO}</a><br>
+            Acepta todas las tarjetas nacionales y cuotas según tu banco.
+          </td>
+        </tr>
+        <tr>
+          <td>Otros</td>
+          <td>Khipu, Mercado Pago u otro medio disponible. Consulta por WhatsApp.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Cómo seguir -->
+  <div class="seccion">
+    <div class="seccion-titulo">Cómo seguir</div>
+    <ol class="pasos">
+      <li>Elige tu opción y paga el monto de hoy.</li>
+      <li>Envía el comprobante por WhatsApp al {RECLUB_WHATSAPP}.</li>
+      <li>Recibes tu boleta de honorarios y el acceso a tu panel de cliente.</li>
+      <li>Agendamos la reunión de estrategia y arranca tu Día 1.</li>
+    </ol>
+  </div>
+
+  <!-- Legal -->
+  <p class="legal">
+    Este documento es una solicitud de pago y no reemplaza al documento tributario. Los valores son en pesos chilenos e incluyen IVA cuando aplique.
+  </p>
+
+  <div class="footer-doc">
+    <span>Benjamín Tapia Riquelme · ReClub · reclubcl.com</span>
+    <span>N° {cobroNum} · Página 1</span>
+  </div>
+
+</div>
+</div>
+
+<script>
+document.getElementById('btnDescarga')?.addEventListener('click', async () => {
+  const btn = document.getElementById('btnDescarga') as HTMLButtonElement;
+  btn.textContent = 'Generando...';
+  btn.disabled = true;
+  const el = document.getElementById('documento')!;
+  const opt = {
+    margin: 0,
+    filename: `CuentaCobro_${document.title.replace(/.*N°/, 'N°').replace(/\s+/g,'_')}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+  };
+  await (window as any).html2pdf().set(opt).from(el).save();
+  btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg> Descargar PDF`;
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>
