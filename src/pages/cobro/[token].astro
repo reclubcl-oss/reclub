@@ -25,7 +25,8 @@ const clinicName = client.clinic_name ?? '_______________';
 const contactName = onb.contact_name ?? client.contact_name ?? '_______________';
 const clientRut = onb.rut ?? '_______________';
 const clientEmail = onb.email ?? client.email ?? '_______________';
-const cobroNum = String(client.id).padStart(4, '0');
+const numRows = await sql`SELECT row_number() OVER (ORDER BY created_at) AS num FROM s90_clients WHERE id = ${client.id}`;
+const cobroNum = String((numRows[0] as any)?.num ?? 1).padStart(4, '0');
 
 // Datos fijos ReClub — actualizar aquí
 const RECLUB_RUT = '12.345.678-9';        // ← reemplazar
