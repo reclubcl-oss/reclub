@@ -1,0 +1,284 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import sql from '../../lib/db';
+import { dayOfProgram, currentPhase } from '../../lib/client-auth';
+
+const { token } = Astro.params;
+const rows = await sql`SELECT * FROM s90_clients WHERE client_token = ${token!} LIMIT 1`;
+if (!rows[0]) return Astro.redirect('/sistema-90');
+
+const client = rows[0] as any;
+const id = client.id;
+const day = dayOfProgram(client.start_date);
+const phase = currentPhase(day);
+const pct = Math.round((day / 90) * 100);
+
+const [onboarding, deliverables, metrics, payments, documents] = await Promise.all([
+  sql`SELECT data FROM s90_onboarding WHERE client_id = ${id} ORDER BY submitted_at DESC LIMIT 1`,
+  sql`SELECT * FROM s90_deliverables WHERE client_id = ${id} ORDER BY sort_order`,
+  sql`SELECT * FROM s90_metrics WHERE client_id = ${id} ORDER BY month`,
+  sql`SELECT * FROM s90_payments WHERE client_id = ${id} ORDER BY installment`,
+  sql`SELECT * FROM s90_documents WHERE client_id = ${id} ORDER BY uploaded_at DESC`,
+]);
+
+const hasOnboarding = onboarding.length > 0;
+const start = new Date(client.start_date);
+function addDays(n: number) {
+  const d = new Date(start); d.setDate(d.getDate() + n);
+  return d.toLocaleDateString('es-CL', { day: 'numeric', month: 'long' });
+}
+const MY_WHATSAPP = '+56938897621';
+const statusColor: Record<string, string> = { pendiente:'#5C5C6A', en_proceso:'#FACC15', entregado:'#4ADE80' };
+const statusLabel: Record<string, string> = { pendiente:'Pendiente', en_proceso:'En proceso', entregado:'Listo ✓' };
+const payColor: Record<string, string> = { pendiente:'#5C5C6A', pagado:'#4ADE80', vencido:'#F87171' };
+---
+
+<Layout title={`Panel ${client.clinic_name} — Sistema 90`} noindex>
+<div class="min-h-screen bg-brand-black text-brand-white">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 border-b border-brand-border bg-brand-black/90 backdrop-blur px-4 py-4 flex items-center justify-between">
+    <div>
+      <p class="font-semibold text-brand-white text-sm">{client.clinic_name}</p>
+      <p class="text-brand-muted text-xs">Sistema 90 — ReClub</p>
+    </div>
+    <a href={`https://wa.me/${MY_WHATSAPP.replace('+','')}?text=${encodeURIComponent(`Hola Benjamín, soy ${client.clinic_name}. `)}`}
+       target="_blank" class="flex items-center gap-2 text-xs text-brand-muted hover:text-brand-white transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#25d366" class="w-4 h-4">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Hablar con Benjamín
+    </a>
+  </header>
+
+  <main class="max-w-xl mx-auto px-4 py-8 pb-20 space-y-5">
+
+    <!-- Progreso -->
+    <div class="bg-brand-card border border-brand-border rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <p class="text-xs text-brand-muted uppercase tracking-wider mb-1">Día actual</p>
+          <p class="font-serif" style="font-size:42px;font-weight:400;line-height:1;letter-spacing:-0.02em;">
+            {day}<span class="text-brand-muted text-xl"> / 90</span>
+          </p>
+        </div>
+        <span class="text-xs border border-brand-border px-3 py-1.5 rounded-full text-brand-muted">{phase}</span>
+      </div>
+      <div class="h-1.5 bg-brand-border rounded-full overflow-hidden">
+        <div class="h-full bg-brand-white rounded-full" style={`width:${pct}%`}></div>
+      </div>
+      <div class="flex justify-between mt-1.5 text-[10px] text-brand-muted">
+        <span>Lanzar</span><span>Optimizar</span><span>Escalar</span>
+      </div>
+    </div>
+
+    <!-- Onboarding integrado si no ha llenado -->
+    {!hasOnboarding && (
+      <div class="bg-brand-card border border-[#5C5C6A]/40 rounded-2xl p-5">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-brand-white/10 border border-brand-border flex items-center justify-center text-xs font-semibold">1</div>
+          <div>
+            <p class="text-sm font-semibold text-brand-white">Completa tu ficha de bienvenida</p>
+            <p class="text-xs text-brand-muted">5 minutos · lo hacemos solo una vez</p>
+          </div>
+        </div>
+        <div id="onbSuccess" class="hidden py-6 text-center">
+          <p class="text-green-400 font-semibold text-sm mb-1">¡Listo, recibimos todo! 🎉</p>
+          <p class="text-brand-muted text-xs">Nos pondremos en contacto pronto.</p>
+        </div>
+        <form id="onbForm" class="space-y-3">
+          <input type="hidden" name="client_id" value={id} />
+          <input type="hidden" name="clinic_name" value={client.clinic_name} />
+          <div class="grid grid-cols-2 gap-3">
+            <div class="col-span-2">
+              <label class="field-label">Tu nombre y cargo *</label>
+              <input name="contact_name" required class="field" placeholder="Dra. Carolina Soto, directora" />
+            </div>
+            <div>
+              <label class="field-label">Teléfono / WhatsApp *</label>
+              <input name="phone" required type="tel" class="field" placeholder="+56 9..." />
+            </div>
+            <div>
+              <label class="field-label">Instagram de la clínica</label>
+              <input name="instagram" class="field" placeholder="@miclinica" />
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Tratamientos que más quieres promover (con precio)</label>
+            <textarea name="treatments_text" rows="3" class="field resize-none" placeholder="Botox — $90.000&#10;Relleno labial — $150.000&#10;Hidratación facial — $70.000"></textarea>
+          </div>
+          <div>
+            <label class="field-label">Días y horarios disponibles para grabar</label>
+            <input name="recording_days" class="field" placeholder="Martes y jueves tarde" />
+          </div>
+          <div>
+            <label class="field-label">¿Quién puede aparecer en cámara?</label>
+            <input name="on_camera" class="field" placeholder="Doctora, asistente..." />
+          </div>
+          <p class="text-xs text-brand-muted pt-1">Accesos que nos ayudan a configurar las campañas:</p>
+          <div class="space-y-2">
+            {[
+              { key: 'meta', label: 'Cuenta publicitaria Meta (Facebook/Instagram Ads)' },
+              { key: 'ig', label: 'Instagram Business conectado a tu página de Facebook' },
+              { key: 'wa', label: 'WhatsApp Business configurado' },
+            ].map(a => (
+              <label class="flex items-center gap-3 text-sm text-brand-muted cursor-pointer">
+                <input type="checkbox" name={`access_${a.key}`} value="si" class="w-4 h-4 accent-brand-white rounded" />
+                {a.label}
+              </label>
+            ))}
+          </div>
+          <label class="flex items-start gap-3 text-xs text-brand-muted cursor-pointer pt-1">
+            <input type="checkbox" name="accepts_meta" required class="w-4 h-4 accent-brand-white mt-0.5 shrink-0" />
+            Entiendo que la inversión en Meta Ads se paga directamente a Meta con mi tarjeta. ReClub administra las campañas.
+          </label>
+          <button type="submit" class="w-full bg-brand-white text-brand-black font-semibold py-3 rounded-full text-sm hover:bg-brand-blue-dark transition-colors mt-1">
+            Enviar ficha →
+          </button>
+        </form>
+      </div>
+    )}
+
+    <!-- Próximas fechas -->
+    <div class="bg-brand-card border border-brand-border rounded-2xl p-5">
+      <p class="text-xs text-brand-muted uppercase tracking-wider mb-3">Próximas fechas</p>
+      {[
+        { label: 'Reunión Día 30', date: addDays(30) },
+        { label: 'Reunión Día 60', date: addDays(60) },
+        { label: 'Cierre Día 90', date: addDays(90) },
+      ].map(f => (
+        <div class="flex justify-between py-2 border-b border-brand-border last:border-0 text-sm">
+          <span class="text-brand-white">{f.label}</span>
+          <span class="text-brand-muted">{f.date}</span>
+        </div>
+      ))}
+      {client.calendar_link && (
+        <a href={client.calendar_link} target="_blank"
+          class="mt-3 flex items-center justify-center gap-2 text-xs text-brand-muted hover:text-brand-white border border-dashed border-brand-border rounded-xl py-2.5 transition-colors">
+          Agendar reunión →
+        </a>
+      )}
+    </div>
+
+    <!-- Entregables -->
+    {(deliverables as any[]).length > 0 && (
+      <div class="bg-brand-card border border-brand-border rounded-2xl p-5">
+        <p class="text-xs text-brand-muted uppercase tracking-wider mb-3">Entregables</p>
+        {(deliverables as any[]).map(d => (
+          <div class="flex items-center justify-between py-2 border-b border-brand-border last:border-0 gap-3">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-brand-white truncate">{d.name}</p>
+              {d.link && <a href={d.link} target="_blank" class="text-xs text-brand-muted underline">Ver →</a>}
+            </div>
+            <span class="text-xs font-medium shrink-0" style={`color:${statusColor[d.status]}`}>{statusLabel[d.status]}</span>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <!-- Resultados -->
+    {(metrics as any[]).length > 0 && (
+      <div class="bg-brand-card border border-brand-border rounded-2xl p-5">
+        <p class="text-xs text-brand-muted uppercase tracking-wider mb-3">Resultados</p>
+        <div class="overflow-x-auto -mx-1">
+          <table class="w-full text-xs min-w-[400px]">
+            <thead>
+              <tr class="text-brand-muted border-b border-brand-border">
+                <th class="text-left py-2 px-1">Mes</th>
+                <th class="text-right py-2 px-1">Pauta</th>
+                <th class="text-right py-2 px-1">Convers.</th>
+                <th class="text-right py-2 px-1">Agendados</th>
+                <th class="text-right py-2 px-1">Reels</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(metrics as any[]).map(m => (
+                <tr class="border-b border-brand-border last:border-0 text-brand-white">
+                  <td class="py-2 px-1">{new Date(m.month).toLocaleDateString('es-CL',{month:'short',year:'2-digit'})}</td>
+                  <td class="py-2 px-1 text-right">${Number(m.ad_spend).toLocaleString('es-CL')}</td>
+                  <td class="py-2 px-1 text-right">{m.conversations}</td>
+                  <td class="py-2 px-1 text-right">{m.patients_booked}</td>
+                  <td class="py-2 px-1 text-right">{m.reels_published}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )}
+
+    <!-- Pagos -->
+    {(payments as any[]).length > 0 && (
+      <div class="bg-brand-card border border-brand-border rounded-2xl p-5">
+        <p class="text-xs text-brand-muted uppercase tracking-wider mb-3">Pagos · {client.plan === 'unico' ? 'Pago único' : '3 cuotas'}</p>
+        {(payments as any[]).map(p => (
+          <div class="flex items-center justify-between py-2 border-b border-brand-border last:border-0">
+            <div>
+              <p class="text-sm text-brand-white">{client.plan === 'unico' ? 'Pago único' : `Cuota ${p.installment}`} — ${Number(p.amount).toLocaleString('es-CL')}</p>
+              {p.due_date && <p class="text-xs text-brand-muted">Vence {new Date(p.due_date).toLocaleDateString('es-CL',{day:'numeric',month:'short'})}</p>}
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-medium" style={`color:${payColor[p.status]}`}>
+                {p.status === 'pagado' ? 'Pagado ✓' : p.status === 'vencido' ? 'Vencido' : 'Pendiente'}
+              </span>
+              {p.status === 'pendiente' && client.payment_link && (
+                <a href={client.payment_link} target="_blank"
+                  class="text-xs bg-brand-white text-brand-black font-semibold px-3 py-1.5 rounded-full hover:bg-brand-blue-dark transition-colors">
+                  Pagar
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <!-- Documentos -->
+    {(documents as any[]).length > 0 && (
+      <div class="bg-brand-card border border-brand-border rounded-2xl p-5">
+        <p class="text-xs text-brand-muted uppercase tracking-wider mb-3">Documentos</p>
+        {(documents as any[]).map(d => (
+          <a href={d.url} target="_blank"
+            class="flex items-center gap-3 py-2 border-b border-brand-border last:border-0 text-sm text-brand-white hover:text-brand-muted transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0 text-brand-muted">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+            </svg>
+            {d.name}
+          </a>
+        ))}
+      </div>
+    )}
+
+  </main>
+</div>
+</Layout>
+
+<style>
+  .field { width:100%;background:#0D0D0D;border:1px solid #1C1C24;border-radius:12px;padding:10px 14px;color:#F5F5F7;font-size:14px;outline:none;transition:border-color .2s;font-family:inherit; }
+  .field:focus { border-color:#5C5C6A; }
+  .field::placeholder { color:rgba(92,92,106,0.45); }
+  .field-label { display:block;font-size:11px;color:#5C5C6A;margin-bottom:5px;font-weight:500; }
+</style>
+
+<script>
+document.getElementById('onbForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target as HTMLFormElement;
+  const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  const fd = new FormData(form);
+  const data: Record<string,any> = {};
+  fd.forEach((v,k) => { data[k] = v; });
+  const res = await fetch('/api/s90/onboarding', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (res.ok) {
+    form.classList.add('hidden');
+    document.getElementById('onbSuccess')!.classList.remove('hidden');
+  } else {
+    btn.disabled = false; btn.textContent = 'Enviar ficha →';
+  }
+});
+</script>

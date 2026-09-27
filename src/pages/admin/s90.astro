@@ -104,10 +104,6 @@ function getPct(day: number) { return Math.round(day / 90 * 100); }
             <label class="label">Link Drive de entregables</label>
             <input name="drive_link" class="adm-input" placeholder="https://drive.google.com/..." />
           </div>
-          <div class="sm:col-span-2 flex items-center gap-3">
-            <input type="checkbox" name="send_welcome" id="chkWelcome" checked class="w-4 h-4 accent-brand-white" />
-            <label for="chkWelcome" class="text-sm text-brand-muted">Enviar correo de acceso al panel al crear</label>
-          </div>
           <div class="sm:col-span-2">
             <button type="submit" id="createBtn" class="bg-brand-white text-brand-black font-semibold px-6 py-2.5 rounded-full text-sm hover:bg-brand-blue-dark transition-colors disabled:opacity-50">
               Crear cliente
@@ -153,9 +149,14 @@ function getPct(day: number) { return Math.round(day / 90 * 100); }
 
                   <!-- Panel de gestión (expandible) -->
                   <div class="client-detail hidden mt-5 pt-5 border-t border-brand-border space-y-5" data-id={c.id}>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      <button class="btn-action" data-action="send_link" data-id={c.id}>📧 Reenviar acceso</button>
-                      <a href={`/panel`} target="_blank" class="btn-action text-center">👁 Ver como cliente</a>
+                    <div class="space-y-2">
+                      <div class="flex items-center gap-2 bg-brand-dark border border-brand-border rounded-xl px-3 py-2">
+                        <span class="text-xs text-brand-muted flex-1 truncate" id={`url-${c.id}`}>reclubcl.com/panel/{c.client_token}</span>
+                        <button class="copy-url-btn text-xs text-brand-white bg-brand-border px-2 py-1 rounded-lg hover:bg-brand-muted transition-colors shrink-0"
+                          data-url={`https://reclubcl.com/panel/${c.client_token}`}>Copiar</button>
+                        <a href={`/panel/${c.client_token}`} target="_blank"
+                          class="text-xs text-brand-muted hover:text-brand-white transition-colors shrink-0">Abrir →</a>
+                      </div>
                     </div>
 
                     <!-- Entregables -->
@@ -251,10 +252,10 @@ document.getElementById('newClientForm')?.addEventListener('submit', async (e) =
   btn.disabled = true; btn.textContent = 'Creando...';
   const body: any = {};
   fd.forEach((v, k) => { body[k] = v; });
-  body.send_welcome = fd.has('send_welcome');
+  body.send_welcome = false;
   const res = await fetch('/api/s90/admin/clients', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (res.ok) {
-    msg.textContent = body.send_welcome ? '¡Cliente creado y correo enviado!' : 'Cliente creado.';
+    msg.textContent = 'Cliente creado. Copia su URL desde la lista.';
     msg.classList.remove('hidden');
     form.reset();
     setTimeout(() => window.location.reload(), 1500);
@@ -263,6 +264,18 @@ document.getElementById('newClientForm')?.addEventListener('submit', async (e) =
     msg.classList.remove('hidden');
   }
   btn.disabled = false; btn.textContent = 'Crear cliente';
+});
+
+// ---- Copiar URL cliente ----
+document.querySelectorAll('.copy-url-btn').forEach(btn => {
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const url = (btn as HTMLElement).dataset.url!;
+    await navigator.clipboard.writeText(url);
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  });
 });
 
 // ---- Expandir cliente ----
@@ -311,16 +324,6 @@ async function loadClientDetail(id: string, container: HTMLElement) {
       });
     });
   }
-
-  // Reenviar acceso
-  container.querySelectorAll('[data-action="send_link"]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      btn.textContent = 'Enviando...';
-      await fetch(`/api/s90/admin/clients/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ action: 'send_link' }) });
-      btn.textContent = '✓ Enviado';
-    });
-  });
 
   // Métricas
   const mForm = container.querySelector('.metrics-form') as HTMLFormElement;
