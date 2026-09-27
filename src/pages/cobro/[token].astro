@@ -28,6 +28,11 @@ const clientEmail = onb.email ?? client.email ?? '_______________';
 const numRows = await sql`SELECT row_number() OVER (ORDER BY created_at) AS num FROM s90_clients WHERE id = ${client.id}`;
 const cobroNum = String((numRows[0] as any)?.num ?? 1).padStart(4, '0');
 
+// Fechas hoja de ruta
+const sem2 = new Date(start); sem2.setDate(sem2.getDate() + 7);
+const sem6 = new Date(start); sem6.setDate(sem6.getDate() + 35);
+const sem10 = new Date(start); sem10.setDate(sem10.getDate() + 63);
+
 // Datos fijos ReClub — actualizar aquí
 const RECLUB_RUT = '12.345.678-9';        // ← reemplazar
 const RECLUB_EMAIL = 'benjamin@reclubcl.com';
@@ -152,6 +157,26 @@ const LINK_PAGO = 'https://reclubcl.com/pagar'; // ← reemplazar
     /* Footer legal */
     .legal { font-size: 10px; color: #AAA; line-height: 1.6; margin-top: 32px; padding-top: 20px; border-top: 1px solid #E8E8E8; }
     .footer-doc { display: flex; justify-content: space-between; font-size: 10px; color: #BBB; margin-top: 40px; padding-top: 16px; border-top: 1px solid #E8E8E8; }
+
+    /* Hoja de ruta */
+    .separador { border: none; border-top: 2px dashed #E0E0E0; margin: 40px 0; }
+    .hoja-titulo { font-family: 'Instrument Serif', serif; font-size: 30px; font-weight: 400; color: #0A0A0F; margin-bottom: 6px; }
+    .hoja-sub { font-size: 12px; color: #888; margin-bottom: 28px; }
+    .seccion-azul { font-size: 13px; font-weight: 700; color: #0A0A0F; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 5px; border-bottom: 2px solid #0A0A0F; }
+    .tr-activo { background: #0A0A0F !important; }
+    .tr-activo td { color: #fff !important; font-weight: 600; }
+    .checklist { list-style: none; padding: 0; margin: 0 0 20px; }
+    .checklist li { display: flex; gap: 10px; font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 8px; }
+    .checklist li::before { content: '·'; color: #0A0A0F; font-weight: 700; font-size: 18px; line-height: 1.2; }
+    .enfoque-dia { font-size: 13px; font-weight: 700; color: #0A0A0F; margin-bottom: 4px; }
+    .enfoque-body { font-size: 13px; color: #444; line-height: 1.7; margin-bottom: 16px; }
+    .quote { font-style: italic; color: #555; border-left: 3px solid #0A0A0F; padding-left: 12px; margin: 10px 0; font-size: 12px; line-height: 1.7; }
+    .acuerdos-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .acuerdos-tabla thead tr { background: #0A0A0F; color: #fff; }
+    .acuerdos-tabla thead th { padding: 9px 12px; text-align: left; font-weight: 500; font-size: 11px; letter-spacing: 0.05em; }
+    .acuerdos-tabla tbody td { padding: 18px 12px; border-bottom: 1px solid #E8E8E8; color: #444; }
+    .proximas { display: flex; gap: 40px; margin-top: 20px; font-size: 13px; color: #444; }
+    .proximas span { border-bottom: 1px solid #999; min-width: 180px; display: inline-block; padding-bottom: 2px; }
 
     @media print {
       .topbar { display: none; }
@@ -367,7 +392,155 @@ const LINK_PAGO = 'https://reclubcl.com/pagar'; // ← reemplazar
 
   <div class="footer-doc">
     <span>Benjamín Tapia Riquelme · ReClub · reclubcl.com</span>
-    <span>N° {cobroNum} · Página 1</span>
+    <span>N° {cobroNum} · Página 1 de 2</span>
+  </div>
+
+  <!-- ── HOJA DE RUTA ── -->
+  <hr class="separador" />
+
+  <h2 class="hoja-titulo">Llamada de Revisión<br>y Hoja de Ruta</h2>
+  <p class="hoja-sub">Guía para las reuniones del Día 30, 60 y 90 · {clinicName}</p>
+
+  <!-- Hoja de ruta 90 días -->
+  <div class="seccion" style="margin-bottom:28px;">
+    <div class="seccion-azul">Hoja de ruta de los 90 días</div>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th style="width:20%">Cuándo</th>
+          <th style="width:20%">Fase</th>
+          <th>Hito</th>
+          <th style="width:18%">Responsable</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Día 1</td><td>Activación</td><td>Reunión de estrategia y formulario de bienvenida</td><td>Ambos</td></tr>
+        <tr><td>Días 1 a 3</td><td>Activación</td><td>Entrega de accesos: cuenta publicitaria, Instagram y WhatsApp</td><td>Clínica</td></tr>
+        <tr><td>Días 3 a 7</td><td>Activación</td><td>WhatsApp Business configurado y guion de grabación listo</td><td>ReClub</td></tr>
+        <tr><td>Semana 2</td><td>Lanzar</td><td>Grabación 1 · <strong>{fmtShort(sem2)}</strong></td><td>Ambos</td></tr>
+        <tr><td>Semana 3</td><td>Lanzar</td><td>Primeros reels publicados, campañas activas y guion de ventas entregado</td><td>ReClub</td></tr>
+        <tr class="tr-activo"><td>Día 30</td><td>Lanzar</td><td>Revisión 1 · <strong>{fmtShort(day30)}</strong></td><td>Ambos</td></tr>
+        <tr><td>Semana 6</td><td>Optimizar</td><td>Grabación 2 · <strong>{fmtShort(sem6)}</strong></td><td>Ambos</td></tr>
+        <tr class="tr-activo"><td>Día 60</td><td>Optimizar</td><td>Revisión 2 · <strong>{fmtShort(day60)}</strong></td><td>Ambos</td></tr>
+        <tr><td>Semana 10</td><td>Escalar</td><td>Grabación 3 · <strong>{fmtShort(sem10)}</strong></td><td>Ambos</td></tr>
+        <tr class="tr-activo"><td>Día 90</td><td>Escalar</td><td>Reunión de cierre, reporte final y propuesta de continuidad · <strong>{fmtShort(end)}</strong></td><td>Ambos</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Antes de la llamada -->
+  <div class="seccion">
+    <div class="seccion-azul">Antes de la llamada (checklist interno)</div>
+    <ul class="checklist">
+      <li>Exportar desde el Administrador de anuncios la inversión, conversaciones iniciadas y costo por conversación del mes.</li>
+      <li>Pedir a la clínica, con 2 días de anticipación, cuántos pacientes agendó y atendió desde las campañas.</li>
+      <li>Elegir los 3 reels con más visualizaciones y los 2 anuncios con menor costo por conversación.</li>
+      <li>Revisar 10 conversaciones de WhatsApp y anotar dónde se pierden los pacientes.</li>
+      <li>Preparar la propuesta del próximo mes: tratamientos foco, ideas de reels y ajuste de presupuesto.</li>
+    </ul>
+  </div>
+
+  <!-- Estructura de la llamada -->
+  <div class="seccion">
+    <div class="seccion-azul">Estructura de la llamada (45 minutos)</div>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th style="width:16%">Minuto</th>
+          <th style="width:28%">Bloque</th>
+          <th>Qué hacer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>0 a 5</td><td>Cómo va la clínica</td><td>Pregunta abierta: ¿cómo han estado este mes, qué han notado en la agenda?</td></tr>
+        <tr><td>5 a 15</td><td>Resultados</td><td>Mostrar la tabla de métricas y compararla con el mes anterior.</td></tr>
+        <tr><td>15 a 25</td><td>Qué funcionó</td><td>Top 3 reels, mejores anuncios y por qué funcionaron. Qué se pausa.</td></tr>
+        <tr><td>25 a 35</td><td>Ventas por WhatsApp</td><td>Revisar conversaciones: tiempos de respuesta, preguntas frecuentes y cierres perdidos.</td></tr>
+        <tr><td>35 a 42</td><td>Plan del próximo mes</td><td>Tratamientos foco, fecha de grabación, ideas de reels y presupuesto.</td></tr>
+        <tr><td>42 a 45</td><td>Acuerdos</td><td>Resumir compromisos de ambos con fechas. Enviarlos por escrito el mismo día.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tabla de métricas -->
+  <div class="seccion">
+    <div class="seccion-azul">Tabla de métricas</div>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Métrica</th>
+          <th style="width:18%;text-align:center;">Mes 1</th>
+          <th style="width:18%;text-align:center;">Mes 2</th>
+          <th style="width:18%;text-align:center;">Mes 3</th>
+        </tr>
+      </thead>
+      <tbody>
+        {[
+          'Inversión en pauta',
+          'Conversaciones iniciadas',
+          'Costo por conversación',
+          'Pacientes agendados',
+          '% de agendamiento (agendados ÷ conversaciones)',
+          'Ventas generadas (estimadas por la clínica)',
+          'Retorno (ventas ÷ inversión total del mes)',
+          'Reels publicados',
+          'Visualizaciones totales',
+          'Seguidores nuevos',
+        ].map(m => (
+          <tr>
+            <td>{m}</td>
+            <td style="text-align:center;color:#ccc;">—</td>
+            <td style="text-align:center;color:#ccc;">—</td>
+            <td style="text-align:center;color:#ccc;">—</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Enfoque de cada reunión -->
+  <div class="seccion">
+    <div class="seccion-azul">Enfoque de cada reunión</div>
+    <p class="enfoque-dia">Día 30 · Ajustar</p>
+    <p class="enfoque-body">El primer mes es de aprendizaje: el objetivo es descubrir qué contenido y qué anuncios traen conversaciones más baratas. Preguntas clave: ¿qué tratamiento consultan más? ¿Las consultas son del público correcto? ¿La clínica está respondiendo rápido?</p>
+    <p class="enfoque-dia">Día 60 · Optimizar</p>
+    <p class="enfoque-body">Con datos de dos meses, se concentra el presupuesto en lo que funciona. Preguntas clave: ¿cuál es el costo por paciente agendado? ¿Conviene subir la pauta? ¿Dónde se pierden los cierres en WhatsApp?</p>
+    <p class="enfoque-dia">Día 90 · Cerrar y proyectar</p>
+    <p class="enfoque-body">Presentar el reporte final con la evolución de los 3 meses y el retorno obtenido. Luego, ofrecer la continuidad:</p>
+    <p class="quote">"En estos 90 días construimos la base: ya sabemos qué contenido y qué anuncios te traen pacientes. Mi propuesta es seguir con un plan mensual para mantener y hacer crecer estos resultados."</p>
+    <p class="enfoque-body" style="margin-top:8px;">Pedir también un testimonio en video y autorización para publicar el caso.</p>
+  </div>
+
+  <!-- Acuerdos -->
+  <div class="seccion">
+    <div class="seccion-azul">Acuerdos de la reunión</div>
+    <table class="acuerdos-tabla">
+      <thead>
+        <tr>
+          <th style="width:55%">Acuerdo</th>
+          <th style="width:25%">Responsable</th>
+          <th>Fecha límite</th>
+        </tr>
+      </thead>
+      <tbody>
+        {[1,2,3,4,5].map(() => (
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <div class="proximas">
+      <div>Próxima grabación: <span></span></div>
+      <div>Próxima revisión: <span></span></div>
+    </div>
+  </div>
+
+  <div class="footer-doc" style="margin-top:32px;">
+    <span>Benjamín Tapia Riquelme · ReClub · reclubcl.com</span>
+    <span>N° {cobroNum} · Página 2 de 2</span>
   </div>
 
 </div>
