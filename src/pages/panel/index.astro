@@ -1,0 +1,241 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getClientSession, dayOfProgram, currentPhase } from '../../lib/client-auth';
+import sql from '../../lib/db';
+
+const session = await getClientSession(Astro.request);
+if (!session) return Astro.redirect('/panel/login');
+
+const id = session.client_id;
+const day = dayOfProgram(session.start_date);
+const phase = currentPhase(day);
+const pct = Math.round((day / 90) * 100);
+
+const [deliverables, metrics, payments, documents] = await Promise.all([
+  sql`SELECT * FROM s90_deliverables WHERE client_id = ${id} ORDER BY sort_order`,
+  sql`SELECT * FROM s90_metrics WHERE client_id = ${id} ORDER BY month`,
+  sql`SELECT * FROM s90_payments WHERE client_id = ${id} ORDER BY installment`,
+  sql`SELECT * FROM s90_documents WHERE client_id = ${id} ORDER BY uploaded_at DESC`,
+]);
+
+const startDate = new Date(session.start_date);
+function addDays(d: Date, n: number) {
+  const r = new Date(d); r.setDate(r.getDate() + n); return r.toLocaleDateString('es-CL', { day: 'numeric', month: 'long' });
+}
+
+const statusColor: Record<string, string> = {
+  pendiente: 'text-brand-muted',
+  en_proceso: 'text-yellow-400',
+  entregado: 'text-green-400',
+};
+const statusLabel: Record<string, string> = {
+  pendiente: 'Pendiente',
+  en_proceso: 'En proceso',
+  entregado: 'Entregado ✓',
+};
+const paymentColor: Record<string, string> = {
+  pendiente: 'text-brand-muted',
+  pagado: 'text-green-400',
+  vencido: 'text-red-400',
+};
+const MY_WHATSAPP = '+56938897621';
+---
+
+<Layout title={`Panel — ${session.clinic_name} | Sistema 90`} noindex>
+  <div class="min-h-screen bg-brand-black text-brand-white">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 border-b border-brand-border bg-brand-black/90 backdrop-blur-md px-4 py-4 flex items-center justify-between gap-4">
+      <div>
+        <p class="text-brand-white font-semibold text-sm leading-none">{session.clinic_name}</p>
+        <p class="text-brand-muted text-xs mt-0.5">Sistema 90 — ReClub</p>
+      </div>
+      <form action="/api/s90/auth/logout" method="POST">
+        <button class="text-brand-muted hover:text-brand-white text-xs transition-colors">Salir</button>
+      </form>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 py-8 space-y-6 pb-28">
+
+      <!-- Resumen: progreso -->
+      <section class="bg-brand-card border border-brand-border rounded-2xl p-6">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <p class="text-xs text-brand-muted tracking-[0.15em] uppercase mb-1">Día actual</p>
+            <p class="font-serif text-brand-white" style="font-size:40px;line-height:1;font-weight:400;letter-spacing:-0.02em;">{day}<span class="text-brand-muted text-xl"> / 90</span></p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-brand-muted tracking-[0.15em] uppercase mb-1">Fase</p>
+            <span class="inline-block bg-brand-white/10 border border-brand-border text-brand-white text-sm font-medium px-3 py-1 rounded-full">{phase}</span>
+          </div>
+        </div>
+        <!-- Barra -->
+        <div class="h-1.5 bg-brand-border rounded-full overflow-hidden">
+          <div class="h-full bg-brand-white rounded-full transition-all" style={`width:${pct}%`}></div>
+        </div>
+        <div class="flex justify-between mt-2">
+          <span class="text-[10px] text-brand-muted">Lanzar</span>
+          <span class="text-[10px] text-brand-muted">Optimizar</span>
+          <span class="text-[10px] text-brand-muted">Escalar</span>
+        </div>
+      </section>
+
+      <!-- Próximas fechas -->
+      <section class="bg-brand-card border border-brand-border rounded-2xl p-6">
+        <p class="text-xs text-brand-muted tracking-[0.15em] uppercase mb-4">Próximas fechas</p>
+        <div class="space-y-3">
+          {[
+            { label: 'Reunión Día 30', date: addDays(startDate, 30), icon: '📅' },
+            { label: 'Reunión Día 60', date: addDays(startDate, 60), icon: '📅' },
+            { label: 'Reunión Día 90 — Cierre', date: addDays(startDate, 90), icon: '🏁' },
+          ].map(f => (
+            <div class="flex items-center justify-between py-2 border-b border-brand-border last:border-0">
+              <span class="text-sm text-brand-white">{f.icon} {f.label}</span>
+              <span class="text-sm text-brand-muted">{f.date}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Entregables -->
+      <section class="bg-brand-card border border-brand-border rounded-2xl p-6">
+        <p class="text-xs text-brand-muted tracking-[0.15em] uppercase mb-4">Entregables</p>
+        <div class="space-y-3">
+          {(deliverables as any[]).map(d => (
+            <div class="flex items-start justify-between gap-3 py-2 border-b border-brand-border last:border-0">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-brand-white truncate">{d.name}</p>
+                {d.link && (
+                  <a href={d.link} target="_blank" class="text-xs text-brand-muted underline hover:text-brand-white truncate block mt-0.5">Ver carpeta →</a>
+                )}
+              </div>
+              <span class={`text-xs font-medium shrink-0 ${statusColor[d.status]}`}>{statusLabel[d.status]}</span>
+            </div>
+          ))}
+          {deliverables.length === 0 && <p class="text-brand-muted text-sm">Sin entregables aún.</p>}
+        </div>
+      </section>
+
+      <!-- Resultados -->
+      <section class="bg-brand-card border border-brand-border rounded-2xl p-6">
+        <p class="text-xs text-brand-muted tracking-[0.15em] uppercase mb-4">Resultados por mes</p>
+        {(metrics as any[]).length === 0 ? (
+          <p class="text-brand-muted text-sm">Los resultados se actualizan al cierre de cada mes.</p>
+        ) : (
+          <div class="overflow-x-auto -mx-2">
+            <table class="w-full text-xs min-w-[480px]">
+              <thead>
+                <tr class="text-brand-muted border-b border-brand-border">
+                  <th class="text-left py-2 px-2 font-medium">Mes</th>
+                  <th class="text-right py-2 px-2 font-medium">Pauta</th>
+                  <th class="text-right py-2 px-2 font-medium">Conversaciones</th>
+                  <th class="text-right py-2 px-2 font-medium">Costo/conv.</th>
+                  <th class="text-right py-2 px-2 font-medium">Agendados</th>
+                  <th class="text-right py-2 px-2 font-medium">Reels</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(metrics as any[]).map(m => (
+                  <tr class="border-b border-brand-border last:border-0 text-brand-white">
+                    <td class="py-2 px-2">{new Date(m.month).toLocaleDateString('es-CL', { month: 'short', year: '2-digit' })}</td>
+                    <td class="py-2 px-2 text-right">${Number(m.ad_spend).toLocaleString('es-CL')}</td>
+                    <td class="py-2 px-2 text-right">{m.conversations}</td>
+                    <td class="py-2 px-2 text-right">${Number(m.cost_per_conv).toLocaleString('es-CL')}</td>
+                    <td class="py-2 px-2 text-right">{m.patients_booked}</td>
+                    <td class="py-2 px-2 text-right">{m.reels_published}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      <!-- Pagos -->
+      <section class="bg-brand-card border border-brand-border rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-xs text-brand-muted tracking-[0.15em] uppercase">Pagos</p>
+          <span class="text-xs text-brand-muted">{session.plan === 'unico' ? 'Pago único' : '3 cuotas'}</span>
+        </div>
+        <div class="space-y-3">
+          {(payments as any[]).map(p => (
+            <div class="flex items-center justify-between py-2 border-b border-brand-border last:border-0">
+              <div>
+                <p class="text-sm text-brand-white">{session.plan === 'unico' ? 'Pago único' : `Cuota ${p.installment}`}</p>
+                <p class="text-xs text-brand-muted mt-0.5">
+                  ${Number(p.amount).toLocaleString('es-CL')}
+                  {p.due_date && ` · Vence ${new Date(p.due_date).toLocaleDateString('es-CL', { day: 'numeric', month: 'short' })}`}
+                </p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class={`text-xs font-medium ${paymentColor[p.status]}`}>
+                  {p.status === 'pagado' ? 'Pagado ✓' : p.status === 'vencido' ? 'Vencido' : 'Pendiente'}
+                </span>
+                {p.status === 'pendiente' && session.payment_link && (
+                  <a href={session.payment_link} target="_blank"
+                    class="text-xs bg-brand-white text-brand-black font-semibold px-3 py-1.5 rounded-full hover:bg-brand-blue-dark transition-colors">
+                    Pagar
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Documentos -->
+      {(documents as any[]).length > 0 && (
+        <section class="bg-brand-card border border-brand-border rounded-2xl p-6">
+          <p class="text-xs text-brand-muted tracking-[0.15em] uppercase mb-4">Documentos</p>
+          <div class="space-y-2">
+            {(documents as any[]).map(doc => (
+              <a href={doc.url} target="_blank"
+                class="flex items-center gap-3 py-2 border-b border-brand-border last:border-0 hover:text-brand-muted transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0 text-brand-muted">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+                </svg>
+                <span class="text-sm text-brand-white">{doc.name}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-auto shrink-0 text-brand-muted">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                </svg>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- Recursos -->
+      <section class="bg-brand-card border border-brand-border rounded-2xl p-6">
+        <p class="text-xs text-brand-muted tracking-[0.15em] uppercase mb-4">Recursos</p>
+        <div class="space-y-2">
+          {[
+            { name: 'Guión de ventas por WhatsApp', href: '#' },
+            { name: 'Autorización de uso de imagen para pacientes', href: '#' },
+          ].map(r => (
+            <a href={r.href} target="_blank"
+              class="flex items-center gap-3 py-2 border-b border-brand-border last:border-0 hover:text-brand-muted transition-colors text-sm text-brand-white">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0 text-brand-muted">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+              </svg>
+              {r.name}
+            </a>
+          ))}
+        </div>
+      </section>
+
+    </main>
+
+    <!-- WhatsApp fijo -->
+    <a
+      href={`https://wa.me/${MY_WHATSAPP.replace('+', '')}?text=${encodeURIComponent(`Hola Benjamín, soy ${session.clinic_name}. `)}`}
+      target="_blank"
+      class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl"
+      style="background:#25d366;"
+      aria-label="WhatsApp"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-7 h-7">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+    </a>
+  </div>
+</Layout>

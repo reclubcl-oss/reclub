@@ -1,0 +1,365 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { checkAuth } from '../../lib/auth';
+import sql from '../../lib/db';
+
+const authed = checkAuth(Astro.request);
+let clients: any[] = [];
+if (authed) {
+  clients = await sql`
+    SELECT c.*,
+      (SELECT submitted_at FROM s90_onboarding WHERE client_id = c.id ORDER BY submitted_at DESC LIMIT 1) as onboarding_at
+    FROM s90_clients c ORDER BY c.created_at DESC
+  ` as any[];
+}
+
+function getDay(startDate: string) {
+  const ms = Date.now() - new Date(startDate).getTime();
+  return Math.min(90, Math.max(1, Math.floor(ms / (1000 * 60 * 60 * 24)) + 1));
+}
+function getPhase(day: number) {
+  if (day <= 30) return 'Lanzar';
+  if (day <= 60) return 'Optimizar';
+  return 'Escalar';
+}
+function getPct(day: number) { return Math.round(day / 90 * 100); }
+---
+
+<Layout title="Admin Sistema 90 — ReClub">
+  <!-- LOGIN -->
+  <div id="loginScreen" class={`min-h-screen flex items-center justify-center p-6 bg-brand-black ${authed ? 'hidden' : ''}`}>
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-black text-brand-white">Sistema 90</h1>
+        <p class="text-brand-muted text-sm mt-1">Admin ReClub</p>
+      </div>
+      <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
+        <div id="loginError" class="hidden mb-4 bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl"></div>
+        <form id="loginForm" class="space-y-4">
+          <input type="password" id="loginPassword" required autocomplete="current-password"
+            class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-brand-white focus:border-brand-muted outline-none"
+            placeholder="Contraseña admin" />
+          <button type="submit" id="loginBtn"
+            class="w-full bg-brand-white text-brand-black py-3 rounded-full font-semibold transition-colors disabled:opacity-50">
+            Entrar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="adminDashboard" class={`min-h-screen bg-brand-black ${authed ? '' : 'hidden'}`}>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 border-b border-brand-border bg-brand-black/90 backdrop-blur-md px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <div>
+        <p class="font-black text-brand-white text-sm leading-none">Sistema 90</p>
+        <p class="text-brand-muted text-xs">Panel de administración</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/admin/whatsapp" class="text-brand-muted hover:text-brand-white text-xs transition-colors hidden sm:block">Leads WhatsApp</a>
+        <button id="logoutBtn" class="text-brand-muted hover:text-red-400 text-xs transition-colors">Salir</button>
+      </div>
+    </header>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+
+      <!-- Crear cliente -->
+      <section class="bg-brand-card border border-brand-border rounded-2xl p-6">
+        <h2 class="text-sm font-semibold text-brand-white mb-5">Nuevo cliente</h2>
+        <form id="newClientForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label">Nombre de la clínica *</label>
+            <input name="clinic_name" required class="adm-input" placeholder="Clínica Estética..." />
+          </div>
+          <div>
+            <label class="label">Nombre de contacto</label>
+            <input name="contact_name" class="adm-input" placeholder="Dra. Carolina..." />
+          </div>
+          <div>
+            <label class="label">Correo electrónico *</label>
+            <input name="email" required type="email" class="adm-input" placeholder="hola@clinica.cl" />
+          </div>
+          <div>
+            <label class="label">Fecha de inicio *</label>
+            <input name="start_date" required type="date" class="adm-input" />
+          </div>
+          <div>
+            <label class="label">Modalidad de pago *</label>
+            <select name="plan" required class="adm-input">
+              <option value="unico">Pago único ($990.000)</option>
+              <option value="cuotas">3 cuotas ($400.000 c/u)</option>
+            </select>
+          </div>
+          <div>
+            <label class="label">Link de pago (opcional)</label>
+            <input name="payment_link" class="adm-input" placeholder="https://..." />
+          </div>
+          <div>
+            <label class="label">Link agenda (Calendly)</label>
+            <input name="calendar_link" class="adm-input" placeholder="https://calendly.com/..." />
+          </div>
+          <div>
+            <label class="label">Link Drive de entregables</label>
+            <input name="drive_link" class="adm-input" placeholder="https://drive.google.com/..." />
+          </div>
+          <div class="sm:col-span-2 flex items-center gap-3">
+            <input type="checkbox" name="send_welcome" id="chkWelcome" checked class="w-4 h-4 accent-brand-white" />
+            <label for="chkWelcome" class="text-sm text-brand-muted">Enviar correo de acceso al panel al crear</label>
+          </div>
+          <div class="sm:col-span-2">
+            <button type="submit" id="createBtn" class="bg-brand-white text-brand-black font-semibold px-6 py-2.5 rounded-full text-sm hover:bg-brand-blue-dark transition-colors disabled:opacity-50">
+              Crear cliente
+            </button>
+            <span id="createMsg" class="ml-3 text-xs text-brand-muted hidden"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- Lista de clientes -->
+      <section>
+        <h2 class="text-sm font-semibold text-brand-white mb-4">Clientes activos ({clients.length})</h2>
+        {clients.length === 0 ? (
+          <p class="text-brand-muted text-sm">Sin clientes aún.</p>
+        ) : (
+          <div class="space-y-3">
+            {clients.map((c: any) => {
+              const day = getDay(c.start_date);
+              const phase = getPhase(day);
+              const pct = getPct(day);
+              return (
+                <div class="client-card bg-brand-card border border-brand-border rounded-2xl p-5 cursor-pointer hover:border-brand-muted transition-colors"
+                     data-id={c.id}>
+                  <div class="flex items-start justify-between gap-4 mb-3">
+                    <div>
+                      <p class="font-semibold text-brand-white text-sm">{c.clinic_name}</p>
+                      <p class="text-brand-muted text-xs mt-0.5">{c.email}</p>
+                    </div>
+                    <div class="text-right shrink-0">
+                      <span class="text-xs bg-brand-border text-brand-muted px-2 py-1 rounded-full">{phase}</span>
+                      <p class="text-xs text-brand-muted mt-1">Día {day}/90</p>
+                    </div>
+                  </div>
+                  <div class="h-1 bg-brand-border rounded-full overflow-hidden mb-3">
+                    <div class="h-full bg-brand-white rounded-full" style={`width:${pct}%`}></div>
+                  </div>
+                  <div class="flex items-center justify-between text-xs text-brand-muted">
+                    <span>{c.plan === 'unico' ? 'Pago único' : '3 cuotas'}</span>
+                    <span class={c.onboarding_at ? 'text-green-400' : ''}>
+                      {c.onboarding_at ? '✓ Onboarding recibido' : 'Sin onboarding'}
+                    </span>
+                  </div>
+
+                  <!-- Panel de gestión (expandible) -->
+                  <div class="client-detail hidden mt-5 pt-5 border-t border-brand-border space-y-5" data-id={c.id}>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      <button class="btn-action" data-action="send_link" data-id={c.id}>📧 Reenviar acceso</button>
+                      <a href={`/panel`} target="_blank" class="btn-action text-center">👁 Ver como cliente</a>
+                    </div>
+
+                    <!-- Entregables -->
+                    <div>
+                      <p class="text-xs text-brand-muted uppercase tracking-wider mb-2">Entregables</p>
+                      <div class="deliverables-list space-y-1" data-id={c.id}></div>
+                    </div>
+
+                    <!-- Métricas -->
+                    <div>
+                      <p class="text-xs text-brand-muted uppercase tracking-wider mb-2">Agregar resultados</p>
+                      <form class="metrics-form grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs" data-id={c.id}>
+                        <div><label class="label-sm">Mes (AAAA-MM-DD)</label><input name="month" type="date" class="adm-input-sm" /></div>
+                        <div><label class="label-sm">Pauta ($)</label><input name="ad_spend" type="number" class="adm-input-sm" /></div>
+                        <div><label class="label-sm">Conversaciones</label><input name="conversations" type="number" class="adm-input-sm" /></div>
+                        <div><label class="label-sm">Costo/conv ($)</label><input name="cost_per_conv" type="number" class="adm-input-sm" /></div>
+                        <div><label class="label-sm">Agendados</label><input name="patients_booked" type="number" class="adm-input-sm" /></div>
+                        <div><label class="label-sm">Reels</label><input name="reels_published" type="number" class="adm-input-sm" /></div>
+                        <div class="sm:col-span-3">
+                          <button type="submit" class="bg-brand-white text-brand-black text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-brand-blue-dark transition-colors">Guardar mes</button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <!-- Subir documento -->
+                    <div>
+                      <p class="text-xs text-brand-muted uppercase tracking-wider mb-2">Subir documento</p>
+                      <form class="doc-form flex flex-col sm:flex-row gap-2" data-id={c.id} enctype="multipart/form-data">
+                        <input name="name" class="adm-input-sm flex-1" placeholder="Nombre del documento" />
+                        <input type="file" name="file" class="text-xs text-brand-muted" />
+                        <button type="submit" class="bg-brand-white text-brand-black text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-brand-blue-dark transition-colors shrink-0">Subir</button>
+                      </form>
+                    </div>
+
+                    <!-- Onboarding -->
+                    {c.onboarding_at && (
+                      <div>
+                        <p class="text-xs text-brand-muted uppercase tracking-wider mb-2">Formulario de bienvenida</p>
+                        <button class="btn-action view-onboarding" data-id={c.id}>Ver respuestas</button>
+                        <pre class="onboarding-data hidden mt-3 text-xs text-brand-muted bg-brand-dark p-4 rounded-xl overflow-x-auto max-h-64" data-id={c.id}></pre>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .label { display:block;font-size:12px;color:#5C5C6A;margin-bottom:6px;font-weight:500; }
+  .label-sm { display:block;font-size:10px;color:#5C5C6A;margin-bottom:4px;font-weight:500; }
+  .adm-input { width:100%;background:#070707;border:1px solid #1C1C24;border-radius:12px;padding:10px 12px;color:#F5F5F7;font-size:14px;outline:none;transition:border-color .2s; }
+  .adm-input:focus { border-color:#5C5C6A; }
+  .adm-input-sm { width:100%;background:#070707;border:1px solid #1C1C24;border-radius:8px;padding:6px 8px;color:#F5F5F7;font-size:12px;outline:none;transition:border-color .2s; }
+  .adm-input-sm:focus { border-color:#5C5C6A; }
+  .btn-action { font-size:12px;background:#0D0D0D;border:1px solid #1C1C24;color:#5C5C6A;padding:6px 12px;border-radius:8px;transition:color .2s;cursor:pointer; }
+  .btn-action:hover { color:#F5F5F7; }
+</style>
+
+<script>
+// ---- Auth ----
+document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pw = (document.getElementById('loginPassword') as HTMLInputElement).value;
+  const btn = document.getElementById('loginBtn') as HTMLButtonElement;
+  const err = document.getElementById('loginError')!;
+  btn.disabled = true;
+  const res = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) });
+  if (res.ok) { window.location.reload(); } else {
+    err.textContent = 'Contraseña incorrecta.';
+    err.classList.remove('hidden');
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+  await fetch('/api/admin/logout', { method: 'POST' });
+  window.location.reload();
+});
+
+// ---- Crear cliente ----
+document.getElementById('newClientForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target as HTMLFormElement;
+  const fd = new FormData(form);
+  const btn = document.getElementById('createBtn') as HTMLButtonElement;
+  const msg = document.getElementById('createMsg')!;
+  btn.disabled = true; btn.textContent = 'Creando...';
+  const body: any = {};
+  fd.forEach((v, k) => { body[k] = v; });
+  body.send_welcome = fd.has('send_welcome');
+  const res = await fetch('/api/s90/admin/clients', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (res.ok) {
+    msg.textContent = body.send_welcome ? '¡Cliente creado y correo enviado!' : 'Cliente creado.';
+    msg.classList.remove('hidden');
+    form.reset();
+    setTimeout(() => window.location.reload(), 1500);
+  } else {
+    msg.textContent = 'Error al crear cliente.';
+    msg.classList.remove('hidden');
+  }
+  btn.disabled = false; btn.textContent = 'Crear cliente';
+});
+
+// ---- Expandir cliente ----
+document.querySelectorAll('.client-card').forEach(card => {
+  card.addEventListener('click', async (e) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, form, input, select, textarea')) return;
+    const id = (card as HTMLElement).dataset.id!;
+    const detail = card.querySelector('.client-detail') as HTMLElement;
+    if (detail.classList.contains('hidden')) {
+      detail.classList.remove('hidden');
+      await loadClientDetail(id, detail);
+    } else {
+      detail.classList.add('hidden');
+    }
+  });
+});
+
+async function loadClientDetail(id: string, container: HTMLElement) {
+  const res = await fetch(`/api/s90/admin/clients/${id}`);
+  const data = await res.json();
+
+  // Deliverables
+  const dlList = container.querySelector('.deliverables-list') as HTMLElement;
+  if (dlList) {
+    dlList.innerHTML = data.deliverables.map((d: any) => `
+      <div class="flex items-center gap-2 py-1">
+        <select class="dl-status adm-input-sm w-36" data-id="${d.id}">
+          <option value="pendiente" ${d.status==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="en_proceso" ${d.status==='en_proceso'?'selected':''}>En proceso</option>
+          <option value="entregado" ${d.status==='entregado'?'selected':''}>Entregado ✓</option>
+        </select>
+        <input class="dl-link adm-input-sm flex-1" value="${d.link??''}" placeholder="Link (opcional)" data-id="${d.id}" />
+        <span class="text-xs text-brand-muted shrink-0 hidden sm:block">${d.name}</span>
+        <button class="save-dl btn-action" data-id="${d.id}">Guardar</button>
+      </div>
+    `).join('');
+    dlList.querySelectorAll('.save-dl').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const did = (btn as HTMLElement).dataset.id!;
+        const status = (dlList.querySelector(`.dl-status[data-id="${did}"]`) as HTMLSelectElement).value;
+        const link = (dlList.querySelector(`.dl-link[data-id="${did}"]`) as HTMLInputElement).value;
+        await fetch(`/api/s90/admin/clients/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ action: 'update_deliverable', deliverable_id: did, status, link }) });
+        (btn as HTMLElement).textContent = '✓';
+      });
+    });
+  }
+
+  // Reenviar acceso
+  container.querySelectorAll('[data-action="send_link"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      btn.textContent = 'Enviando...';
+      await fetch(`/api/s90/admin/clients/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ action: 'send_link' }) });
+      btn.textContent = '✓ Enviado';
+    });
+  });
+
+  // Métricas
+  const mForm = container.querySelector('.metrics-form') as HTMLFormElement;
+  mForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(mForm);
+    const body: any = { action: 'upsert_metric' };
+    fd.forEach((v, k) => { body[k] = k === 'month' ? v : Number(v); });
+    await fetch(`/api/s90/admin/clients/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    (mForm.querySelector('button[type="submit"]') as HTMLElement).textContent = '✓ Guardado';
+  });
+
+  // Documentos
+  const docForm = container.querySelector('.doc-form') as HTMLFormElement;
+  docForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(docForm);
+    fd.append('client_id', id);
+    const uploadRes = await fetch('/api/s90/admin/upload-doc', { method: 'POST', body: fd });
+    const { url } = await uploadRes.json();
+    const name = (docForm.querySelector('input[name="name"]') as HTMLInputElement).value;
+    await fetch(`/api/s90/admin/clients/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action: 'add_document', name, url }) });
+    (docForm.querySelector('button[type="submit"]') as HTMLElement).textContent = '✓ Subido';
+  });
+
+  // Onboarding
+  container.querySelectorAll('.view-onboarding').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pre = container.querySelector('.onboarding-data') as HTMLElement;
+      if (pre.classList.contains('hidden')) {
+        pre.textContent = JSON.stringify(data.onboarding?.data ?? {}, null, 2);
+        pre.classList.remove('hidden');
+        btn.textContent = 'Ocultar respuestas';
+      } else {
+        pre.classList.add('hidden');
+        btn.textContent = 'Ver respuestas';
+      }
+    });
+  });
+}
+</script>

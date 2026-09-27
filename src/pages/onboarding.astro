@@ -1,0 +1,273 @@
+---
+import Layout from '../layouts/Layout.astro';
+const clinic = Astro.url.searchParams.get('clinic') ?? '';
+---
+
+<Layout title="Formulario de bienvenida — Sistema 90" noindex>
+  <main class="min-h-screen bg-brand-black text-brand-white px-4 py-12">
+    <div class="max-w-2xl mx-auto">
+
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <a href="/" class="text-brand-white font-semibold text-lg tracking-tight">ReClub</a>
+        <p class="text-brand-muted text-xs tracking-[0.2em] uppercase mt-2 mb-8">Sistema 90 — Formulario de bienvenida</p>
+        <h1 class="font-serif text-brand-white mb-3" style="font-size:clamp(26px,5vw,40px);font-weight:400;letter-spacing:-0.02em;">Cuéntanos sobre tu clínica</h1>
+        <p class="text-brand-muted text-sm leading-relaxed">Son aproximadamente 10 minutos. Esta información nos permite crear un plan a medida desde el día 1.</p>
+      </div>
+
+      <!-- Estado de enviado -->
+      <div id="successScreen" class="hidden text-center py-20">
+        <div class="w-16 h-16 rounded-full border border-green-500/30 bg-green-500/10 flex items-center justify-center mx-auto mb-6">
+          <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h2 class="font-serif text-brand-white mb-2" style="font-size:28px;font-weight:400;">¡Listo! Recibimos todo.</h2>
+        <p class="text-brand-muted text-sm mb-8">Nos pondremos en contacto contigo pronto para coordinar los detalles.</p>
+        <a href="/bienvenida" class="inline-flex bg-brand-white text-brand-black font-semibold px-6 py-3 rounded-full hover:bg-brand-blue-dark transition-colors text-sm">
+          Volver al inicio
+        </a>
+      </div>
+
+      <form id="onboardingForm" class="space-y-8" enctype="multipart/form-data">
+        <!-- 1. Datos de la clínica -->
+        <fieldset class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
+          <legend class="text-xs text-brand-muted tracking-[0.15em] uppercase px-1 mb-2">Datos de la clínica</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">Nombre de la clínica *</label>
+              <input name="clinic_name" required value={clinic} class="input-field" placeholder="Clínica Estética Las Condes" />
+            </div>
+            <div>
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">RUT de la empresa</label>
+              <input name="rut" class="input-field" placeholder="12.345.678-9" />
+            </div>
+            <div>
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">Dirección</label>
+              <input name="address" class="input-field" placeholder="Av. Apoquindo 3000" />
+            </div>
+            <div>
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">Comuna</label>
+              <input name="commune" class="input-field" placeholder="Las Condes" />
+            </div>
+            <div>
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">Nombre de quien decide *</label>
+              <input name="contact_name" required class="input-field" placeholder="Dra. Carolina Soto" />
+            </div>
+            <div>
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">Cargo</label>
+              <input name="contact_role" class="input-field" placeholder="Directora médica" />
+            </div>
+            <div>
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">Teléfono / WhatsApp *</label>
+              <input name="phone" required type="tel" class="input-field" placeholder="+56 9 1234 5678" />
+            </div>
+            <div>
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">Correo electrónico *</label>
+              <input name="email" required type="email" class="input-field" placeholder="hola@miclinca.cl" />
+            </div>
+            <div>
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">Instagram</label>
+              <input name="instagram" class="input-field" placeholder="@miclinicaestetica" />
+            </div>
+            <div>
+              <label class="block text-xs text-brand-muted mb-1.5 font-medium">Sitio web</label>
+              <input name="website" type="url" class="input-field" placeholder="https://miclinica.cl" />
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 2. Tratamientos -->
+        <fieldset class="bg-brand-card border border-brand-border rounded-2xl p-6">
+          <legend class="text-xs text-brand-muted tracking-[0.15em] uppercase px-1 mb-4">Tratamientos foco (mínimo 3)</legend>
+          <p class="text-brand-muted text-xs mb-4">Estos serán los tratamientos que destacaremos en el contenido y los anuncios.</p>
+          <div id="treatmentsList" class="space-y-2">
+            {[1,2,3].map(n => (
+              <div class="treatment-row flex gap-2">
+                <input name="t_name" class="input-field flex-1" placeholder={`Tratamiento ${n}`} />
+                <input name="t_price" class="input-field w-28" placeholder="$90.000" />
+              </div>
+            ))}
+          </div>
+          <button type="button" id="addTreatment" class="mt-3 text-xs text-brand-muted hover:text-brand-white border border-dashed border-brand-border px-3 py-2 rounded-xl transition-colors w-full">
+            + Agregar tratamiento
+          </button>
+        </fieldset>
+
+        <!-- 3. Público ideal -->
+        <fieldset class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
+          <legend class="text-xs text-brand-muted tracking-[0.15em] uppercase px-1 mb-2">Público ideal</legend>
+          <div>
+            <label class="block text-xs text-brand-muted mb-1.5 font-medium">Rango de edad de tus pacientes</label>
+            <input name="age_range" class="input-field" placeholder="25 a 50 años" />
+          </div>
+          <div>
+            <label class="block text-xs text-brand-muted mb-1.5 font-medium">Comunas donde viven tus pacientes</label>
+            <input name="patient_communes" class="input-field" placeholder="Las Condes, Vitacura, Providencia..." />
+          </div>
+          <div>
+            <label class="block text-xs text-brand-muted mb-1.5 font-medium">Perfil del paciente ideal (cuéntanos con tus palabras)</label>
+            <textarea name="patient_profile" rows="3" class="input-field resize-none" placeholder="Mujeres profesionales, mamás jóvenes, ejecutivos..."></textarea>
+          </div>
+        </fieldset>
+
+        <!-- 4. Grabaciones -->
+        <fieldset class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
+          <legend class="text-xs text-brand-muted tracking-[0.15em] uppercase px-1 mb-2">Grabaciones</legend>
+          <div>
+            <label class="block text-xs text-brand-muted mb-1.5 font-medium">Horarios de atención de la clínica</label>
+            <input name="office_hours" class="input-field" placeholder="Lun–Vie 9:00–19:00, Sáb 10:00–14:00" />
+          </div>
+          <div>
+            <label class="block text-xs text-brand-muted mb-1.5 font-medium">Días y horarios preferidos para grabar</label>
+            <input name="recording_days" class="input-field" placeholder="Martes y jueves por la tarde" />
+          </div>
+          <div>
+            <label class="block text-xs text-brand-muted mb-1.5 font-medium">¿Quién puede aparecer en cámara?</label>
+            <textarea name="on_camera" rows="2" class="input-field resize-none" placeholder="Doctora, asistente, pacientes con autorización..."></textarea>
+          </div>
+        </fieldset>
+
+        <!-- 5. Accesos -->
+        <fieldset class="bg-brand-card border border-brand-border rounded-2xl p-6">
+          <legend class="text-xs text-brand-muted tracking-[0.15em] uppercase px-1 mb-4">Checklist de accesos</legend>
+          <p class="text-brand-muted text-xs mb-5 leading-relaxed">Necesitamos acceso a estas plataformas para configurar las campañas. Marca lo que ya tienes listo y despliega el instructivo si necesitas ayuda.</p>
+          <div class="space-y-3">
+            {[
+              { key: 'meta_ads', label: 'Cuenta publicitaria de Meta (agregar a ReClub como socio)', instr: 'Ve a business.facebook.com → Configuración del negocio → Personas y activos → Cuentas publicitarias → Agregar persona. Ingresa el correo [CORREO_RECLUB] y otorga el rol de Administrador.' },
+              { key: 'facebook', label: 'Página de Facebook', instr: 'Asegúrate de ser administrador de la página. Si ReClub necesita acceso, ve a Configuración de la página → Funciones de la página → Agregar persona.' },
+              { key: 'instagram', label: 'Instagram Business', instr: 'Ve a Configuración → Cuenta → Cambiar a cuenta profesional. Luego conecta tu Instagram a tu página de Facebook en business.facebook.com.' },
+              { key: 'whatsapp', label: 'WhatsApp Business', instr: 'Descarga WhatsApp Business. Configura tu perfil con nombre, descripción, horario y dirección de la clínica. Activa el mensaje de bienvenida automático.' },
+            ].map(item => (
+              <div class="border border-brand-border rounded-xl">
+                <div class="flex items-center gap-3 p-4">
+                  <input type="checkbox" name={`access_${item.key}`} value="si" id={`chk_${item.key}`}
+                    class="w-4 h-4 rounded border-brand-border accent-brand-white" />
+                  <label for={`chk_${item.key}`} class="text-sm text-brand-white cursor-pointer flex-1">{item.label}</label>
+                  <button type="button" class="toggle-instr text-xs text-brand-muted hover:text-brand-white transition-colors shrink-0" data-target={`instr_${item.key}`}>
+                    Instructivo ↓
+                  </button>
+                </div>
+                <div id={`instr_${item.key}`} class="hidden px-4 pb-4">
+                  <p class="text-xs text-brand-muted leading-relaxed border-t border-brand-border pt-3">{item.instr}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </fieldset>
+
+        <!-- 6. Logo y fotos -->
+        <fieldset class="bg-brand-card border border-brand-border rounded-2xl p-6">
+          <legend class="text-xs text-brand-muted tracking-[0.15em] uppercase px-1 mb-4">Logo y fotos (opcional)</legend>
+          <div class="border-2 border-dashed border-brand-border rounded-xl p-6 text-center hover:border-brand-muted transition-colors">
+            <input type="file" name="logo" id="logoInput" accept="image/*,.pdf" class="hidden" />
+            <label for="logoInput" class="cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-brand-muted mx-auto mb-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+              </svg>
+              <p class="text-sm text-brand-muted">Logo o fotos de la clínica</p>
+              <p class="text-xs text-brand-muted/60 mt-1">JPG, PNG o PDF</p>
+              <p id="logoFileName" class="text-xs text-brand-white mt-2 hidden"></p>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- 7. Aceptación -->
+        <div class="border border-brand-border rounded-2xl p-6">
+          <div class="flex gap-3">
+            <input type="checkbox" name="accepts_meta_spend" required id="chkMeta"
+              class="w-4 h-4 mt-0.5 shrink-0 rounded border-brand-border accent-brand-white" />
+            <label for="chkMeta" class="text-sm text-brand-muted leading-relaxed">
+              Entiendo que la inversión publicitaria en Meta Ads (Facebook e Instagram) se paga directamente a Meta con mi tarjeta de crédito o cuenta bancaria. ReClub administra las campañas pero no cobra la pauta.
+            </label>
+          </div>
+        </div>
+
+        <!-- Botón -->
+        <button type="submit" id="submitBtn"
+          class="w-full bg-brand-white text-brand-black font-semibold py-4 rounded-full hover:bg-brand-blue-dark transition-colors disabled:opacity-50 text-sm">
+          Enviar formulario
+        </button>
+      </form>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .input-field {
+    width: 100%;
+    background: #070707;
+    border: 1px solid #1C1C24;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #F5F5F7;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-field::placeholder { color: rgba(92,92,106,0.5); }
+  .input-field:focus { border-color: #5C5C6A; }
+  textarea.input-field { font-family: inherit; }
+</style>
+
+<script>
+// Agregar tratamiento
+document.getElementById('addTreatment')?.addEventListener('click', () => {
+  const list = document.getElementById('treatmentsList')!;
+  const div = document.createElement('div');
+  div.className = 'treatment-row flex gap-2';
+  div.innerHTML = `<input name="t_name" class="input-field flex-1" placeholder="Tratamiento" />
+    <input name="t_price" class="input-field w-28" placeholder="$0" />`;
+  list.appendChild(div);
+});
+
+// Toggle instructivos
+document.querySelectorAll('.toggle-instr').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.getElementById((btn as HTMLElement).dataset.target!);
+    target?.classList.toggle('hidden');
+    btn.textContent = target?.classList.contains('hidden') ? 'Instructivo ↓' : 'Instructivo ↑';
+  });
+});
+
+// Mostrar nombre del archivo subido
+document.getElementById('logoInput')?.addEventListener('change', (e) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  const el = document.getElementById('logoFileName')!;
+  if (file) { el.textContent = file.name; el.classList.remove('hidden'); }
+  else { el.classList.add('hidden'); }
+});
+
+// Enviar formulario
+document.getElementById('onboardingForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target as HTMLFormElement;
+  const btn = document.getElementById('submitBtn') as HTMLButtonElement;
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  const fd = new FormData(form);
+
+  // Agrupar tratamientos como JSON
+  const names = fd.getAll('t_name') as string[];
+  const prices = fd.getAll('t_price') as string[];
+  fd.delete('t_name');
+  fd.delete('t_price');
+  const treatments = names.map((n, i) => ({ name: n, price: prices[i] })).filter(t => t.name);
+  fd.append('treatments', JSON.stringify(treatments));
+
+  try {
+    const res = await fetch('/api/s90/onboarding', { method: 'POST', body: fd });
+    if (res.ok) {
+      form.classList.add('hidden');
+      document.getElementById('successScreen')!.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Enviar formulario';
+      alert('Hubo un error. Por favor intenta de nuevo.');
+    }
+  } catch {
+    btn.disabled = false;
+    btn.textContent = 'Enviar formulario';
+  }
+});
+</script>
