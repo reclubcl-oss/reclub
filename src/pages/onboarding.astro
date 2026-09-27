@@ -209,8 +209,8 @@ const clinic = Astro.url.searchParams.get('clinic') ?? '';
 <style>
   .input-field {
     width: 100%;
-    background: #070707;
-    border: 1px solid #1C1C24;
+    background: #111114;
+    border: 1px solid #2C2C36;
     border-radius: 12px;
     padding: 12px 16px;
     color: #F5F5F7;
@@ -218,9 +218,19 @@ const clinic = Astro.url.searchParams.get('clinic') ?? '';
     outline: none;
     transition: border-color 0.2s;
   }
-  .input-field::placeholder { color: rgba(92,92,106,0.5); }
+  .input-field::placeholder { color: rgba(255,255,255,0.28); }
   .input-field:focus { border-color: #5C5C6A; }
   textarea.input-field { font-family: inherit; }
+
+  /* Labels visibles */
+  fieldset label, form > div label { color: rgba(255,255,255,0.55) !important; }
+
+  /* Fieldset legend más visible */
+  fieldset { border-color: #2C2C36; }
+  legend { color: rgba(255,255,255,0.4) !important; }
+
+  /* Checkbox label */
+  label[for="chkMeta"] { color: rgba(255,255,255,0.5) !important; }
 </style>
 
 <script>
