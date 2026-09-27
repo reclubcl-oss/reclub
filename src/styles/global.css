@@ -37,6 +37,11 @@ body {
   overscroll-behavior: none;
 }
 
+body.white-page {
+  background-color: #ffffff !important;
+  color: #1A1A1A !important;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: #020202; }
