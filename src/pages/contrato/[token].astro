@@ -27,7 +27,7 @@ const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune 
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es" style="background:#fff !important;">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -39,7 +39,7 @@ const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune 
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #FFFFFF; font-family: 'Inter', sans-serif; color: #1A1A1A; }
+    html, body { background: #FFFFFF !important; color: #1A1A1A !important; font-family: 'Inter', sans-serif; }
 
     /* Barra superior */
     .topbar { background: #0A0A0F; color: #F5F5F7; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
@@ -142,7 +142,7 @@ const address = onb.address ? `${onb.address}${onb.commune ? ', ' + onb.commune 
   </div>
 
   <!-- Documento -->
-  <div class="page-wrap">
+  <div class="page-wrap" style="background:#fff;">
   <div id="documento">
 
     <!-- Membrete -->
