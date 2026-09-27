@@ -379,14 +379,26 @@ document.getElementById('btnDescarga')?.addEventListener('click', async () => {
   btn.textContent = 'Generando...';
   btn.disabled = true;
   const el = document.getElementById('documento')!;
+  // Forzar fondo blanco antes de capturar
+  const prevBg = el.style.background;
+  el.style.background = '#ffffff';
   const opt = {
-    margin: 0,
+    margin: [8, 8, 8, 8],
     filename: `CuentaCobro_${document.title.replace(/.*N°/, 'N°').replace(/\s+/g,'_')}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false,
+      windowWidth: 794,
+      windowHeight: 1123,
+    },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
   };
   await (window as any).html2pdf().set(opt).from(el).save();
+  el.style.background = prevBg;
   btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg> Descargar PDF`;
   btn.disabled = false;
 });
